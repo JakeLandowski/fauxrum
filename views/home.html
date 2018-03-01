@@ -11,7 +11,7 @@
 <style>
     body 
     {
-        background: url("./image/ya.jpg");
+        background: url("{{ @BASE }}/image/ya.jpg");
         font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -93,9 +93,7 @@
     </p>
 </div>
 
-
-
-<form action="./views/home.html">
+<form method="POST" action="{{ @BASE }}/">
     <div class="imgcontainer">
         <img src="//lorempixel.com/300/300" alt="Avatar" class="avatar">
     </div>
