@@ -1,11 +1,10 @@
 <?php
 /**
  *  Jake Landowski
- *  Shahbaz Iqbal 
+ *  Shahbaz Iqbal
+ *  2-8-18
  *  
- *  2 - 8 - 18
- *  
- *  Route controller for Fauxram assignment.
+ *  Route controller for Fauxrum assignment.
 */  
 
   //================================================//
@@ -29,12 +28,12 @@ $f3->set('DEBUG', 3);
  //                    ROUTES                      //
 //================================================//
 
-    //  HOME ROUTE
-$f3->route('GET /', function()
+    // HOME ROUTE
+$f3->route('GET|POST /', function()
 {
     echo Template::instance()->render('views/home.html');
 });
-    //THREAD ROUTE
+    // THREAD ROUTE
 $f3->route('GET /thread', function()
 {
     echo Template::instance()->render('views/thread.html');
