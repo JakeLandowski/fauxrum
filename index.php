@@ -36,6 +36,7 @@ $f3->route('GET|POST /', function()
 {
     echo Template::instance()->render('views/home.html');
 });
+
     // THREADS ROUTE
 $f3->route('GET /threads', function()
 {
@@ -49,7 +50,6 @@ $f3->route('GET /posts', function()
 });
 
 $f3->run();
-
 
     //  End Runtime clock
 require_once "testing/runTimeEnd.php";
