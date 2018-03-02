@@ -71,7 +71,7 @@ class TextMap
             $gram = substr($seed, $i, $i + $this->_order);
             if(!isset($_weighted[$gram])) { echo 'No key found' . '<br>'; return $seed; }
             $point = rand(0, $_weighted[$gram]['max']);
-            $seed .= $this->findFirstRange($point, $_weighted[$gram]['probs']);
+            $seed .= $this->_findFirstRange($point, $_weighted[$gram]['probs']);
         }
         
         return $seed;
@@ -99,7 +99,7 @@ class TextMap
     }
     
     
-    private function findFirstRange(&$index, &$array)
+    private function _findFirstRange(&$index, &$array)
     {
         foreach($array as $range => $element)
         {
