@@ -43,11 +43,34 @@ $f3->route('GET /threads', function()
     echo Template::instance()->render('views/threads.html');
 });
 
-// POSTS ROUTE
+    // POSTS ROUTE
 $f3->route('GET /posts', function()
 {
     echo Template::instance()->render('views/posts.html');
 });
+
+  //================================================//
+ //                    TESTING                     //
+//================================================//
+
+$f3->route('GET /test', function()
+{
+    $map = new TextMap;
+
+    $text = "This is a sentence and stuff so this is for testing.";
+
+    
+    $map.parseText($text);
+
+    echo $map.generate(500);
+
+    echo Template::instance()->render('testing/db_testing.html');
+});
+
+  //================================================//
+ //                    TESTING                     //
+//================================================//
+
 
 $f3->run();
 
