@@ -44,7 +44,7 @@ abstract class Database
         catch(PDOException $e)
         {
             Database::disconnect($connection);
-            die('Query failed: ' . $e->getMessage());
+            CustomError::throw('Query failed: ' . $e->getMessage());
         }
     }
 
@@ -68,7 +68,7 @@ abstract class Database
 
         else if(trim($columns) != '*' && !in_array(trim($columns), Database::VALID_ENTRIES[$table]))
         {
-            die("$columns is not a valid entry for $table");
+            CustomError::throw("$columns is not a valid entry for $table");
         }
         
         $columns   = trim($columns);
@@ -82,7 +82,7 @@ abstract class Database
     {
         if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
         {
-            die("$table is not a valid table in the Database.");
+            CustomError::throw("$table is not a valid table in the Database.");
         }
     }
 
@@ -93,7 +93,7 @@ abstract class Database
         {
             if(!in_array(trim($col), Database::VALID_ENTRIES[$table]))
             {
-                die("$col is not a valid column name in $table");
+                CustomError::throw("$col is not a valid column name in $table");
             }
             
             $columnString .= $col . ' ';
@@ -111,7 +111,7 @@ abstract class Database
         }
         catch(PDOException $err)
         {
-            die("Connection failed: " . $err->getMessage());
+            CustomError::throw("Connection failed: " . $err->getMessage());
         }
 
         return $connection;
