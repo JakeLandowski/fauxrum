@@ -126,7 +126,7 @@ class Condition
         {
             if($otherCondition)
             {
-                if($otherCondition->isComplete())
+                if(!$otherCondition->isComplete())
                 {
                     CustomError::throw("Tried to $type incomplete condition: $otherCondition");
                 }
