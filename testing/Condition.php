@@ -14,6 +14,7 @@ class Condition
         columns      => [],
         comparisons  => [],
         values       => [],
+        allValues    => [],
         logical      => [],
         others       => [],
         binds        => []
@@ -101,27 +102,26 @@ class Condition
 
     public function getValues()
     {
-        if(!$this->isComplete() && count($this->_expression['values']) 
-                                != count($this->_expression['binds']))
-            CustomError::throw("Cannot resolve values, this condition is incomplete, or binds don't match values.");
+        $numValues = count($this->_expression['allValues']);
+
+        if(!$this->_hasBeenRendered())
+            CustomError::throw("Cannot resolve values, this condition is incomplete, 
+                                or binds don't match values. This is most likely 
+                                because the condition hasn't been rendered yet to
+                                create a sql string.");
         else
         {
-            $allValues = $this->_expression['values'];
-
-            foreach($this->_expression['others'] as $other)
-            {
-                $allValues = array_merge($allValues, $other->getValues());
-            }
-
-            return $allValues;
+            return $this->_expression['allValues'];
         } 
     }
 
     public function getBinds()
     {
-        if(!$this->isComplete() && count($this->_expression['values']) 
-                                != count($this->_expression['binds']))
-            CustomError::throw("Cannot resolve binds, this condition is incomplete or values don't match binds.");
+        if(!$this->_hasBeenRendered())
+            CustomError::throw("Cannot resolve values, this condition is incomplete, 
+                                or binds don't match values. This is most likely 
+                                because the condition hasn't been rendered yet to 
+                                create a sql string.");
         else 
             return $this->_expression['binds'];
     }
@@ -129,6 +129,37 @@ class Condition
     public function __toString()
     {
         return $this->_bindChunks($this->_render());
+    }
+
+    public function isComplete()
+    {
+        return $this->_numColumns != 0 & 
+               $this->_numColumns == $this->_numComparisons &&
+               $this->_numComparisons == $this->_numValues &&
+               $this->_numLogical == $this->_numColumns - 1;
+    }
+
+    public function and($otherCondition=null)
+    {
+        $this->_logical($otherCondition, 'AND');
+        return $this;
+    }
+
+    public function or($otherCondition=null)
+    {
+        $this->_logical($otherCondition, 'OR');
+    }
+
+  //=========================================================//
+ //                   PRIVATE FUNCTIONS                     //
+//=========================================================//
+
+    private function _hasBeenRendered()
+    {
+        $numValues = count($this->_expression['allValues']);
+
+        return $this->isComplete() && $numValues > 0 && 
+               $numValues == count($this->_expression['binds']);
     }
 
     private function _bindChunks($chunks)
@@ -152,7 +183,22 @@ class Condition
             }
         }
 
+        $this->_compileAllValues();
+
         return $str;
+    }
+
+    private function _compileAllValues()
+    {
+        $allValues = $this->_expression['values'];
+
+        foreach($this->_expression['others'] as $other)
+        {
+            $other->_compileAllValues();
+            $allValues = array_merge($allValues, $other->_expression['allValues']);
+        }
+
+        $this->_expression['allValues'] = $allValues;
     }
 
     private function _render()
@@ -183,29 +229,6 @@ class Condition
 
         return $chunks;
     }
-
-    public function isComplete()
-    {
-        return $this->_numColumns != 0 & 
-               $this->_numColumns == $this->_numComparisons &&
-               $this->_numComparisons == $this->_numValues &&
-               $this->_numLogical == $this->_numColumns - 1;
-    }
-
-    public function and($otherCondition=null)
-    {
-        $this->_logical($otherCondition, 'AND');
-        return $this;
-    }
-
-    public function or($otherCondition=null)
-    {
-        $this->_logical($otherCondition, 'OR');
-    }
-
-  //=========================================================//
- //                   PRIVATE FUNCTIONS                     //
-//=========================================================//
 
     private function _logical($other, $type)
     {
