@@ -40,6 +40,8 @@ class Condition
             CustomError::throw("Tried to set column \"$column\", expected a comparison.", 2);
         else if($this->_state == 'values') 
             CustomError::throw("Tried to set column \"$column\", expected a value.", 2);
+        else if(!Database::isValidColumn($column)) 
+            CustomError::throw("Tried to set and invalid column \"$column\".", 2);
         else
         {
             $this->_numColumns++;
@@ -148,21 +150,6 @@ class Condition
             }
 
             return $args;
-
-            // $values = [];
-            // $types  = [];
-
-            // foreach($this->_expression['allValues'] as $pair)
-            // {
-            //     $values[] = $pair['value'];
-            //     $types[]   = $pair['type'];
-            // }
-
-            // return [
-            //          'binds'  => $this->_expression['binds'],
-            //          'values' => $values,
-            //          'types'  => $types
-            //        ];
         } 
     }
 

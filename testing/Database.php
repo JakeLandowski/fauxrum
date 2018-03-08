@@ -13,23 +13,50 @@ abstract class Database
         'Thread'  => [ 'id', 'title',    'owner', 'created', 'bot_generated' ],
         'Post'    => [ 'id', 'thread',   'owner', 'created', 'bot_generated', 'content', 'is_root_post' ],
         'TextMap' => [ 'id', 'map_data', 'owner' ]
-    ];    
+    ];
+    
+    const PDO_PARAMS = 
+    [
+        'int'    => PDO::PARAM_INT,
+        'string' => PDO::PARAM_STR,
+        'lob'    => PDO::PARAM_LOB
+    ];
 
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public static final function isValidColumn($column)
+    {
+        foreach(Database::VALID_ENTRIES as $table)
+        {
+            if(in_array($column, $table)) return true;
+        }
+
+        return false; 
+    }
+
     public static final function SELECT($columns, $table, $condition=null, $get=Database::EVERYTHING)
     {
-        Database::validateTable($table);
-        $sql = Database::buildSelect($columns, $table, $condition); 
+        $sql = Database::buildSelect($columns, $table, $condition);
 
         $connection = Database::connect();
 
         try
         {
             $statement = $connection->prepare($sql);
-            // $statement->bindValue(':start',  $start,  PDO::PARAM_INT);
+
+            if(Database::_conditionGiven($condition))
+            {
+                $bindArguments = $condition->getBindsAndValues();
+                
+                foreach($bindArguments as $args)
+                {
+                    $statement->bindValue($args['bind'],  $args['value'],  Database::PDO_PARAMS[$args['type']]);
+                }
+            }
+
+
             $statement->execute();
 
             if($get == Database::EVERYTHING)
@@ -57,9 +84,9 @@ abstract class Database
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
 
-    private static final function appendCondition(&$sql)
+    private static final function _conditionGiven(&$condition)
     {
-        
+        return isset($condition) && !empty($condition) && $condition instanceof Condition;
     }
 
     private static final function buildSelect(&$columns, &$table, &$condition)
@@ -70,40 +97,39 @@ abstract class Database
         {
             $columns = Database::buildColumns($columns, $table);
         }
-
         else if(trim($columns) != '*' && !in_array(trim($columns), Database::VALID_ENTRIES[$table]))
         {
-            CustomError::throw("$columns is not a valid entry for $table");
+            CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
         }
         
         $columns   = trim($columns);
         $table     = trim($table);
-        // $condition = trim($condition);
 
-        return "SELECT $columns FROM $table WHERE $condition" . ';';
+        if(Database::_conditionGiven($condition))
+            $sql .= " WHERE $condition";
+
+        return "SELECT $columns FROM $table" . ';';
     }
 
     private static final function validateTable(&$table)
     {
         if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
         {
-            CustomError::throw("$table is not a valid table in the Database.");
+            CustomError::throw("\"$table\" is not a valid table in the Database.", 2);
         }
     }
 
     private static final function buildColumns(&$columns, &$table)
     {
-        $columnString = '';
         foreach($columns as $col)
         {
             if(!in_array(trim($col), Database::VALID_ENTRIES[$table]))
             {
-                CustomError::throw("$col is not a valid column name in $table");
+                CustomError::throw("\"$col\" is not a valid column name in \"$table\"", 2);
             }
-            
-            $columnString .= $col . ' ';
         }
-        return $columnString; 
+
+        return implode(', ', $columns); 
     }
 
     private static final function connect()
@@ -116,7 +142,7 @@ abstract class Database
         }
         catch(PDOException $err)
         {
-            CustomError::throw("Connection failed: " . $err->getMessage());
+            CustomError::throw("Connection failed: " . $err->getMessage(), 2);
         }
 
         return $connection;
