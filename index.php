@@ -31,10 +31,16 @@ $f3->set('DEBUG', 3);
  //                    ROUTES                      //
 //================================================//
 
-    // HOME ROUTE
-$f3->route('GET|POST /', function()
+// HOME ROUTE
+$f3->route('GET /', function($f3)
 {
-    echo Template::instance()->render('views/home.html');
+    $f3->reroute('/login');
+});
+
+    // HOME ROUTE
+$f3->route('GET|POST /login', function()
+{
+    echo Template::instance()->render('views/login.html');
 });
 
     // THREADS ROUTE
