@@ -2,6 +2,8 @@
 
 class Condition
 {
+    const NUM_UNIQUE_VALUES = 100;
+
     const VALID_TYPES =
     [
         'string', 'int', 'lob'
@@ -13,10 +15,11 @@ class Condition
         comparisons  => [],
         values       => [],
         logical      => [],
-        AND_other    => [],
-        OR_other     => []
+        others       => [],
+        binds        => []
     ];
 
+    private $_otherJoinType  = '';
     private $_numColumns     = 0;
     private $_numComparisons = 0;
     private $_numValues      = 0;
@@ -43,7 +46,6 @@ class Condition
             $this->_numColumns++;
             $this->_expression['columns'][] = trim($column);
             $this->_state = 'comparisons';
-            // $this->_expression['logical'][] = '';
             return $this; 
         }
     }
@@ -97,42 +99,89 @@ class Condition
         return $this;
     }
 
-    public function getExpression()
+    public function getValues()
     {
-        if(!$this->isComplete())
-            CustomError::throw("Cannot resolve expression, this condition is incomplete.");
+        if(!$this->isComplete() && count($this->_expression['values']) 
+                                != count($this->_expression['binds']))
+            CustomError::throw("Cannot resolve values, this condition is incomplete, or binds don't match values.");
+        else
+        {
+            $allValues = $this->_expression['values'];
+
+            foreach($this->_expression['others'] as $other)
+            {
+                $allValues = array_merge($allValues, $other->getValues());
+            }
+
+            return $allValues;
+        } 
+    }
+
+    public function getBinds()
+    {
+        if(!$this->isComplete() && count($this->_expression['values']) 
+                                != count($this->_expression['binds']))
+            CustomError::throw("Cannot resolve binds, this condition is incomplete or values don't match binds.");
         else 
-            return $this->_expression;
+            return $this->_expression['binds'];
     }
 
     public function __toString()
     {
-        if(!$this->isComplete()) return '';
+        return $this->_bindChunks($this->_render());
+    }
 
-        $str = '(';
-        $count = count($this->_expression['columns']);
+    private function _bindChunks($chunks)
+    {
+        $this->_expression['binds'] = [];
+        $numValues = 1;
+        $bind;
+        $str = '';
 
-        for($i = 0; $i < $count; $i++)
+        foreach($chunks as $chunk)
         {
-            $str .= $this->_expression['columns'][$i] . ' ';
-            $str .= $this->_expression['comparisons'][$i] . ' ';
-            $str .= ':' . $this->_expression['values'][$i]['value'];
-            if($i > 0) $str .= $this->_expression['logical'][$i - 1];
-        }
-
-        $str .= ')'; 
-
-        foreach($this->_expression['AND_other'] as $other)
-        {
-            $str .= ' AND ' . $other;
-        }
-
-        foreach($this->_expression['OR_other'] as $other)
-        {
-            $str .= ' OR ' . $other;
+            if($chunk == null)
+            {
+                $bind = ':value_' . $numValues++;
+                $this->_expression['binds'][] = $bind;
+                $str .= $bind;
+            }     
+            else
+            {
+                $str .= $chunk; 
+            }
         }
 
         return $str;
+    }
+
+    private function _render()
+    {
+        if(!$this->isComplete()) return '';
+
+        $chunks = [];
+
+        $chunks[] = '(';
+
+        $count = count($this->_expression['columns']);
+
+        for($i = 0; $i < $count; $i++)
+        { 
+            $chunks[] = $this->_expression['columns'][$i] . ' ';
+            $chunks[] = $this->_expression['comparisons'][$i] . ' ';
+            $chunks[] = null; 
+            if($i < $count - 1) $chunks[] = ' ' . $this->_expression['logical'][$i] . ' ';
+        }
+
+        $chunks[] = ')'; 
+
+        foreach($this->_expression['others'] as $other)
+        {
+            $chunks[] = " $other->_otherJoinType ";
+            $chunks = array_merge($chunks, $other->_render());
+        }
+
+        return $chunks;
     }
 
     public function isComplete()
@@ -170,8 +219,8 @@ class Condition
                 }
                 else
                 {
-                    // $this->_numLogical++;
-                    $this->_expression["{$type}_other"][] = $other;
+                    $other->_otherJoinType = $type;
+                    $this->_expression['others'][] = $other;
                 }
             }
             else
