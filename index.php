@@ -61,24 +61,35 @@ $f3->route('GET /posts', function()
 
 $f3->route('GET /test', function()
 {
-    // $map = new TextMap;
-
-    // $text = "This is a sentence and stuff so this is for testing.";
-
-    // $map->parseText($text);
-    // echo $map->generate(500);
-
-    require_once 'testing/Database.php';
-
-    try
+    spl_autoload_register(function($className)
     {
-        Database::SELECT('cols', 'table', 'condition');
-    }
-    catch(Exception $e)
+        require_once "./testing/{$className}.php";
+    });
+
+    $cond = (new Condition)->col('id')->greaterThan('int', 1)->and()->col('name')->equals('string', 'bob');
+    $cond2 = (new Condition)->col('id')->greaterThan('int', 1)->and()->col('name')->equals('string', 'bob')->and($cond);
+
+    echo $cond2;
+    echo '<pre style="color:white;">';
+    print_r($cond2->getBindsAndValues());
+    echo '</pre>';
+
+    // echo $cond2;
+
+    foreach($cond2->getValues() as $value)
     {
-        echo 'EXCEPTION: ' . $e->getMessage() . '<br \>';
+        echo '<br>Value: ';
+        print_r($value);
     }
 
+    foreach($cond2->getBinds() as $bind)
+    {
+        echo '<br>Bind: ';
+        print_r($bind);
+    }
+    
+    // print_r(Database::SELECT('id', 'User', '', Database::ONE));
+    // print_r(Database::SELECT_ALL('Use', 'id = 1'));
 
     echo Template::instance()->render('testing/db_testing.html');
 });
