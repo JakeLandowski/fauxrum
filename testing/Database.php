@@ -13,16 +13,16 @@ abstract class Database
         'Thread'  => [ 'id', 'title',    'owner', 'created', 'bot_generated' ],
         'Post'    => [ 'id', 'thread',   'owner', 'created', 'bot_generated', 'content', 'is_root_post' ],
         'TextMap' => [ 'id', 'map_data', 'owner' ]
-    ];
+    ];    
 
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
-    public static final function SELECT($columns, $table, $condition='', $get=Database::EVERYTHING)
+    public static final function SELECT($columns, $table, $condition=null, $get=Database::EVERYTHING)
     {
         Database::validateTable($table);
-        $sql = Database::buildSelect($columns, $table, $condition);        
+        $sql = Database::buildSelect($columns, $table, $condition); 
 
         $connection = Database::connect();
 
@@ -48,7 +48,7 @@ abstract class Database
         }
     }
 
-    public static final function SELECT_ALL($table, $condition='', $get=Database::EVERYTHING)
+    public static final function SELECT_ALL($table, $condition=null, $get=Database::EVERYTHING)
     {
         return Database::SELECT('*', $table, $condition, $get);
     }
@@ -56,6 +56,11 @@ abstract class Database
   //=========================================================//
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
+
+    private static final function appendCondition(&$sql)
+    {
+        
+    }
 
     private static final function buildSelect(&$columns, &$table, &$condition)
     {
@@ -73,9 +78,9 @@ abstract class Database
         
         $columns   = trim($columns);
         $table     = trim($table);
-        $condition = trim($condition);
+        // $condition = trim($condition);
 
-        return "SELECT $columns FROM $table" . (empty($condition) ? '' : " WHERE $condition") . ';';
+        return "SELECT $columns FROM $table WHERE $condition" . ';';
     }
 
     private static final function validateTable(&$table)
