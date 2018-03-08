@@ -31,16 +31,10 @@ $f3->set('DEBUG', 3);
  //                    ROUTES                      //
 //================================================//
 
-// HOME ROUTE
-$f3->route('GET /', function($f3)
-{
-    $f3->reroute('/login');
-});
-
     // HOME ROUTE
-$f3->route('GET|POST /login', function()
+$f3->route('GET|POST /', function()
 {
-    echo Template::instance()->render('views/login.html');
+    echo Template::instance()->render('views/home.html');
 });
 
     // THREADS ROUTE
@@ -55,30 +49,26 @@ $f3->route('GET /posts', function()
     echo Template::instance()->render('views/posts.html');
 });
 
+// CREATE THREAD ROUTE
+$f3->route('GET /new-thread', function()
+{
+    echo Template::instance()->render('views/create_thread.html');
+});
+
   //================================================//
  //                    TESTING                     //
 //================================================//
 
 $f3->route('GET /test', function()
 {
-    // $map = new TextMap;
+    $map = new TextMap;
 
-    // $text = "This is a sentence and stuff so this is for testing.";
+    $text = "This is a sentence and stuff so this is for testing.";
 
-    // $map->parseText($text);
-    // echo $map->generate(500);
+    
+    $map.parseText($text);
 
-    require_once 'testing/Database.php';
-
-    try
-    {
-        Database::SELECT('cols', 'table', 'condition');
-    }
-    catch(Exception $e)
-    {
-        echo 'EXCEPTION: ' . $e->getMessage() . '<br \>';
-    }
-
+    echo $map.generate(500);
 
     echo Template::instance()->render('testing/db_testing.html');
 });
