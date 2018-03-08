@@ -2,8 +2,6 @@
 
 class Condition
 {
-    const NUM_UNIQUE_VALUES = 100;
-
     const VALID_TYPES =
     [
         'string', 'int', 'lob'
