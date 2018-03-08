@@ -124,6 +124,48 @@ class Condition
             return $this->_expression['binds'];
     }
 
+    public function getBindsAndValues()
+    {
+        if(!$this->_hasBeenRendered())
+            CustomError::throw("Cannot resolve values, this condition is incomplete, 
+                                or binds don't match values. This is most likely 
+                                because the condition hasn't been rendered yet to 
+                                create a sql string.", 2);
+        else
+        {
+            $count = count($this->_expression['binds']);
+
+            $args = [];
+
+            for($i = 0; $i < $count; $i++)
+            {
+                $args[] = 
+                        [
+                            'bind'  => $this->_expression['binds'][$i],
+                            'value' => $this->_expression['allValues'][$i]['value'],
+                            'type'  => $this->_expression['allValues'][$i]['type']  
+                        ];
+            }
+
+            return $args;
+
+            // $values = [];
+            // $types  = [];
+
+            // foreach($this->_expression['allValues'] as $pair)
+            // {
+            //     $values[] = $pair['value'];
+            //     $types[]   = $pair['type'];
+            // }
+
+            // return [
+            //          'binds'  => $this->_expression['binds'],
+            //          'values' => $values,
+            //          'types'  => $types
+            //        ];
+        } 
+    }
+
     public function __toString()
     {
         return $this->_bindChunks($this->_render());
