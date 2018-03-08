@@ -39,9 +39,9 @@ class Condition
     public function col($column)
     {
         if($this->_state == 'comparisons') 
-            CustomError::throw("Tried to set column {$column}, expected a comparison.", 2);
+            CustomError::throw("Tried to set column \"$column\", expected a comparison.", 2);
         else if($this->_state == 'values') 
-            CustomError::throw("Tried to set column {$column}, expected a value.", 2);
+            CustomError::throw("Tried to set column \"$column\", expected a value.", 2);
         else
         {
             $this->_numColumns++;
@@ -238,7 +238,7 @@ class Condition
             {
                 if(!$other->isComplete())
                 {
-                    CustomError::throw("Tried to $type incomplete condition: $other");
+                    CustomError::throw("Tried to \"$type\" incomplete condition: \"$other\"");
                 }
                 else
                 {
@@ -254,17 +254,17 @@ class Condition
         }
         else
         {
-            CustomError::throw("Tried to $type an empty condition 
-            or incomplete condition with state: $this->_state", 2);
+            CustomError::throw("Tried to \"$type\" an empty condition 
+            or incomplete condition with state: \"$this->_state\"", 2);
         }
     }
 
     private function _comparison($comparison)
     {
         if($this->_state == 'columns') 
-            CustomError::throw("Tried to set comparison {$comparison}, expected a column.", 2);
+            CustomError::throw("Tried to set comparison \"$comparison\", expected a column.", 2);
         else if($this->_state == 'values') 
-            CustomError::throw("Tried to set comparison {$comparison}, expected a value.", 2);
+            CustomError::throw("Tried to set comparison \"$comparison\", expected a value.", 2);
         else
         {
             $this->_numComparisons++;
@@ -276,11 +276,12 @@ class Condition
     private function _val($type, $value)
     {
         if($this->_state == 'columns') 
-            CustomError::throw("Tried to set value $type {$value}, expected a column.", 2);
+            CustomError::throw("Tried to set value \"$type\" \"$value\", expected a column.", 2);
         else if($this->_state == 'comparisons') 
-            CustomError::throw("Tried to set value $type {$value}, expected a comparison.", 2);
+            CustomError::throw("Tried to set value \"$type\" \"$value\", expected a comparison.", 2);
         else if(!in_array($type, Condition::VALID_TYPES))
-            CustomError::throw("Invalid type $type given for value.", 2);
+            CustomError::throw("Invalid type \"$type\" given for value. Valid types are: "
+                             . '[' . implode(', ', Condition::VALID_TYPES) . ']', 2);
         else
         {
             $this->_numValues++;
