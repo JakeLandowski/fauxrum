@@ -1,10 +1,11 @@
 <?php
+/**
+ * 
+ */
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-$text = "Hash Tables are symbol tables that turn a key into a 32-bit integer representation of that key in order to use it as an index in a plain array structure. This gives you constant access times, which is extremely good speed. The downside is that in order to hash an object you have made, you need to override and define a solid hashing function that can uniquely convert your object into a number, it also needs to do so consistently, and you waste a bit of memory initially. One way to do this is to accumulate your object's fields and multiply them by prime numbers, giving them more chances of dividing into unique indices later. Another factor in creating unique hashes is trying to make use of all of an int's 32 bits, and not disregarding the least significant or most significant bits. Once you have your hashing function, you then just modulus by the container size, or better yet, the largest prime of that size, this is how you convert your large hash to a usable index. There are 2 type of hash table storage techniques, separate chaining, where each slot of the table is a linked list, and when multiple objects fall on the same index (a collision) you instead append it to the linked list, and dynamically grow that slot. The second type is linear probing, where you place the element at the next available slot when it falls on an already filled slot. One part that was confusing to me was at the start of the chapter, the author gives examples of hashing functions that involves a variable R, but it never explains what R represents afaik, so I have no idea how to interpret the algorithm it gives. int hash = (((day * R + month) % M) * R + year) % M; Also as far as separate chaining go, I know one benefit is how easy it can grow without having to resize, but wouldn't another good option be just more hash tables in each index instead of linked lists? Since it's standard to have excess storage anyway and you can resize them along with resizing the primary array, this would be really fast if you had a lot of collisions.";
-
+/**
+ * 
+ */
 class MarkovMap
 {
     private $_signature = 0;
@@ -106,12 +107,3 @@ class MarkovMap
         return '';
     }
 }
-
-
-require_once "../runTimeStart.php";
-
-$markov = new MarkovMap;
-$markov->parseText($text);
-echo $markov->generate();
-
-require_once "../runTimeEnd.php";
