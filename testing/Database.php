@@ -81,15 +81,9 @@ abstract class Database
         {
             $statement = $connection->prepare($sql);
 
+                // IF CONDITION BIND THEM
             if(Database::_conditionGiven($condition))
-            {
-                $bindArguments = $condition->getBindsAndValues();
-                
-                foreach($bindArguments as $args)
-                {
-                    $statement->bindValue($args['bind'],  $args['value'],  Database::PDO_PARAMS[$args['type']]);
-                }
-            }
+                Database::_bindConditions($statement, $condition);
 
             $statement->execute();
 
@@ -133,11 +127,84 @@ abstract class Database
                 $statement->bindValue(':value_' . ($i + 1),  $value,  Database::PDO_PARAMS[$type]); 
             }
 
-            $statement->execute();
-            $id = $connection->lastInsertId();
+            $returnValue = false;
+            if($statement->execute()) $returnValue = $connection->lastInsertId();
             Database::disconnect($connection);
 
-            return $id; // returns 0 if fail I believe
+            return $returnValue; // returns false if fail, otherwise last insert ID
+        }
+        catch(PDOException $e)
+        {
+            Database::disconnect($connection);
+            CustomError::throw('Query failed: ' . $e->getMessage());
+        }
+    }
+
+    public static final function DELETE($table, $condition)
+    {
+        $sql = Database::_buildDelete($table, $condition);
+
+        echo $sql;
+
+        $connection = Database::connect();
+
+        try
+        {
+            $statement = $connection->prepare($sql);
+
+                // IF CONDITION BIND THEM
+            if(Database::_conditionGiven($condition))
+                Database::_bindConditions($statement, $condition);
+            else
+                CustomError::throw("Need to give a condition for DELETE operations.");
+
+            $returnValue = false;
+            if($statement->execute()) $returnValue = $statement->rowCount();
+
+            Database::disconnect($connection);
+
+            return $returnValue; // returns false if fail, otherwise num rows affected
+        }
+        catch(PDOException $e)
+        {
+            Database::disconnect($connection);
+            CustomError::throw('Query failed: ' . $e->getMessage());
+        }
+    }
+
+    public static final function UPDATE($table, $columns, $values, $condition)
+    {
+        
+        $sql = Database::_buildUpdate($table, $columns, $values, $condition);
+        
+        $connection = Database::connect();
+        
+        echo $sql;
+        
+        try
+        {
+            $statement = $connection->prepare($sql);
+            
+            if(!is_array($values)) $values = [$values];
+            
+            // FOR EACH VALUE BIND THEM
+            $type;
+            foreach($values as $i => $value)
+            {   
+                $type = Database::VALID_ENTRIES[$table][$columns[$i]]; 
+                $statement->bindValue(':value_' . ($i + 1),  $value,  Database::PDO_PARAMS[$type]); 
+            }
+
+                // IF CONDITION BIND THEM
+            if(Database::_conditionGiven($condition))
+                Database::_bindConditions($statement, $condition);
+
+            $returnValue = false;
+            if($statement->execute()) $returnValue = $statement->rowCount();
+
+            Database::disconnect($connection);
+
+            return $returnValue; // returns false if fail, otherwise num rows affected
         }
         catch(PDOException $e)
         {
@@ -150,9 +217,19 @@ abstract class Database
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
 
+    private static final function _bindConditions(&$statement, &$condition)
+    {
+        $bindArguments = $condition->getBindsAndValues();
+                
+        foreach($bindArguments as $args)
+        {
+            $statement->bindValue($args['bind'],  $args['value'],  Database::PDO_PARAMS[$args['type']]);
+        }
+    }
+
     private static final function _validateCondition(&$condition)
     {
-        if(!Database::_conditionGiven($condition))
+        if(isset($condition) && !($condition instanceof Condition))
             CustomError::throw("Given condition \"$condition\" is not a Condition object.", 3);
     }
 
@@ -163,6 +240,7 @@ abstract class Database
 
     private static final function _buildSelect(&$columns, &$table, &$condition)
     {
+        $table = trim($table);
         Database::validateTable($table);
         Database::_validateCondition($condition);
 
@@ -176,7 +254,6 @@ abstract class Database
         }
         
         $columns   = trim($columns);
-        $table     = trim($table);
 
         return "SELECT $columns FROM $table" . 
                 (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
@@ -184,6 +261,7 @@ abstract class Database
 
     private static final function _buildInsert(&$table, &$columns, &$values)
     {
+        $table = trim($table);
         Database::validateTable($table);
 
         $columnString = $columns;
@@ -202,10 +280,58 @@ abstract class Database
         if(is_array($values)) $valuesString = Database::_buildValues($values);
 
         $columnString = trim($columnString);
-        $table        = trim($table);
         $valuesString = trim($valuesString);
 
-        return "INSERT INTO $table ( $columnString ) VALUES ( $valuesString )" . ';';
+        return "INSERT INTO $table ( $columnString ) VALUES ( $valuesString );";
+    }
+
+    private static final function _buildDelete(&$table, &$condition)
+    {
+        $table = trim($table);
+        Database::validateTable($table);
+        Database::_validateCondition($condition);
+
+        return "DELETE FROM $table" . 
+                (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
+    }
+
+    private static final function _buildUpdate(&$table, &$columns, &$values, &$condition)
+    {
+        $table = trim($table);
+        Database::validateTable($table);
+        Database::_validateCondition($condition);
+
+        $setValues = Database::_buildSetValuePairs($columns, $values, $table);
+
+        return "UPDATE $table SET $setValues" . 
+            (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
+    }
+
+    private static final function _buildSetValuePairs(&$columns, &$values, &$table)
+    {
+            //  IF BOTH ARRAY
+        if(is_array($columns) && is_array($values))
+        {
+            if(count($columns) != count($values))
+                CustomError::throw("Number of columns in \"$columns\" 
+                does not match number of values in\"$values\"");
+            else
+            {
+                $builtPairs = [];
+                foreach($columns as $i => $col)
+                {
+                    if(!array_key_exists(trim($col), Database::VALID_ENTRIES[$table]))
+                        CustomError::throw("\"$col\" is not a valid entry for \"$table\"", 2);
+
+                    $builtPairs[] = trim($col) . ' = :value_' . ($i + 1);
+                }
+                return implode(', ', $builtPairs);
+            }
+        }
+        else  // IF BOTH ATOMIC
+        {
+            return trim($columns) . ' = :value_1';
+        }
     }
 
     private static final function _buildValues(&$values)
