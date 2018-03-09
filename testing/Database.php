@@ -75,8 +75,6 @@ abstract class Database
     {
         $sql = Database::_buildSelect($columns, $table, $condition);
 
-        echo $sql;
-
         $connection = Database::connect();
 
         try
@@ -118,11 +116,9 @@ abstract class Database
 
     public static final function INSERT($table, $columns, $values)
     {
-        if(!is_array($values)) CustomError::throw("\"$values\" given needs to be an array of type and value");
+        if(!is_array($values)) $values = [$values];
 
         $sql = Database::_buildInsert($table, $columns, $values);
-
-        echo $sql;
 
         $connection = Database::connect();
 
@@ -138,9 +134,7 @@ abstract class Database
             }
 
             $statement->execute();
-
             $id = $connection->lastInsertId();
-
             Database::disconnect($connection);
 
             return $id; // returns 0 if fail I believe
@@ -156,6 +150,12 @@ abstract class Database
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
 
+    private static final function _validateCondition(&$condition)
+    {
+        if(!Database::_conditionGiven($condition))
+            CustomError::throw("Given condition \"$condition\" is not a Condition object.", 3);
+    }
+
     private static final function _conditionGiven(&$condition)
     {
         return isset($condition) && !empty($condition) && $condition instanceof Condition;
@@ -164,6 +164,7 @@ abstract class Database
     private static final function _buildSelect(&$columns, &$table, &$condition)
     {
         Database::validateTable($table);
+        Database::_validateCondition($condition);
 
         if(is_array($columns))
         {

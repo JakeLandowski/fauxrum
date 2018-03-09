@@ -100,32 +100,6 @@ class Condition
         return $this;
     }
 
-    // public function getValues()
-    // {
-    //     $numValues = count($this->_expression['allValues']);
-
-    //     if(!$this->_hasBeenRendered())
-    //         CustomError::throw("Cannot resolve values, this condition is incomplete, 
-    //                             or binds don't match values. This is most likely 
-    //                             because the condition hasn't been rendered yet to
-    //                             create a sql string.", 2);
-    //     else
-    //     {
-    //         return $this->_expression['allValues'];
-    //     } 
-    // }
-
-    // public function getBinds()
-    // {
-    //     if(!$this->_hasBeenRendered())
-    //         CustomError::throw("Cannot resolve values, this condition is incomplete, 
-    //                             or binds don't match values. This is most likely 
-    //                             because the condition hasn't been rendered yet to 
-    //                             create a sql string.", 2);
-    //     else 
-    //         return $this->_expression['binds'];
-    // }
-
     public function getBindsAndValues()
     {
         if(!$this->_hasBeenRendered())
@@ -175,6 +149,7 @@ class Condition
     public function or($otherCondition=null)
     {
         $this->_logical($otherCondition, 'OR');
+        return $this;
     }
 
   //=========================================================//
@@ -230,7 +205,8 @@ class Condition
 
     private function _render()
     {
-        if(!$this->isComplete()) return '';
+        if(!$this->isComplete()) 
+            CustomError::throw("Tried to render incomplete Condition.");
 
         $chunks = [];
 
@@ -306,12 +282,9 @@ class Condition
             CustomError::throw("Tried to set value \"$value\", expected a column.", 2);
         else if($this->_state == 'comparisons') 
             CustomError::throw("Tried to set value \"$value\", expected a comparison.", 2);
-        // else if(!array_key_exists($type, Database::PDO_PARAMS))
-        //     CustomError::throw("Invalid type \"$type\" given for value. Valid types are: "
-        //                      . '[' . implode(', ', array_keys(Database::PDO_PARAMS)) . ']', 2);
         else
         {
-            $this->_numValues++;                            //'type' => strtolower(trim($type)),
+            $this->_numValues++;                           
             $this->_expression['values'][] = ['type' => $this->_nextType,  
                                               'value' => trim($value)];
             $this->_state = 'columns';
