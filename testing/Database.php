@@ -9,10 +9,37 @@ abstract class Database
 
     const VALID_ENTRIES = 
     [
-        'User'    => [ 'id', 'username', 'email', 'password' ],
-        'Thread'  => [ 'id', 'title',    'owner', 'created', 'bot_generated' ],
-        'Post'    => [ 'id', 'thread',   'owner', 'created', 'bot_generated', 'content', 'is_root_post' ],
-        'TextMap' => [ 'id', 'map_data', 'owner' ]
+        'User' => 
+            [ 
+                'id'       => 'string', 
+                'username' => 'string', 
+                'email'    => 'string', 
+                'password' => 'string' 
+            ],
+        'Thread' => 
+            [ 
+                'id'            => 'int', 
+                'title'         => 'string',    
+                'owner'         => 'int', 
+                'created'       => 'string', 
+                'bot_generated' => 'int' 
+            ],
+        'Post' => 
+            [ 
+                'id'            => 'int', 
+                'thread'        => 'int',   
+                'owner'         => 'int', 
+                'created'       => 'string', 
+                'bot_generated' => 'int', 
+                'content'       => 'string', 
+                'is_root_post'  => 'int' 
+            ],
+        'TextMap' =>
+            [ 
+                'id'       => 'int', 
+                'map_data' => 'lob', 
+                'owner'    => 'int' 
+            ]
     ];
     
     const PDO_PARAMS = 
@@ -30,7 +57,7 @@ abstract class Database
     {
         foreach(Database::VALID_ENTRIES as $table)
         {
-            if(in_array($column, $table)) return true;
+            if(array_key_exists($column, $table)) return true;
         }
 
         return false; 
@@ -83,7 +110,9 @@ abstract class Database
     {
         if(!is_array($values)) CustomError::throw("\"$values\" given needs to be an array of type and value");
 
-        $sql = Database::_buildInsert($columns, $table, $values);
+        $sql = Database::_buildInsert($table, $columns, $values);
+
+        echo $sql;
 
         $connection = Database::connect();
 
@@ -91,9 +120,11 @@ abstract class Database
         {
             $statement = $connection->prepare($sql);
 
+            $type;
             foreach($values as $i => $value)
-            {
-                $statement->bindValue('value_' . $i + 1,  $value['data'],  Database::PDO_PARAMS[$value['type']]);
+            {   
+                $type = Database::VALID_ENTRIES[$table][$columns[$i]]; 
+                $statement->bindValue(':value_' . ($i + 1),  $value,  Database::PDO_PARAMS[$type]); 
             }
 
             $statement->execute();
@@ -128,7 +159,7 @@ abstract class Database
         {
             $columns = Database::_buildColumns($columns, $table);
         }
-        else if(trim($columns) != '*' && !in_array(trim($columns), Database::VALID_ENTRIES[$table]))
+        else if(trim($columns) != '*' && !array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
         {
             CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
         }
@@ -146,34 +177,39 @@ abstract class Database
     {
         Database::_validateTable($table);
 
+        $columnString = $columns;
+
         if(is_array($columns))
         {
-            $columns = Database::_buildColumns($columns, $table);
+            $columnString = Database::_buildColumns($columns, $table);
         }
-        else if(trim($columns) != '*' && !in_array(trim($columns), Database::VALID_ENTRIES[$table]))
+        else if(!array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
         {
             CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
         }
 
-        if(is_array($values)) $values = Database::_buildValues($values);
+        $valuesString = $valuesString;
 
-        $columns   = trim($columns);
-        $table     = trim($table);
-        $values    = trim($values);
+        if(is_array($values)) $valuesString = Database::_buildValues($values);
 
-        return "INSERT INTO $table ( $columns ) VALUES ( $values )" . ';';
+        $columnString = trim($columnString);
+        $table        = trim($table);
+        $valuesString = trim($valuesString);
+
+        return "INSERT INTO $table ( $columnString ) VALUES ( $valuesString )" . ';';
     }
 
     private static final function _buildValues(&$values)
     {
-        $builtValues = '';
+        $builtValues = [];
+        $count = count($values);
 
-        foreach($values as $i => $value)
+        for($i = 0; $i < $count; $i++)
         {
-            $builtValues .= ':' . 'value_' . $i + 1 . ', ';
+            $builtValues[] = ':value_' . ($i + 1);
         }
 
-        return substr($buildValues, 0, strlen($buildValues) - 2);
+        return implode(', ', $builtValues);
     }
 
     private static final function _validateTable(&$table)
@@ -188,7 +224,7 @@ abstract class Database
     {
         foreach($columns as $col)
         {
-            if(!in_array(trim($col), Database::VALID_ENTRIES[$table]))
+            if(!array_key_exists(trim($col), Database::VALID_ENTRIES[$table]))
             {
                 CustomError::throw("\"$col\" is not a valid column name in \"$table\"", 2);
             }
