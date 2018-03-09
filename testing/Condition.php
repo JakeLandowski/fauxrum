@@ -306,9 +306,9 @@ class Condition
             CustomError::throw("Tried to set value \"$type\" \"$value\", expected a column.", 2);
         else if($this->_state == 'comparisons') 
             CustomError::throw("Tried to set value \"$type\" \"$value\", expected a comparison.", 2);
-        else if(!in_array($type, Condition::VALID_TYPES))
+        else if(!array_key_exists($type, Database::PDO_PARAMS))
             CustomError::throw("Invalid type \"$type\" given for value. Valid types are: "
-                             . '[' . implode(', ', Condition::VALID_TYPES) . ']', 2);
+                             . '[' . implode(', ', array_keys(Database::PDO_PARAMS)) . ']', 2);
         else
         {
             $this->_numValues++;

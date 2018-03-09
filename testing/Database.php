@@ -81,6 +81,8 @@ abstract class Database
 
     public static final function INSERT($table, $columns, $values)
     {
+        if(!is_array($values)) CustomError::throw("\"$values\" given needs to be an array of type and value");
+
         $sql = Database::_buildInsert($columns, $table, $values);
 
         $connection = Database::connect();
@@ -89,12 +91,10 @@ abstract class Database
         {
             $statement = $connection->prepare($sql);
 
-            // $bindArguments = [];
-            
-            // foreach($bindArguments as $args)
-            // {
-            //     $statement->bindValue($args['bind'],  $args['value'],  Database::PDO_PARAMS[$args['type']]);
-            // }
+            foreach($values as $i => $value)
+            {
+                $statement->bindValue('value_' . $i + 1,  $value['data'],  Database::PDO_PARAMS[$value['type']]);
+            }
 
             $statement->execute();
 
@@ -155,13 +155,25 @@ abstract class Database
             CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
         }
 
-        if(is_array($values)) $values = implode(', ', $values);
-        
+        if(is_array($values)) $values = Database::_buildValues($values);
+
         $columns   = trim($columns);
         $table     = trim($table);
         $values    = trim($values);
 
         return "INSERT INTO $table ( $columns ) VALUES ( $values )" . ';';
+    }
+
+    private static final function _buildValues(&$values)
+    {
+        $builtValues = '';
+
+        foreach($values as $i => $value)
+        {
+            $builtValues .= ':' . 'value_' . $i + 1 . ', ';
+        }
+
+        return substr($buildValues, 0, strlen($buildValues) - 2);
     }
 
     private static final function _validateTable(&$table)
