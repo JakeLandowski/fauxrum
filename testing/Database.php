@@ -11,7 +11,7 @@ abstract class Database
     [
         'User' => 
             [ 
-                'id'       => 'string', 
+                'id'       => 'int', 
                 'username' => 'string', 
                 'email'    => 'string', 
                 'password' => 'string' 
@@ -63,9 +63,19 @@ abstract class Database
         return false; 
     }
 
+    public static final function validateTable(&$table)
+    {
+        if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
+        {
+            CustomError::throw("\"$table\" is not a valid table in the Database.", 2);
+        }
+    }
+
     public static final function SELECT($columns, $table, $condition=null, $get=Database::EVERYTHING)
     {
         $sql = Database::_buildSelect($columns, $table, $condition);
+
+        echo $sql;
 
         $connection = Database::connect();
 
@@ -153,7 +163,7 @@ abstract class Database
 
     private static final function _buildSelect(&$columns, &$table, &$condition)
     {
-        Database::_validateTable($table);
+        Database::validateTable($table);
 
         if(is_array($columns))
         {
@@ -167,15 +177,13 @@ abstract class Database
         $columns   = trim($columns);
         $table     = trim($table);
 
-        if(Database::_conditionGiven($condition))
-            $sql .= " WHERE $condition";
-
-        return "SELECT $columns FROM $table" . ';';
+        return "SELECT $columns FROM $table" . 
+                (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
     }
 
     private static final function _buildInsert(&$table, &$columns, &$values)
     {
-        Database::_validateTable($table);
+        Database::validateTable($table);
 
         $columnString = $columns;
 
@@ -210,14 +218,6 @@ abstract class Database
         }
 
         return implode(', ', $builtValues);
-    }
-
-    private static final function _validateTable(&$table)
-    {
-        if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
-        {
-            CustomError::throw("\"$table\" is not a valid table in the Database.", 2);
-        }
     }
 
     private static final function _buildColumns(&$columns, &$table)

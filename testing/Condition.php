@@ -18,14 +18,18 @@ class Condition
     private $_numComparisons = 0;
     private $_numValues      = 0;
     private $_numLogical     = 0;
-    private $_state = 'columns';
+    private $_state          = 'columns';
+    private $_nextType       = '';
+    private $_table;
      
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
-    public function __construct()
+    public function __construct($table)
     {
+        Database::validateTable($table);
+        $this->_table = $table;
         return $this;
     }
 
@@ -42,84 +46,85 @@ class Condition
             $this->_numColumns++;
             $this->_expression['columns'][] = trim($column);
             $this->_state = 'comparisons';
+            $this->_nextType = Database::VALID_ENTRIES[$this->_table][$column];
             return $this; 
         }
     }
 
-    public function equals($type, $value)
+    public function equals($value)
     {
         $this->_comparison('=');
-        $this->_val($type, $value);
+        $this->_val($value);
         return $this;
     }
 
-    public function notEquals($type, $value)
+    public function notEquals($value)
     {
         $this->_comparison('<>');
-        $this->_val($type, $value);
+        $this->_val($value);
         return $this;
     }
 
-    public function lessThan($type, $value)
+    public function lessThan($value)
     {
         $this->_comparison('<');
-        $this->_val($type, $value);
+        $this->_val($value);
         return $this;
     }
 
-    public function greaterThan($type, $value)
+    public function greaterThan($value)
     {
         $this->_comparison('>');
-        $this->_val($type, $value);
+        $this->_val($value);
         return $this;
     }
 
-    public function lessThanOrEquals($type, $value)
+    public function lessThanOrEquals($value)
     {
         $this->_comparison('<=');
-        $this->_val($type, $value);
+        $this->_val($value);
         return $this;
     }
 
-    public function greaterThanOrEquals($type, $value)
+    public function greaterThanOrEquals($value)
     {
         $this->_comparison('>=');
-        $this->_val($type, $value);
+        $this->_val($value);
         return $this;
     }
 
     public function like($value)
     {
         $this->_comparison('LIKE');
-        $this->_val('string', $value);
+        $this->_val($value);
         return $this;
     }
 
-    public function getValues()
-    {
-        $numValues = count($this->_expression['allValues']);
+    // public function getValues()
+    // {
+    //     $numValues = count($this->_expression['allValues']);
 
-        if(!$this->_hasBeenRendered())
-            CustomError::throw("Cannot resolve values, this condition is incomplete, 
-                                or binds don't match values. This is most likely 
-                                because the condition hasn't been rendered yet to
-                                create a sql string.", 2);
-        else
-        {
-            return $this->_expression['allValues'];
-        } 
-    }
+    //     if(!$this->_hasBeenRendered())
+    //         CustomError::throw("Cannot resolve values, this condition is incomplete, 
+    //                             or binds don't match values. This is most likely 
+    //                             because the condition hasn't been rendered yet to
+    //                             create a sql string.", 2);
+    //     else
+    //     {
+    //         return $this->_expression['allValues'];
+    //     } 
+    // }
 
-    public function getBinds()
-    {
-        if(!$this->_hasBeenRendered())
-            CustomError::throw("Cannot resolve values, this condition is incomplete, 
-                                or binds don't match values. This is most likely 
-                                because the condition hasn't been rendered yet to 
-                                create a sql string.", 2);
-        else 
-            return $this->_expression['binds'];
-    }
+    // public function getBinds()
+    // {
+    //     if(!$this->_hasBeenRendered())
+    //         CustomError::throw("Cannot resolve values, this condition is incomplete, 
+    //                             or binds don't match values. This is most likely 
+    //                             because the condition hasn't been rendered yet to 
+    //                             create a sql string.", 2);
+    //     else 
+    //         return $this->_expression['binds'];
+    // }
 
     public function getBindsAndValues()
     {
@@ -295,19 +300,19 @@ class Condition
         }
     }
 
-    private function _val($type, $value)
+    private function _val($value)
     {
         if($this->_state == 'columns') 
-            CustomError::throw("Tried to set value \"$type\" \"$value\", expected a column.", 2);
+            CustomError::throw("Tried to set value \"$value\", expected a column.", 2);
         else if($this->_state == 'comparisons') 
-            CustomError::throw("Tried to set value \"$type\" \"$value\", expected a comparison.", 2);
-        else if(!array_key_exists($type, Database::PDO_PARAMS))
-            CustomError::throw("Invalid type \"$type\" given for value. Valid types are: "
-                             . '[' . implode(', ', array_keys(Database::PDO_PARAMS)) . ']', 2);
+            CustomError::throw("Tried to set value \"$value\", expected a comparison.", 2);
+        // else if(!array_key_exists($type, Database::PDO_PARAMS))
+        //     CustomError::throw("Invalid type \"$type\" given for value. Valid types are: "
+        //                      . '[' . implode(', ', array_keys(Database::PDO_PARAMS)) . ']', 2);
         else
         {
-            $this->_numValues++;
-            $this->_expression['values'][] = ['type' => strtolower(trim($type)), 
+            $this->_numValues++;                            //'type' => strtolower(trim($type)),
+            $this->_expression['values'][] = ['type' => $this->_nextType,  
                                               'value' => trim($value)];
             $this->_state = 'columns';
         }
