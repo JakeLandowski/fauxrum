@@ -2,11 +2,6 @@
 
 class Condition
 {
-    const VALID_TYPES =
-    [
-        'string', 'int', 'lob'
-    ];
-
     private $_expression = 
     [
         'columns'      => [],
