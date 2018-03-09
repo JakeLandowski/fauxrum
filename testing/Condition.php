@@ -9,13 +9,13 @@ class Condition
 
     private $_expression = 
     [
-        columns      => [],
-        comparisons  => [],
-        values       => [],
-        allValues    => [],
-        logical      => [],
-        others       => [],
-        binds        => []
+        'columns'      => [],
+        'comparisons'  => [],
+        'values'       => [],
+        'allValues'    => [],
+        'logical'      => [],
+        'others'       => [],
+        'binds'        => []
     ];
 
     private $_otherJoinType  = '';
@@ -200,7 +200,7 @@ class Condition
         {
             if($chunk == null)
             {
-                $bind = ':value_' . $numValues++;
+                $bind = ':cond_value_' . $numValues++;
                 $this->_expression['binds'][] = $bind;
                 $str .= $bind;
             }     

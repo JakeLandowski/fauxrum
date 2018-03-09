@@ -38,7 +38,7 @@ abstract class Database
 
     public static final function SELECT($columns, $table, $condition=null, $get=Database::EVERYTHING)
     {
-        $sql = Database::buildSelect($columns, $table, $condition);
+        $sql = Database::_buildSelect($columns, $table, $condition);
 
         $connection = Database::connect();
 
@@ -55,7 +55,6 @@ abstract class Database
                     $statement->bindValue($args['bind'],  $args['value'],  Database::PDO_PARAMS[$args['type']]);
                 }
             }
-
 
             $statement->execute();
 
@@ -80,6 +79,38 @@ abstract class Database
         return Database::SELECT('*', $table, $condition, $get);
     }
 
+    public static final function INSERT($table, $columns, $values)
+    {
+        $sql = Database::_buildInsert($columns, $table, $values);
+
+        $connection = Database::connect();
+
+        try
+        {
+            $statement = $connection->prepare($sql);
+
+            // $bindArguments = [];
+            
+            // foreach($bindArguments as $args)
+            // {
+            //     $statement->bindValue($args['bind'],  $args['value'],  Database::PDO_PARAMS[$args['type']]);
+            // }
+
+            $statement->execute();
+
+            $id = $connection->lastInsertId();
+
+            Database::disconnect($connection);
+
+            return $id; // returns 0 if fail I believe
+        }
+        catch(PDOException $e)
+        {
+            Database::disconnect($connection);
+            CustomError::throw('Query failed: ' . $e->getMessage());
+        }
+    }
+
   //=========================================================//
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
@@ -89,13 +120,13 @@ abstract class Database
         return isset($condition) && !empty($condition) && $condition instanceof Condition;
     }
 
-    private static final function buildSelect(&$columns, &$table, &$condition)
+    private static final function _buildSelect(&$columns, &$table, &$condition)
     {
-        Database::validateTable($table);
+        Database::_validateTable($table);
 
         if(is_array($columns))
         {
-            $columns = Database::buildColumns($columns, $table);
+            $columns = Database::_buildColumns($columns, $table);
         }
         else if(trim($columns) != '*' && !in_array(trim($columns), Database::VALID_ENTRIES[$table]))
         {
@@ -111,7 +142,29 @@ abstract class Database
         return "SELECT $columns FROM $table" . ';';
     }
 
-    private static final function validateTable(&$table)
+    private static final function _buildInsert(&$table, &$columns, &$values)
+    {
+        Database::_validateTable($table);
+
+        if(is_array($columns))
+        {
+            $columns = Database::_buildColumns($columns, $table);
+        }
+        else if(trim($columns) != '*' && !in_array(trim($columns), Database::VALID_ENTRIES[$table]))
+        {
+            CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
+        }
+
+        if(is_array($values)) $values = implode(', ', $values);
+        
+        $columns   = trim($columns);
+        $table     = trim($table);
+        $values    = trim($values);
+
+        return "INSERT INTO $table ( $columns ) VALUES ( $values )" . ';';
+    }
+
+    private static final function _validateTable(&$table)
     {
         if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
         {
@@ -119,7 +172,7 @@ abstract class Database
         }
     }
 
-    private static final function buildColumns(&$columns, &$table)
+    private static final function _buildColumns(&$columns, &$table)
     {
         foreach($columns as $col)
         {
