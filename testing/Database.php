@@ -277,6 +277,10 @@ abstract class Database
         $returnValues = ['success' => false];
 
         if(!is_array($values)) $values = [$values];
+        if(!is_array($columns)) $columns = [$columns];
+        if(count($values) != count($columns))
+            CustomError::throw("The number of columns and values
+                                given in INSERT don't match.");
 
         $sql = Database::_buildInsert($table, $columns, $values);
         
@@ -318,6 +322,28 @@ abstract class Database
     }
 
     // ~~~~ DELETE ~~~~ //
+    /**
+     *  Attempts to perform a DELETE query on the database on the given
+     *  table with the required conditions.
+     * 
+     *  Usage: Database::DELETE($table = string, $condition)
+     * 
+     *  @param string    $table     The string of a table to INSERT into,
+     *                              will throw an error if given an invalid table 
+     *  
+     *  @param Condition $condition The Condition object that specifies
+     *                              conditions for a WHERE clause in the
+     *                              DELETE query, must be an instance of
+     *                              the Condition class or will throw an error,
+     *                              will also throw an error if not given a
+     *                              condition  
+     * 
+     *  @return array An array of query data: 
+     * 
+     *                'success' => Boolean if the query was successful  
+     * 
+     *                'num_rows' => The number of rows affected by the query   
+     */
     public static final function DELETE($table, $condition)
     {
         $returnValues = ['success' => false];
@@ -355,6 +381,40 @@ abstract class Database
     }
 
     // ~~~~ UPDATE ~~~~ //
+    /**
+     *  Attempts to perform an UPDATE query to the database using the
+     *  given table, columns, their associated values and the required
+     *  conditions. Will automatically bind values and check for errors 
+     *  to ensure robustness.
+     * 
+     *  Usage: Database::UPDATE($table = string, $columns = [ strings ], $values = [ strings ], $condition = Condition)
+     *         Database::UPDATE($table = string, $columns = string, $values = string, $condition = Condition)
+     * 
+     *  @param string    $table     The string of a table to INSERT into,
+     *                              will throw an error if given an invalid table 
+     * 
+     *  @param mixed     $columns   The string or array of strings of columns
+     *                              to insert values into, will throw an error if
+     *                              the column doesn't exist in the table given or
+     *                              if the number of values don't match
+     * 
+     *  @param mixed     $values    The string or array of strings of values
+     *                              to insert into the given columns, will throw
+     *                              an error if the number of columns don't match
+     *  
+     *  @param Condition $condition The required Condition object that specifies
+     *                              conditions for a WHERE clause in the
+     *                              UPDATE query, must be an instance of
+     *                              the Condition class or will throw an error,
+     *                              will also throw an error if not given a
+     *                              condition
+     * 
+     *  @return array An array of query data: 
+     * 
+     *                'success' => Boolean if the query was successful
+     * 
+     *                'num_rows' => The number of rows affected by the query   
+     */
     public static final function UPDATE($table, $columns, $values, $condition)
     {   
         $returnValues = ['success' => false];
@@ -380,12 +440,10 @@ abstract class Database
                 // IF CONDITION BIND THEM
             if(Database::_conditionGiven($condition))
                 Database::_bindConditions($statement, $condition);
+            else
+                CustomError::throw("Need to give a condition for UPDATE operations.");
 
-            if($statement->execute())
-            {
-                $returnValues['id'] = $connection->lastInsertId();
-                $returnValues['success'] = true;
-            }
+            if($statement->execute()) $returnValues['success'] = true;
 
             $returnValues['num_rows'] = $statement->rowCount();
 
@@ -485,15 +543,17 @@ abstract class Database
 
     private static final function _buildColumns(&$columns, &$table)
     {
+        $builtColumns = [];
         foreach($columns as $col)
         {
             if(!array_key_exists(trim($col), Database::VALID_ENTRIES[$table]))
             {
                 CustomError::throw("\"$col\" is not a valid column name in \"$table\"", 2);
             }
+            $builtColumns[] = $col;
         }
 
-        return implode(', ', $columns); 
+        return implode(', ', $builtColumns); 
     }
 
 
@@ -559,12 +619,12 @@ abstract class Database
         {
             $columnString = Database::_buildColumns($columns, $table);
         }
-        else if(!array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
-        {
-            CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
-        }
+        // else if(!array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
+        // {
+        //     CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
+        // }
 
-        $valuesString = $valuesString;
+        $valuesString = $values;
 
         if(is_array($values)) $valuesString = Database::_buildValues($values);
 
