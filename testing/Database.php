@@ -244,6 +244,34 @@ abstract class Database
     }
 
     // ~~~~ INSERT ~~~~ //
+    /**
+     *  Attempts to perform an INSERT query to the database using the
+     *  given table, columns, and their associated values. Will automatically
+     *  bind values and check for errors to ensure robustness.
+     * 
+     *  Usage: Database::INSERT($table = string, $columns = [ strings ], $values = [ strings ])
+     *         Database::INSERT($table = string, $columns = string, $values = string)
+     * 
+     *  @param string $table  The string of a table to INSERT into,
+     *                        will throw an error if given an invalid table 
+     * 
+     *  @param mixed $columns The string or array of strings of columns
+     *                        to insert values into, will throw an error if
+     *                        the column doesn't exist in the table given or
+     *                        if the number of values don't match
+     * 
+     *  @param mixed $values  The string or array of strings of values
+     *                        to insert into the given columns, will throw
+     *                        an error if the number of columns don't match
+     * 
+     *  @return array An array of query data: 
+     * 
+     *                'success' => Boolean if the query was successful
+     * 
+     *                'id' => id of the inserted row if successful  
+     * 
+     *                'num_rows' => The number of rows affected by the query   
+     */
     public static final function INSERT($table, $columns, $values)
     {
         $returnValues = ['success' => false];
@@ -311,9 +339,10 @@ abstract class Database
             if($statement->execute())
             {
                 $returnValues['success'] = true;
-                $returnValues['num_rows'] = $statement->rowCount();
             } 
 
+            $returnValues['num_rows'] = $statement->rowCount();
+            
             Database::disconnect($connection);
         }
         catch(PDOException $e)
