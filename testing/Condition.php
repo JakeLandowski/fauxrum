@@ -53,7 +53,7 @@ class Condition
 
     public function equals($value)
     {
-        $this->_comparison('=');
+        $this->_comparison('<=>');
         $this->_val($value);
         return $this;
     }
