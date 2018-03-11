@@ -1,11 +1,21 @@
 <?php
+/**
+ *  Library of CRUD Operations for Fauxrum application. 
+ */
 
 require_once getenv('HOME') . '/db_configs/fauxrum_config.php';
 
+/**
+ *  Contains SELECT, SELECT_ALL, INSERT, UPDATE, DELETE 
+ *  functions for basic CRUD operations.
+ *  
+ *  @author Jacob Landowski
+ */
 abstract class Database
 {
-    // const EVERYTHING = 'everything';
     const ONE = 'one';
+
+    // ~~~~ Database Schema ~~~~ //
     const VALID_ENTRIES = 
     [
         'User' => 
@@ -41,6 +51,7 @@ abstract class Database
             ]
     ];
     
+    // ~~~~ Cross Reference from Schema to assign bind type ~~~~ //
     const PDO_PARAMS = 
     [
         'int'    => PDO::PARAM_INT,
@@ -52,6 +63,18 @@ abstract class Database
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    // ~~~~ USED BY Condition.php ~~~~ //
+    /**
+     *  Checks if a given column string exists under any of the tables
+     *  in the database schema specified in Database:VALID_ENTRIES.
+     * 
+     *  @param string $column The string to lookup in VALID_ENTRIES
+     *                        to check if this column exists in any
+     *                        of the database tables.
+     * 
+     *  @return boolean       True if the column exists under one of 
+     *                        tables.
+     */
     public static final function isValidColumn($column)
     {
         foreach(Database::VALID_ENTRIES as $table)
@@ -62,6 +85,16 @@ abstract class Database
         return false; 
     }
 
+    // ~~~~ USED BY Condition.php ~~~~ //
+    /**
+     *  Checks if a given table string exists as a table in the database
+     *  schema specified in Database:VALID_ENTRIES.
+     * 
+     *  @param string $table The string to lookup in VALID_ENTRIES
+     *                       to check if this table exists..
+     * 
+     *  @return boolean      True if the table exists.
+     */
     public static final function validateTable(&$table)
     {
         if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
@@ -70,6 +103,67 @@ abstract class Database
         }
     }
 
+    // ~~~~ SELECT ~~~~ //
+    /**
+     *  Attempts to perform a SELECT query to the database using the
+     *  given table, columns, and additional SELECT options in an options
+     *  array. Will automatically bind values and check for errors to ensure
+     *  robustness.
+     * 
+     *  Usage: Database::SELECT($columns = [ strings ], $table = string, OPTIONAL: $options = [ fields ])
+     *         Database::SELECT($columns = string, $table = string)
+     *         Database::SELECT_ALL($table = string, OPTIONAL: $options = [ fields ])
+     *         Database::SELECT_ALL($table = string)
+     * 
+     *  @param mixed $columns The string or array of strings of columns
+     *                        to return on a successful SELECT, will throw
+     *                        an error if the column doesn't exist in the   
+     *                        table given
+     * 
+     *  @param string $table  The string of a table to perform SELECT on,
+     *                        will throw an error if given an invalid table 
+     *  
+     *  @param array $options The array of additional parameters to apply to
+     *                        the SELECT query:
+     *                      
+     *                        'fetch' => Database::ONE : will only fetch one 
+     *                                   row from the result set if given,  
+     *                                   defaults to fetching all rows if omitted
+     *                      
+     *                        'condition' => The Condition object that specifies
+     *                                       conditions for a WHERE clause in the
+     *                                       SELECT query, must be an instance of
+     *                                       the Condition class or will throw an error
+     *          
+     *                        'order_by' => The column to order the result set by,
+     *                                      must be a valid column or will throw an
+     *                                      error
+     *  
+     *                        'descending' => Boolean that determines if the ordered
+     *                                        result set is in descending order
+     * 
+     *                        'limit_amount' => Positive int that determines the amount
+     *                                          of rows to select in the SELECT query, 
+     *                                          will also give the total existing rows 
+     *                                          in the return value if set
+     * 
+     *                        'limit_start' => Positive int that determines where to
+     *                                         begin the limit, requires a limit_amount
+     *                                         to be set to do anything 
+     * 
+     *  @return array An array of query data: 
+     * 
+     *                'success' => Boolean if the query was successful
+     * 
+     *                'row' => The row of data if fetch => Database::ONE was set
+     * 
+     *                'rows' => The rows of data if fetch was not set
+     * 
+     *                'num_rows' => The number of rows found in the query
+     * 
+     *                'total_rows' => The total number of rows in the table 
+     *                                if limit_amount was set   
+     */
     public static final function SELECT($columns, $table, $options=[])//$condition=null, $get=Database::EVERYTHING)
     {
             //  INITIALIZE OPTIONAL PARAMS
@@ -80,12 +174,12 @@ abstract class Database
                               $options['descending'] ? true : false;
         
         $limit_start  = isset($options['limit_start']) && 
-                        is_numeric($options['limit_start']) 
-                        ? abs($options['limit_start'])  : null;
+                        is_numeric($options['limit_start']) ? 
+                            abs($options['limit_start'])  : null;
 
         $limit_amount = isset($options['limit_amount']) && 
-                        is_numeric($options['limit_amount']) 
-                        ? abs($options['limit_amount']) : null;  
+                        is_numeric($options['limit_amount']) ? 
+                            abs($options['limit_amount']) : null;  
 
         $returnValues = ['success' => false];
 
@@ -149,6 +243,7 @@ abstract class Database
         return Database::SELECT('*', $table, $options);//$get);
     }
 
+    // ~~~~ INSERT ~~~~ //
     public static final function INSERT($table, $columns, $values)
     {
         $returnValues = ['success' => false];
@@ -194,6 +289,7 @@ abstract class Database
         return $returnValues;
     }
 
+    // ~~~~ DELETE ~~~~ //
     public static final function DELETE($table, $condition)
     {
         $returnValues = ['success' => false];
@@ -229,6 +325,7 @@ abstract class Database
         return $returnValues;
     }
 
+    // ~~~~ UPDATE ~~~~ //
     public static final function UPDATE($table, $columns, $values, $condition)
     {   
         $returnValues = ['success' => false];
@@ -279,7 +376,7 @@ abstract class Database
     }
 
   //=========================================================//
- //                   PRIVATE FUNCTIONS                     //
+ //                   PRIVATE HELPERS                       //
 //=========================================================//
 
     private static final function _validateOrderBy(&$order_by, &$table)
@@ -315,99 +412,6 @@ abstract class Database
     private static final function _conditionGiven(&$condition)
     {
         return isset($condition) && !empty($condition) && $condition instanceof Condition;
-    }
-
-    private static final function _buildSelect(&$columns, &$table, &$condition, 
-                                               &$order_by, &$limit_start, &$limit_amount,
-                                               &$descending)
-    {
-        $table = trim($table);
-        Database::validateTable($table);
-        Database::_validateCondition($condition);
-
-            //  CHECK ALL COLUMNS GIVEN ARE VALID
-            //  AND BUILD THEM INTO STRING
-        if(is_array($columns))
-        {
-            $columns = Database::_buildColumns($columns, $table);
-        }
-        else if(trim($columns) != '*' && !array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
-        {
-            CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
-        }
-        
-        $columns = trim($columns);
-
-        $sql = "SELECT " . ($limit_amount ? 'SQL_CALC_FOUND_ROWS' : '') 
-                . "$columns FROM $table";
-
-            //  CHECK AND APPEND CONDITION
-        if(Database::_conditionGiven($condition))
-            $sql .= " WHERE $condition";
-
-            // CHECK AND APPEND ORDER BY
-        if(Database::_validateOrderBy($order_by, $table))
-        {
-            $sql .= " ORDER BY $order_by";
-            if($descending) $sql .= ' DESC';
-        }
-
-            //  CHECK AND APPEND LIMITS
-        if($limit_amount)
-        {
-            $sql .= " LIMIT :limit_amount";
-            if($limit_start) $sql .= " OFFSET :limit_start";
-        }
-
-        return $sql .= ';';
-    }
-
-    private static final function _buildInsert(&$table, &$columns, &$values)
-    {
-        $table = trim($table);
-        Database::validateTable($table);
-
-        $columnString = $columns;
-
-        if(is_array($columns))
-        {
-            $columnString = Database::_buildColumns($columns, $table);
-        }
-        else if(!array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
-        {
-            CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
-        }
-
-        $valuesString = $valuesString;
-
-        if(is_array($values)) $valuesString = Database::_buildValues($values);
-
-        $columnString = trim($columnString);
-        $valuesString = trim($valuesString);
-
-        return "INSERT INTO $table ( $columnString ) VALUES ( $valuesString );";
-    }
-
-    private static final function _buildDelete(&$table, &$condition)
-    {
-        $table = trim($table);
-        Database::validateTable($table);
-        Database::_validateCondition($condition);
-
-        return "DELETE FROM $table" . 
-                (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
-    }
-
-    private static final function _buildUpdate(&$table, &$columns, &$values, &$condition)
-    {
-        $table = trim($table);
-        Database::validateTable($table);
-        Database::_validateCondition($condition);
-
-        $setValues = Database::_buildSetValuePairs($columns, $values, $table);
-
-        return "UPDATE $table SET $setValues" . 
-            (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
     }
 
     private static final function _buildSetValuePairs(&$columns, &$values, &$table)
@@ -462,6 +466,112 @@ abstract class Database
 
         return implode(', ', $columns); 
     }
+
+
+  //=========================================================//
+ //                 PRIVATE CRUD BUILDERS                   //
+//=========================================================//
+
+    // ~~~~ BUILD SELECT ~~~~ //
+    private static final function _buildSelect(&$columns, &$table, &$condition, 
+                                               &$order_by, &$limit_start, &$limit_amount,
+                                               &$descending)
+    {
+        $table = trim($table);
+        Database::validateTable($table);
+        Database::_validateCondition($condition);
+
+            //  CHECK ALL COLUMNS GIVEN ARE VALID
+            //  AND BUILD THEM INTO STRING
+        if(is_array($columns))
+        {
+            $columns = Database::_buildColumns($columns, $table);
+        }
+        else if(trim($columns) != '*' && !array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
+        {
+            CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
+        }
+        
+        $columns = trim($columns);
+
+        $sql = "SELECT " . ($limit_amount ? 'SQL_CALC_FOUND_ROWS' : '') 
+                . "$columns FROM $table";
+
+            //  CHECK AND APPEND CONDITION
+        if(Database::_conditionGiven($condition))
+            $sql .= " WHERE $condition";
+
+            // CHECK AND APPEND ORDER BY
+        if(Database::_validateOrderBy($order_by, $table))
+        {
+            $sql .= " ORDER BY $order_by";
+            if($descending) $sql .= ' DESC';
+        }
+
+            //  CHECK AND APPEND LIMITS
+        if($limit_amount)
+        {
+            $sql .= " LIMIT :limit_amount";
+            if($limit_start) $sql .= " OFFSET :limit_start";
+        }
+
+        return $sql .= ';';
+    }
+
+    // ~~~~ BUILD INSERT ~~~~ //
+    private static final function _buildInsert(&$table, &$columns, &$values)
+    {
+        $table = trim($table);
+        Database::validateTable($table);
+
+        $columnString = $columns;
+
+        if(is_array($columns))
+        {
+            $columnString = Database::_buildColumns($columns, $table);
+        }
+        else if(!array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
+        {
+            CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
+        }
+
+        $valuesString = $valuesString;
+
+        if(is_array($values)) $valuesString = Database::_buildValues($values);
+
+        $columnString = trim($columnString);
+        $valuesString = trim($valuesString);
+
+        return "INSERT INTO $table ( $columnString ) VALUES ( $valuesString );";
+    }
+
+    // ~~~~ BUILD DELETE ~~~~ //
+    private static final function _buildDelete(&$table, &$condition)
+    {
+        $table = trim($table);
+        Database::validateTable($table);
+        Database::_validateCondition($condition);
+
+        return "DELETE FROM $table" . 
+                (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
+    }
+
+    // ~~~~ BUILD UPDATE ~~~~ //
+    private static final function _buildUpdate(&$table, &$columns, &$values, &$condition)
+    {
+        $table = trim($table);
+        Database::validateTable($table);
+        Database::_validateCondition($condition);
+
+        $setValues = Database::_buildSetValuePairs($columns, $values, $table);
+
+        return "UPDATE $table SET $setValues" . 
+            (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
+    }
+
+  //=========================================================//
+ //                 CONNECTION HANDLING                     //
+//=========================================================//
 
     private static final function connect()
     {
