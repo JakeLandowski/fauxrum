@@ -9,7 +9,9 @@ CREATE TABLE User
     username      VARCHAR(20)  NOT NULL,
     email         VARCHAR(50)  NOT NULL,
     password      VARCHAR(255) NOT NULL,
-    PRIMARY KEY(id)
+    PRIMARY KEY(id),
+    UNIQUE(username),
+    UNIQUE(email)
 
 ) ENGINE=InnoDB;
 
@@ -22,7 +24,8 @@ CREATE TABLE Thread
     created       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     bot_generated TINYINT     NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
-    FOREIGN KEY(owner)     REFERENCES User(id) 
+    FOREIGN KEY(owner) REFERENCES User(id), 
+    UNIQUE(title)
 
 ) ENGINE=InnoDB;
 
