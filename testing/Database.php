@@ -5,8 +5,7 @@ require_once getenv('HOME') . '/db_configs/fauxrum_config.php';
 abstract class Database
 {
     // const EVERYTHING = 'everything';
-    const ONE        = 'one';
-
+    const ONE = 'one';
     const VALID_ENTRIES = 
     [
         'User' => 
@@ -90,12 +89,11 @@ abstract class Database
 
         $returnValues = ['success' => false];
 
-        $validOrderBy     = Database::_validateOrderBy($order_by, $table);
         $validLimitStart  = isset($limit_start);
         $validLimitAmount = isset($limit_amount);
 
         $sql = Database::_buildSelect($columns, $table, $condition, 
-                                      $validOrderBy, $validLimitStart, 
+                                      $order_by, $validLimitStart, 
                                       $validLimitAmount, $descending);
 
         echo $sql;
@@ -110,13 +108,12 @@ abstract class Database
             if(Database::_conditionGiven($condition))
                 Database::_bindConditions($statement, $condition);
 
-            if($validOrderBy)
-                $statement->bindValue(':order_by',  $order_by,  PDO::PARAM_STR);
             if($validLimitAmount)
                 $statement->bindValue(':limit_amount',  $limit_amount,  PDO::PARAM_INT);
             if($validLimitStart)
                 $statement->bindValue(':limit_start',  $limit_start,  PDO::PARAM_INT); 
 
+                //  EXECUTE STATEMENT IF SUCCESS SET RESULTS
             if($statement->execute())
             {
                 $returnValues['success'] = true;
@@ -147,9 +144,9 @@ abstract class Database
         return $returnValues;
     }
 
-    public static final function SELECT_ALL($table, $condition=null, $options=[])//$get=Database::EVERYTHING)
+    public static final function SELECT_ALL($table, $options=[])
     {
-        return Database::SELECT('*', $table, $condition, $options);//$get);
+        return Database::SELECT('*', $table, $options);//$get);
     }
 
     public static final function INSERT($table, $columns, $values)
@@ -349,9 +346,9 @@ abstract class Database
             $sql .= " WHERE $condition";
 
             // CHECK AND APPEND ORDER BY
-        if($order_by)
+        if(Database::_validateOrderBy($order_by, $table))
         {
-            $sql .= " ORDER BY :order_by";
+            $sql .= " ORDER BY $order_by";
             if($descending) $sql .= ' DESC';
         }
 
