@@ -21,7 +21,7 @@ abstract class DataCore
      * 
      *  @param $data The array of data to add to this object
      */
-    public function __construct(&$data)
+    public function __construct(&$data=[])
     {
         foreach($data as $key => $value)
         {
