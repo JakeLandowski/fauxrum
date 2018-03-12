@@ -202,7 +202,7 @@ abstract class Database
                 Database::_bindConditions($statement, $condition);
                 if($condition->getTable() != $table)
                     CustomError::throw("Table for condition doesn't 
-                                        match condition for SELECT query.");
+                                        match condition for SELECT query.", 2);
             }
 
             if($validLimitAmount)
@@ -367,7 +367,7 @@ abstract class Database
                 Database::_bindConditions($statement, $condition);
                 if($condition->getTable() != $table)
                     CustomError::throw("Table for condition doesn't 
-                                        match condition for DELETE query.");
+                                        match condition for DELETE query.", 2);
             }
             else
                 CustomError::throw("Need to give a condition for DELETE operations.");
@@ -453,7 +453,7 @@ abstract class Database
                 Database::_bindConditions($statement, $condition);
                 if($condition->getTable() != $table)
                     CustomError::throw("Table for condition doesn't 
-                                        match condition for UPDATE query.");
+                                        match condition for UPDATE query.", 2);
             }
             else
                 CustomError::throw("Need to give a condition for UPDATE operations.");
