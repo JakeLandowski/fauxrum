@@ -22,11 +22,10 @@ class User extends DataCore
  //                      CONSTRUCTORS                       //
 //=========================================================//
 
-    public function __construct($email, $username, $textmap)
+    public function __construct($email, $username)
     {
         $this->setValue('email', $email);
         $this->setValue('username', $username);
-        $this->setValue('textmap', $textmap);
     }
 
   //=========================================================//

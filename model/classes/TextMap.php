@@ -103,9 +103,7 @@ class TextMap
     public function parseSentences(&$text)
     {
         $sentences = preg_split('/([^.!?]+[.!?]+)/', $text, -1,  PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        
-        print_r($sentences);
-
+    
         foreach($sentences as $sentence)
             $this->parseText($sentence);
     }
