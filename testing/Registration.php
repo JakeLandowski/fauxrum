@@ -30,10 +30,12 @@ class Registration extends Validator
      */
     public function validate()
     { 
+        $this->hasValidated(); // Used to prove this object has ran validation 
+
         $missingEmail = 'Please enter an email';
         $invalidEmail = 'Please enter a valid email ex: email@place.com';
         $missingUserName = 'Please enter a username';
-        $invalidUserName = 'Username must be between 3-20 alphanumeric characters only.';
+        $invalidUserName = 'Username must be between 3-20 characters A-Z, a-z and 0-9 only.';
         $missingPassword = 'Please enter a password';
         $invalidPassword = 'Password must be 8 or more characters, 
                             and atleast 1 uppercase, 1 lowercase, 1 digit';
@@ -43,13 +45,18 @@ class Registration extends Validator
         {
             if(filter_var($value, FILTER_VALIDATE_EMAIL))
             {
-                // check database
-                // if email alrdy used false
-                // and new error message here
-                // else true
+                $whereThisEmail = (new Condition('User'))->col('email')->equals($value);
+                $result = Database::SELECT('email', 'User', ['condition' => $whereThisEmail]);
+
+                if($result['num_rows'] > 0)
+                {
+                    $this->_errors['email'] = 'This email is already taken';
+                }
+
+                return true; // skip invalidEmail message given before
             }
 
-            return false; 
+            return false; // apply invalidEmail message
         });
 
         $this->_validateField('username', $missingUserName, $invalidUserName, 
@@ -57,13 +64,18 @@ class Registration extends Validator
         {
             if(preg_match('/^[0-9a-z]{3,20}$/i', $value))
             {
-                // check database
-                // if username alrdy used false
-                // and new error message here
-                // else true
+                $whereThisUserName = (new Condition('User'))->col('username')->equals($value);
+                $result = Database::SELECT('email', 'User', ['condition' => $whereThisUserName]);
+
+                if($result['num_rows'] > 0)
+                {
+                    $this->_errors['username'] = 'This username is already taken';
+                }
+
+                return true; // skip invalidUserName message given before
             }
 
-            return false;
+            return false; // apply invalidUserName message
         });
 
         $this->_validateField('password', $missingPassword, $invalidPassword, 
@@ -84,7 +96,18 @@ class Registration extends Validator
      */
     public function registerUser()
     {
-        return true;
+        if(count($this->_errors) == 0)
+        {
+            $email    = $this->getValue('email');
+            $username = $this->getValue('username');
+            $password = $this->getValue('password');
+            $result = Database::INSERT('User', ['email', 'username', 'password'], 
+                                               [$email,  $username,  $password]);
+            print_r($result);
+            return $result;
+        }
+
+        return false;
     }
 
   //=========================================================//
