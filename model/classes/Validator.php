@@ -12,7 +12,7 @@
  */
 abstract class Validator extends DataCore
 {    
-    protected $_errors = [];
+    protected $_errors = ['not_checked' => null];
 
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
@@ -26,6 +26,11 @@ abstract class Validator extends DataCore
   //=========================================================//
  //                 PROTECTED FUNCTIONS                     //
 //=========================================================//
+
+    protected function hasValidated()
+    {
+        unset($this->_errors['not_checked']);
+    }
 
     protected function _validateField($name, $missingMessage, $invalidMessage, $valid)
     {

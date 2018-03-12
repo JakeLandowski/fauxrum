@@ -8,6 +8,7 @@
  */
 class TextMap
 {
+    private $_id;
     private $_signature = 0;
     private $_lastSignature = 0;
     private $_map = [];
@@ -24,6 +25,11 @@ class TextMap
              if($cap < $order * 2) $cap = $order * 2;
         else if($cap > 3000) $cap = 3000;
         $this->_cap = $cap;
+    }
+
+    public function setId($id)
+    {
+        $this->_id = $id > 0 ? $id : null;
     }
 
     public function parseText(&$text)
@@ -106,7 +112,6 @@ class TextMap
 
     public function generate($size=100)
     {
-        echo 'GENERATE CALLED';
         if(empty($this->_map)) return '';
 
         if($this->_lastSignature != $this->_signature)
@@ -182,7 +187,6 @@ class TextMap
      */
     private function _weighProbabilities()
     {
-        echo 'WEIGH PROBABILITIES CALLED';
         $acc;
 
         foreach($this->_map as $gram => $charSet)

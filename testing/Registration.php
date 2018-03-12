@@ -100,14 +100,39 @@ class Registration extends Validator
         {
             $email    = $this->getValue('email');
             $username = $this->getValue('username');
-            $password = $this->getValue('password');
-            $result = Database::INSERT('User', ['email', 'username', 'password'], 
-                                               [$email,  $username,  $password]);
-            print_r($result);
-            return $result;
-        }
+            $password = password_hash($this->getValue('password'), PASSWORD_DEFAULT); 
+            $result   = Database::INSERT('User', ['email', 'username', 'password'], 
+                                                 [$email,  $username,  $password]);
 
-        return false;
+            $returnValue;
+
+            if(isset($result['duplicate']))
+            {
+                $returnValue = 'Sorry, but this account has already been created, 
+                                somebody might have beat you to it';
+            }
+            else if(!$result['success'] || $result['num_rows'] == 0)
+            {
+                $returnValue = 'Sorry, something went wrong registering you';
+            }
+            else if($result['id'])
+            {
+                $textMap = new TextMap(5, 500);
+                $textMap->setId(null);
+
+                
+
+                $returnValue = new User($email, $username, $textMap);
+                $returnValue->setValue('id', $result['id']);
+            }
+
+            return $returnValue;
+        }
+        else
+        {
+            CustomError::throw('Tried to INSERT new member in Registration 
+                                when there are still errors.', 2);
+        }
     }
 
   //=========================================================//
