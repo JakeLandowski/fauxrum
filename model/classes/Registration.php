@@ -103,7 +103,6 @@ class Registration extends Validator
             $password = password_hash($this->getValue('password'), PASSWORD_DEFAULT); 
             $result   = Database::INSERT('User', ['email', 'username', 'password'], 
                                                  [$email,  $username,  $password]);
-
             $returnValue;
 
             if(isset($result['duplicate']))
@@ -115,20 +114,34 @@ class Registration extends Validator
             {
                 $returnValue = 'Sorry, something went wrong registering you';
             }
-            else if($result['id'])
+            else if($result['id']) // SUCCESSFUL REGISTRATION
             {
-                $textMap = new TextMap(5, 500);
-                $textMap->setId(null);
+                $userId = $result['id']; // Get id
 
-                
+                $textMap = new TextMap(5, 500); // Create fresh TextMap 
+                $serializedTextMap = serialize($textMap); // Prepare for INSERT
 
-                $returnValue = new User($email, $username, $textMap);
-                $returnValue->setValue('id', $result['id']);
+                    // Insert TextMap
+                $mapResult = Database::INSERT('TextMap', ['owner', 'map_data'], 
+                                                [$userId, $serializedTextMap]);
+                    // Create User Object
+                $returnValue = new User($email, $username);
+                $returnValue->setValue('id', $userId);
+
+                    // If TextMap INSERT Success
+                    // Set TextMap ID and attach to User Object 
+                if($mapResult['success'] && 
+                   $mapResult['num_rows'] == 1 && 
+                   isset($mapResult['id']))
+                {
+                    $textMap->setId($mapResult['id']); 
+                    $returnValue->setValue('textmap', $textMap);
+                }
             }
 
-            return $returnValue;
+            return $returnValue; // Return User Object or Error Message
         }
-        else
+        else // If whoever uses this class forgets to check for errors
         {
             CustomError::throw('Tried to INSERT new member in Registration 
                                 when there are still errors.', 2);
