@@ -6,8 +6,8 @@
 CREATE TABLE User
 (
     id            INT          NOT NULL AUTO_INCREMENT,
-    username      VARCHAR(20)  NOT NULL,
-    email         VARCHAR(50)  NOT NULL,
+    username      VARCHAR(20),
+    email         VARCHAR(50),
     password      VARCHAR(255) NOT NULL,
     PRIMARY KEY(id),
     UNIQUE(username),
@@ -15,12 +15,15 @@ CREATE TABLE User
 
 ) ENGINE=InnoDB;
 
-/*Don't delete Thread if User is deleted*/
+/* CHECK FOR THIS USER ON LOGINS */
+INSERT INTO User(username, email, password) VALUES('USER_GRAVEYARD', 'unused', 'unused');
+
+/* CREATE THREAD GRAVEYARD WHEN USER IS MADE */
 CREATE TABLE Thread
 (
     id            INT         NOT NULL AUTO_INCREMENT,
     owner         INT         NOT NULL,
-    title         VARCHAR(40) NOT NULL,
+    title         VARCHAR(40),
     created       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     bot_generated TINYINT     NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
@@ -29,18 +32,17 @@ CREATE TABLE Thread
 
 ) ENGINE=InnoDB;
 
-/*Don't delete Post if User is deleted*/
 CREATE TABLE Post
 (
     id            INT       NOT NULL AUTO_INCREMENT,
     thread        INT       NOT NULL,
     owner         INT       NOT NULL,
     created       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    content       TEXT      NOT NULL DEFAULT '',
+    content       TEXT      NOT NULL,
     bot_generated TINYINT   NOT NULL DEFAULT 0,
     is_root_post  TINYINT   NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
-    FOREIGN KEY(thread) REFERENCES Thread(id) ON DELETE CASCADE,
+    FOREIGN KEY(thread) REFERENCES Thread(id),
     FOREIGN KEY(owner)  REFERENCES User(id)
 
 ) ENGINE=InnoDB;
