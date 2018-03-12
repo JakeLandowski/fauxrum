@@ -203,6 +203,9 @@ class Condition
      */
     public function and($otherCondition=null)
     {
+        if(isset($otherCondition) && !($otherCondition instanceof Condition))
+            CustomError::throw("Value \"$otherCondition\" given for and() needs to 
+                                be another Condition object.");
         $this->_logical($otherCondition, 'AND');
         return $this;
     }
@@ -219,6 +222,9 @@ class Condition
      */
     public function or($otherCondition=null)
     {
+        if(isset($otherCondition) && !($otherCondition instanceof Condition))
+            CustomError::throw("Value \"$otherCondition\" given for or() needs to 
+                                be another Condition object.");
         $this->_logical($otherCondition, 'OR');
         return $this;
     }
@@ -267,6 +273,16 @@ class Condition
     public function __toString()
     {
         return $this->_bindChunks($this->_render());
+    }
+
+    /**
+     *  Gets the table this Condition was configured for.
+     * 
+     *  @return string The string table this Condition is configured for   
+     */
+    public function getTable()
+    {
+        return $this->_table;
     }
 
   //=========================================================//
