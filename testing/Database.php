@@ -198,7 +198,12 @@ abstract class Database
 
                 // IF CONDITION BIND THEM
             if(Database::_conditionGiven($condition))
+            {
                 Database::_bindConditions($statement, $condition);
+                if($condition->getTable() != $table)
+                    CustomError::throw("Table for condition doesn't 
+                                        match condition for SELECT query.");
+            }
 
             if($validLimitAmount)
                 $statement->bindValue(':limit_amount',  $limit_amount,  PDO::PARAM_INT);
@@ -358,7 +363,12 @@ abstract class Database
 
                 // IF CONDITION BIND THEM
             if(Database::_conditionGiven($condition))
+            {
                 Database::_bindConditions($statement, $condition);
+                if($condition->getTable() != $table)
+                    CustomError::throw("Table for condition doesn't 
+                                        match condition for DELETE query.");
+            }
             else
                 CustomError::throw("Need to give a condition for DELETE operations.");
 
@@ -439,7 +449,12 @@ abstract class Database
 
                 // IF CONDITION BIND THEM
             if(Database::_conditionGiven($condition))
+            {
                 Database::_bindConditions($statement, $condition);
+                if($condition->getTable() != $table)
+                    CustomError::throw("Table for condition doesn't 
+                                        match condition for UPDATE query.");
+            }
             else
                 CustomError::throw("Need to give a condition for UPDATE operations.");
 
@@ -568,9 +583,9 @@ abstract class Database
                                                &$order_by, &$limit_start, &$limit_amount,
                                                &$descending)
     {
-        $table = trim($table);
         Database::validateTable($table);
         Database::_validateCondition($condition);
+        $table = trim($table);
 
             //  CHECK ALL COLUMNS GIVEN ARE VALID
             //  AND BUILD THEM INTO STRING
@@ -612,8 +627,8 @@ abstract class Database
     // ~~~~ BUILD INSERT ~~~~ //
     private static final function _buildInsert(&$table, &$columns, &$values)
     {
-        $table = trim($table);
         Database::validateTable($table);
+        $table = trim($table);
 
         $columnString = $columns;
 
@@ -639,9 +654,9 @@ abstract class Database
     // ~~~~ BUILD DELETE ~~~~ //
     private static final function _buildDelete(&$table, &$condition)
     {
-        $table = trim($table);
         Database::validateTable($table);
         Database::_validateCondition($condition);
+        $table = trim($table);
 
         return "DELETE FROM $table" . 
                 (Database::_conditionGiven($condition) ? " WHERE $condition;" : ';');
@@ -650,9 +665,9 @@ abstract class Database
     // ~~~~ BUILD UPDATE ~~~~ //
     private static final function _buildUpdate(&$table, &$columns, &$values, &$condition)
     {
-        $table = trim($table);
         Database::validateTable($table);
         Database::_validateCondition($condition);
+        $table = trim($table);
 
         $setValues = Database::_buildSetValuePairs($columns, $values, $table);
 

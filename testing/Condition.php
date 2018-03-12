@@ -51,7 +51,7 @@ class Condition
     public function __construct($table)
     {
         Database::validateTable($table);
-        $this->_table = $table;
+        $this->_table = trim($table);
         return $this;
     }
 
