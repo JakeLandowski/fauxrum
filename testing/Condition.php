@@ -1,5 +1,15 @@
 <?php
+/**
+ *  Class for representing conditions in SQL WHERE clauses. 
+ */
 
+/**
+ *  Represents a condition for a WHERE clause and is created
+ *  using method chaining. Can also compose together multiple
+ *  Condition objects for more complex conditions.
+ *  
+ *  @author Jacob Landowski
+ */
 class Condition
 {
     private $_expression = 
@@ -26,6 +36,18 @@ class Condition
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    /**
+     *  Starts a Condition object and its method chaining.
+     * 
+     *  Usage: (new Condition)->col( string $column )->operator( string $value ) 
+     * 
+     *  @param string $table The string of a table to create a condition for,
+     *                       this is used to automatically set the correct
+     *                       bind types for future values given and check columns
+     *                       given, will throw an error if given an invalid table 
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function __construct($table)
     {
         Database::validateTable($table);
@@ -33,6 +55,16 @@ class Condition
         return $this;
     }
 
+    /**
+     *  Chooses a column to compare to a future value. Will throw an error if on
+     *  the wrong stage for this Condition, ex: Calling col() twice in a row.
+     * 
+     *  @param string $column The string of a column to set, throws an error
+     *                        if the column is not a valid column for the table
+     *                        this condition is configured for
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function col($column)
     {
         if($this->_state == 'comparisons') 
@@ -51,6 +83,14 @@ class Condition
         }
     }
 
+    /**
+     *  Sets the last set column equal to the given value. Throws an error if on
+     *  the wrong stage for this Condition, ex: Calling equals() twice in a row.
+     * 
+     *  @param string $value The value to set the previous column equal to
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function equals($value)
     {
         $this->_comparison('<=>');
@@ -58,6 +98,14 @@ class Condition
         return $this;
     }
 
+    /**
+     *  Sets the last set column not equal to the given value. Throws an error if on
+     *  the wrong stage for this Condition, ex: Calling notEquals() twice in a row.
+     * 
+     *  @param string $value The value to set the previous column not equal to
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function notEquals($value)
     {
         $this->_comparison('<>');
@@ -65,6 +113,14 @@ class Condition
         return $this;
     }
 
+    /**
+     *  Sets the last set column to be less than the given value. Throws an error if on
+     *  the wrong stage for this Condition, ex: Calling lessThan() twice in a row.
+     * 
+     *  @param string $value The value to set the previous column less than
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function lessThan($value)
     {
         $this->_comparison('<');
@@ -72,6 +128,14 @@ class Condition
         return $this;
     }
 
+    /**
+     *  Sets the last set column to be greater than the given value. Throws an error if on
+     *  the wrong stage for this Condition, ex: Calling greaterThan() twice in a row.
+     * 
+     *  @param string $value The value to set the previous column greater than
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function greaterThan($value)
     {
         $this->_comparison('>');
@@ -79,6 +143,15 @@ class Condition
         return $this;
     }
 
+    /**
+     *  Sets the last set column to be less than or equal to the given value. 
+     *  Throws an error if on the wrong stage for this Condition, ex: Calling
+     *  lessThanOrEquals() twice in a row.
+     * 
+     *  @param string $value The value to set the previous column less than or equals to
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function lessThanOrEquals($value)
     {
         $this->_comparison('<=');
@@ -86,6 +159,15 @@ class Condition
         return $this;
     }
 
+    /**
+     *  Sets the last set column to be greater than or equal to the given value. 
+     *  Throws an error if on the wrong stage for this Condition, ex: Calling
+     *  greaterThanOrEquals() twice in a row.
+     * 
+     *  @param string $value The value to set the previous column greater than or equals to
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function greaterThanOrEquals($value)
     {
         $this->_comparison('>=');
@@ -93,6 +175,15 @@ class Condition
         return $this;
     }
 
+    /**
+     *  Sets the last set column to be LIKE the given value for wildcard searching. 
+     *  Throws an error if on the wrong stage for this Condition, ex: Calling
+     *  like() twice in a row.
+     * 
+     *  @param string $value The value to set the previous column to be LIKE
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
     public function like($value)
     {
         $this->_comparison('LIKE');
@@ -100,6 +191,45 @@ class Condition
         return $this;
     }
 
+    /**
+     *  If given no parameters, sets the stage of this Condition to accept
+     *  another column/value pair of conditions to be wrapped within the 
+     *  same parenthesis. If given a Condition object, composes that Condition
+     *  with this one in separate parenthesis. ANDs the 2 conditions.
+     * 
+     *  @param Condition $otherCondition
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
+    public function and($otherCondition=null)
+    {
+        $this->_logical($otherCondition, 'AND');
+        return $this;
+    }
+
+    /**
+     *  If given no parameters, sets the stage of this Condition to accept
+     *  another column/value pair of conditions to be wrapped within the 
+     *  same parenthesis. If given a Condition object, composes that Condition
+     *  with this one in separate parenthesis. ORs the 2 conditions.
+     * 
+     *  @param Condition $otherCondition
+     * 
+     *  @return Condition $this returns this Condition object for further methods   
+     */
+    public function or($otherCondition=null)
+    {
+        $this->_logical($otherCondition, 'OR');
+        return $this;
+    }
+
+    /**
+     *  Returns an array of all compiled values, bind placeholders, and their types
+     *  to be used in binding values to a PDO object. Used by Database class.
+     * 
+     *  @return array The array of associative arrays each holding 'binds', 'value',
+     *                and 'type'   
+     */
     public function getBindsAndValues()
     {
         if(!$this->_hasBeenRendered())
@@ -127,12 +257,23 @@ class Condition
         } 
     }
 
+    /**
+     *  Created and returns a string to represent this Condition object to be used 
+     *  for constructing a sql query. Compiles all composed conditions underneath this
+     *  Condition. Used by the Database class.
+     * 
+     *  @return string The string representing this Condition object   
+     */
     public function __toString()
     {
         return $this->_bindChunks($this->_render());
     }
 
-    public function isComplete()
+  //=========================================================//
+ //                   PRIVATE FUNCTIONS                     //
+//=========================================================//
+
+    private function _isComplete()
     {
         return $this->_numColumns != 0 & 
                $this->_numColumns == $this->_numComparisons &&
@@ -140,27 +281,11 @@ class Condition
                $this->_numLogical == $this->_numColumns - 1;
     }
 
-    public function and($otherCondition=null)
-    {
-        $this->_logical($otherCondition, 'AND');
-        return $this;
-    }
-
-    public function or($otherCondition=null)
-    {
-        $this->_logical($otherCondition, 'OR');
-        return $this;
-    }
-
-  //=========================================================//
- //                   PRIVATE FUNCTIONS                     //
-//=========================================================//
-
     private function _hasBeenRendered()
     {
         $numValues = count($this->_expression['allValues']);
 
-        return $this->isComplete() && $numValues > 0 && 
+        return $this->_isComplete() && $numValues > 0 && 
                $numValues == count($this->_expression['binds']);
     }
 
@@ -205,7 +330,7 @@ class Condition
 
     private function _render()
     {
-        if(!$this->isComplete()) 
+        if(!$this->_isComplete()) 
             CustomError::throw("Tried to render incomplete Condition.");
 
         $chunks = [];
@@ -235,11 +360,11 @@ class Condition
 
     private function _logical($other, $type)
     {
-        if($this->isComplete())
+        if($this->_isComplete())
         {
             if($other)
             {
-                if(!$other->isComplete())
+                if(!$other->_isComplete())
                 {
                     CustomError::throw("Tried to \"$type\" incomplete condition: \"$other\"");
                 }
