@@ -190,8 +190,6 @@ abstract class Database
                                       $order_by, $validLimitStart, 
                                       $validLimitAmount, $descending);
 
-        echo $sql;
-
         $connection = Database::connect();
 
         try
@@ -283,7 +281,7 @@ abstract class Database
                                 given in INSERT don't match.");
 
         $sql = Database::_buildInsert($table, $columns, $values);
-        
+    
         $connection = Database::connect();
 
         try
@@ -294,7 +292,7 @@ abstract class Database
             foreach($values as $i => $value)
             {   
                 $type = Database::VALID_ENTRIES[$table][$columns[$i]]; 
-                $statement->bindValue(':value_' . ($i + 1),  $value,  Database::PDO_PARAMS[$type]); 
+                $statement->bindValue(':value_' . ($i + 1),  $value,  Database::PDO_PARAMS[$type]);
             }
 
             if($statement->execute())
@@ -317,6 +315,8 @@ abstract class Database
             else 
                 CustomError::throw('Query failed: ' . $e->getMessage());
         }
+
+        $returnValues['num_rows'] = $statement->rowCount();
 
         return $returnValues;
     }
@@ -458,6 +458,8 @@ abstract class Database
             else
                 CustomError::throw('Query failed: ' . $e->getMessage());
         }
+
+        $returnValues['num_rows'] = $statement->rowCount();
 
         return $returnValues; 
     }
