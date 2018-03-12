@@ -15,8 +15,7 @@ class Registration extends Validator
     protected $data = 
     [
         'email'    => null,
-        'username' => null,
-        'password' => null
+        'username' => null
     ];
     
   //=========================================================//
@@ -39,6 +38,8 @@ class Registration extends Validator
         $missingPassword = 'Please enter a password';
         $invalidPassword = 'Password must be 8 or more characters, 
                             and atleast 1 uppercase, 1 lowercase, 1 digit';
+        $missingRepeatPassword = 'Please enter your password again';
+        $invalidRepeatPassword = 'Repeated password must match the original';
 
         $this->_validateField('email', $missingEmail, $invalidEmail,
         function($value)
@@ -85,6 +86,14 @@ class Registration extends Validator
                    preg_match('/[a-z]/', $value) && 
                    preg_match('/[0-9]/', $value) &&
                    strlen($value) >= 8;
+        });
+
+        $this->_validateField('repeat_password', $missingRepeatPassword, $invalidRepeatPassword, 
+        function($value)
+        {
+            $password = $this->getValue('password');
+
+            return isset($password) && $value == $password;
         });
     }
 
