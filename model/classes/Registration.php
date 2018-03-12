@@ -89,10 +89,13 @@ class Registration extends Validator
     }
 
     /**
-     *  Registers the user if there are no errors, returns false 
-     *  if there are.
+     *  Registers the user if there are no errors, throws an error otherwise.
+     *  Hashed password and attempts to INSERT user to database, if not successful
+     *  returns an error message to be used in template. If successful INSERTS
+     *  a fresh TextMap object and creates a new User object to represent this user.
+     *  If the TextMap successfully INSERTS then it is given to the User object.
      * 
-     *  @return boolean True if no errors and user registered successfully
+     *  @return mixed Error messages if User insertion failed otherwise User object
      */
     public function registerUser()
     {
@@ -147,9 +150,4 @@ class Registration extends Validator
                                 when there are still errors.', 2);
         }
     }
-
-  //=========================================================//
- //                   PRIVATE FUNCTIONS                     //
-//=========================================================//
-
 }
