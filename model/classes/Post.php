@@ -56,7 +56,7 @@ class Post extends Validator
         $this->_validateField('content', $missingPost, $invalidPost,
         function($value)
         {
-            return !empty(trim($value)) && strlen($value) >= 3;
+            return !empty(trim($value)) && strlen(trim($value)) >= 3;
         });
     }
 
