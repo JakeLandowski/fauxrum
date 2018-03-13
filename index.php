@@ -54,6 +54,22 @@ $f3->route('GET /', function($f3)
     }
 });
 
+    // LOGOUT ROUTE
+$f3->route('GET /logout', function($f3)
+{
+    if(loggedIn())
+    {
+        if(isset($_COOKIE[session_name()]))
+        {
+            setcookie(session_name(), '', time() - 3600, '/' );
+        } 
+        $_SESSION = array();
+        session_destroy();       
+    }
+
+    $f3->reroute('/login');
+});
+
     // LOGIN ROUTE
 $f3->route('GET|POST /login', function($f3)
 {
@@ -145,7 +161,7 @@ $f3->route('GET /posts', function()
 });
 
     // CREATE THREAD ROUTE
-$f3->route('GET /new-thread', function()
+$f3->route('GET|POST /new-thread', function()
 {
     echo Template::instance()->render('views/create_thread.html');
 });
@@ -162,8 +178,6 @@ $f3->route('GET|POST /test', function()
     });
 
     echo '<pre style="color:white;">';
-    
-    // $map2 = Database::SELECT_ALL('TextMap')['rows'][0]['map_data'];
 
     echo '</pre>';
 
