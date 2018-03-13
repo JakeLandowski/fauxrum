@@ -32,6 +32,11 @@ function isPost()
     return $_SERVER['REQUEST_METHOD'] === 'POST';
 }
 
+function loggedIn()
+{
+    return isset($_SESSION['User']);
+}
+
   //================================================//
  //                    ROUTES                      //
 //================================================//
@@ -39,13 +44,51 @@ function isPost()
     // HOME ROUTE
 $f3->route('GET /', function($f3)
 {
-    $f3->reroute('/login');
+    if(loggedIn())
+    {
+        $f3->reroute('/threads');
+    }
+    else
+    {
+        $f3->reroute('/login');
+    }
 });
 
     // LOGIN ROUTE
-$f3->route('GET|POST /login', function()
+$f3->route('GET|POST /login', function($f3)
 {
+    if(loggedIn())
+    {
+        $f3->reroute('/threads');
+    }
+    else if(isPost())
+    {
+        $login = new Login;
+        $login->validate();
+        
+        if(count($login->getErrors()) == 0)
+        {
+            $loginResult = $login->logUserIn();
+            
+            if($loginResult instanceof User)
+            {
+                    // success, save in session and reroute
+                $_SESSION['User'] = $loginResult;
+                $f3->reroute('/threads');
+            }
+            else
+            {
+                // failed insert error message to print to user
+                $f3->set('fail_message', $loginResult);
+            }
+        }
     
+        $f3->mset([
+            'errors'    => $login->getErrors(),
+            'email'     => $login->displayValue('email'),
+            'username'  => $login->displayValue('username')
+        ]);
+    }
 
     echo Template::instance()->render('views/login.html');
 });
@@ -53,7 +96,11 @@ $f3->route('GET|POST /login', function()
     //  REGISTRATION ROUTE
 $f3->route('GET|POST /register', function($f3)
 {
-    if(isPost())
+    if(loggedIn())
+    {
+        $f3->reroute('/threads');
+    }
+    else if(isPost())
     {
         $registration = new Registration;
         $registration->validate();
@@ -63,22 +110,22 @@ $f3->route('GET|POST /register', function($f3)
             $registerResult = $registration->registerUser();
             
             if($registerResult instanceof User)
-        {
-                // success, save in session and reroute
+            {
+                    // success, save in session and reroute
                 $_SESSION['User'] = $registerResult;
-            $f3->reroute('/threads');
+                $f3->reroute('/threads');
+            }
+            else
+            {
+                // failed insert error message to print to user
+                $f3->set('fail_message', $registerResult);
+            }
         }
-        else
-        {
-            // failed insert error message to print to user
-            $f3->set('fail_message', $registerResult);
-        }
-    }
     
-    $f3->mset([
-        'errors'    => $registration->getErrors(),
-        'email'     => $registration->displayValue('email'),
-        'username'  => $registration->displayValue('username')
+        $f3->mset([
+            'errors'    => $registration->getErrors(),
+            'email'     => $registration->displayValue('email'),
+            'username'  => $registration->displayValue('username')
         ]);
     }
 
