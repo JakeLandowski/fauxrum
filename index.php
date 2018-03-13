@@ -149,20 +149,35 @@ $f3->route('GET|POST /register', function($f3)
 });
 
     // THREADS ROUTE
-$f3->route('GET /threads', function()
+$f3->route('GET /threads', function($f3)
 {
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+
     echo Template::instance()->render('views/threads.html');
 });
 
     // POSTS ROUTE
 $f3->route('GET /posts', function()
 {
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+
     echo Template::instance()->render('views/posts.html');
 });
 
     // CREATE THREAD ROUTE
 $f3->route('GET|POST /new-thread', function()
 {
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+    
     echo Template::instance()->render('views/create_thread.html');
 });
 
