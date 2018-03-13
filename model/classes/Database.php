@@ -97,7 +97,11 @@ abstract class Database
      */
     public static final function validateTable(&$table)
     {
-        if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
+        if(!is_string($table))
+        {
+            CustomError::throw("\"$table\" given is not a string.", 2);
+        }
+        else if(!array_key_exists(trim($table), Database::VALID_ENTRIES))
         {
             CustomError::throw("\"$table\" is not a valid table in the Database.", 2);
         }
@@ -215,7 +219,7 @@ abstract class Database
             {
                 $returnValues['success'] = true;
              
-                if(isset($options['FETCH']) && $options['FETCH'] == Database::ONE)
+                if(isset($options['fetch']) && $options['fetch'] == Database::ONE)
                     $returnValues['row']  = $statement->fetch(PDO::FETCH_ASSOC);
                 else
                     $returnValues['rows'] = $statement->fetchAll(PDO::FETCH_ASSOC);
