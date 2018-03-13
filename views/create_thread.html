@@ -28,7 +28,7 @@
         <div class="form-group">
             <label for="title">Thread Title</label>
             <p class="error-text m-0">
-                {{ isset(@errors['username']) ? @errors['username'] : ''}}
+                {{ isset(@errors['title']) ? @errors['title'] : ''}}
             </p>
             <input type="text" 
                 class="form-control {{ isset(@errors['title']) ? 'error' : ''}}" 
@@ -41,7 +41,14 @@
     </div>
 
     <div class="form-group">
-        <textarea class="form-control" id="exampleTextarea1" rows="5"></textarea>
+        <p class="error-text m-0">
+            {{ isset(@errors['content']) ? @errors['content'] : ''}}
+        </p>
+        <textarea class="form-control {{ isset(@errors['content']) ? 'error' : ''}}" 
+                  id="content"
+                  name="content"
+                  rows="5"
+        >{{ isset(@content) ? @content : '' }}</textarea>
     </div>
 
     <input type="submit" value="Create Thread" class="btn btn-primary" />

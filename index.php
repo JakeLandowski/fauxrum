@@ -160,7 +160,7 @@ $f3->route('GET /threads', function($f3)
 });
 
     // POSTS ROUTE
-$f3->route('GET /posts', function()
+$f3->route('GET /posts', function($f3)
 {
     if(!loggedIn())
     {
@@ -171,11 +171,45 @@ $f3->route('GET /posts', function()
 });
 
     // CREATE THREAD ROUTE
-$f3->route('GET|POST /new-thread', function()
+$f3->route('GET|POST /new-thread', function($f3)
 {
     if(!loggedIn())
     {
         $f3->reroute('/login');
+    }
+    else if(isPost())
+    {
+        $user = $_SESSION['User'];
+        $thread = new Thread;
+        $thread->setValue('owner', $user->getValue('id'));
+        
+        $thread->validate();
+
+        if(count($thread->getErrors()) == 0)
+        {
+            $threadResult = $thread->createThread();
+            
+            if($threadResult instanceof Thread)
+            {
+                //success, show the thread
+                $f3->reroute('/posts');
+            }
+            else
+            {
+                // failed insert error message to print to user
+                $f3->set('fail_message', $registerResult);
+            }
+        }
+    
+        $f3->mset([
+            'errors'  => $thread->getErrors(),
+            'title'   => $thread->displayValue('title'),
+            'content' => $thread->getValue('root_post')->displayValue('content')
+        ]);
+
+
+
+
     }
     
     echo Template::instance()->render('views/create_thread.html');
