@@ -115,7 +115,7 @@ class Registration extends Validator
             $password = password_hash($this->getValue('password'), PASSWORD_DEFAULT); 
             $result   = Database::INSERT('User', ['email', 'username', 'password'], 
                                                  [$email,  $username,  $password]);
-            $returnValue;
+            $returnValue = '';
 
             if(isset($result['duplicate']))
             {
