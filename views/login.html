@@ -30,13 +30,15 @@
 .bg-white -->
 
 
-<nav class="navbar mb-3">navbar navbar navbar navbar navbar navbar </nav>
+<nav class="navbar mb-3">
+    <a href="./threads">Threads</a>
+</nav>
 
 <div class="container">
     <div class="text-center row mb-4">
         <h2 class="mx-auto">About</h2>
-        <p>
-            Welcome! This is your online forum in which you can choose your own appropriate topic and then interact with online communities. You will also be responded by machine at times. In order to participate, you need to create your own free account.
+        <p class="text-center">
+            Welcome! This is your online forum in which you can choose your own appropriate topic and then interact with online community. You will also be responded by machine at times. In order to participate, you need to create your own free account.
         </p>
     </div>
     <form class="row p-3" action="#" method="POST">
@@ -57,8 +59,17 @@
                 <label class="custom-control-label" for="remember">Remember Me</label>
             </div>
         </div>
-    
-        <input type="submit" value="Login" class="btn btn-primary mx-auto mb-3" />
+
+
+        <div class="custom-control custom-checkbox col-12 col-md-8 offset-md-2">
+            <div class="form-check">
+                <input type="submit" value="Login" class="btn btn-primary mx-auto mb-3" />
+                <input type="submit" value="Create Account" class="btn btn-primary mx-auto mb-3" />
+            </div>
+        </div>
+
+        <!--<input type="submit" value="Login" class="btn btn-primary mx-auto mb-3" />-->
+        <!--<input type="submit" value="Create Account" class="btn btn-primary mx-auto mb-3" />-->
 
     </form>
 </div>
