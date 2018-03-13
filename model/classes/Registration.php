@@ -50,7 +50,7 @@ class Registration extends Validator
                 $whereThisEmail = (new Condition('User'))->col('email')->equals($value);
                 $result = Database::SELECT('email', 'User', ['condition' => $whereThisEmail]);
 
-                if($result['num_rows'] > 0)
+                if($result['success'] && $result['num_rows'] > 0)
                 {
                     $this->_errors['email'] = 'This email is already taken';
                 }
@@ -69,7 +69,7 @@ class Registration extends Validator
                 $whereThisUserName = (new Condition('User'))->col('username')->equals($value);
                 $result = Database::SELECT('email', 'User', ['condition' => $whereThisUserName]);
 
-                if($result['num_rows'] > 0)
+                if($result['success'] && $result['num_rows'] > 0)
                 {
                     $this->_errors['username'] = 'This username is already taken';
                 }
