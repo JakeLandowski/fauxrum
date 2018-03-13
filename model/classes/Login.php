@@ -103,13 +103,12 @@ class Login extends Validator
     }
 
     /**
-     *  Registers the user if there are no errors, throws an error otherwise.
-     *  Hashed password and attempts to INSERT user to database, if not successful
-     *  returns an error message to be used in template. If successful INSERTS
-     *  a fresh TextMap object and creates a new User object to represent this user.
-     *  If the TextMap successfully INSERTS then it is given to the User object.
+     *  Attempts to log the user in. Will check either username or email plus
+     *  password for authentication. Will return errors if either one fails. 
+     *  Otherwise tries to pull the user's TextMap object out from the database
+     *  and creates a User object with it to represent the User.
      * 
-     *  @return mixed Error messages if User insertion failed otherwise User object
+     *  @return mixed Error messages if User login failed otherwise User object
      */
     public function logUserIn()
     {
