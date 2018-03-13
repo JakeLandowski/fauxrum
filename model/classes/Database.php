@@ -168,7 +168,7 @@ abstract class Database
      *                'total_rows' => The total number of rows in the table 
      *                                if limit_amount was set   
      */
-    public static final function SELECT($columns, $table, $options=[])//$condition=null, $get=Database::EVERYTHING)
+    public static final function SELECT($columns, $table, $options=[])
     {
             //  INITIALIZE OPTIONAL PARAMS
         $fetch        = isset($options['fetch'])      ? $options['fetch']     : null;
@@ -247,7 +247,7 @@ abstract class Database
 
     public static final function SELECT_ALL($table, $options=[])
     {
-        return Database::SELECT('*', $table, $options);//$get);
+        return Database::SELECT('*', $table, $options);
     }
 
     // ~~~~ INSERT ~~~~ //
@@ -640,10 +640,6 @@ abstract class Database
         {
             $columnString = Database::_buildColumns($columns, $table);
         }
-        // else if(!array_key_exists(trim($columns), Database::VALID_ENTRIES[$table]))
-        // {
-        //     CustomError::throw("\"$columns\" is not a valid entry for \"$table\"", 2);
-        // }
 
         $valuesString = $values;
 
