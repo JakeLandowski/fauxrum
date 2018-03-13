@@ -27,20 +27,62 @@ $f3->set('DEBUG', 3);
  //                   PRE-ROUTE                    //
 //================================================//
 
+function isPost()
+{
+    return $_SERVER['REQUEST_METHOD'] === 'POST';
+}
+
   //================================================//
  //                    ROUTES                      //
 //================================================//
 
-// HOME ROUTE
+    // HOME ROUTE
 $f3->route('GET /', function($f3)
 {
     $f3->reroute('/login');
 });
 
-    // HOME ROUTE
+    // LOGIN ROUTE
 $f3->route('GET|POST /login', function()
 {
+    
+
     echo Template::instance()->render('views/login.html');
+});
+
+    //  REGISTRATION ROUTE
+$f3->route('GET|POST /register', function($f3)
+{
+    if(isPost())
+    {
+        $registration = new Registration;
+        $registration->validate();
+        
+        if(count($registration->getErrors()) == 0)
+        {
+            $registerResult = $registration->registerUser();
+            
+            if($registerResult instanceof User)
+        {
+                // success, save in session and reroute
+                $_SESSION['User'] = $registerResult;
+            $f3->reroute('/threads');
+        }
+        else
+        {
+            // failed insert error message to print to user
+            $f3->set('fail_message', $registerResult);
+        }
+    }
+    
+    $f3->mset([
+        'errors'    => $registration->getErrors(),
+        'email'     => $registration->displayValue('email'),
+        'username'  => $registration->displayValue('username')
+        ]);
+    }
+
+    echo Template::instance()->render('views/register.html');
 });
 
     // THREADS ROUTE
@@ -72,32 +114,11 @@ $f3->route('GET|POST /test', function()
         require_once "./testing/{$className}.php";
     });
 
-    $registration = new Registration;
+    echo '<pre style="color:white;">';
+    
+    // $map2 = Database::SELECT_ALL('TextMap')['rows'][0]['map_data'];
 
-    $registration->validate();
-    print_r($registration->getErrors());
-    // echo $registration->displayValue('email');
-    $registerResult = $registration->registerUser(); 
-    if($registerResult)
-    {
-        if($registerResult['success'])
-        {
-            if($registerResult['num_rows'] > 0)
-            {
-                // create user object and redirect
-                $id = $registerResult['id'];
-            }
-
-        }
-        else 
-        {
-            
-        }
-    }
-    else // still errors
-    {
-
-    }
+    echo '</pre>';
 
     echo Template::instance()->render('testing/db_testing.html');
 });
