@@ -18,6 +18,6 @@
                  },
 
     "autoload" : {
-                    "classmap" : ["model/classes/", "views/classes/"]
+                    "classmap" : ["model/classes/"]
                  }
 }
