@@ -16,6 +16,7 @@ class Login extends Validator
     [
         'email'    => null,
         'username' => null,
+        'password' => null,
         'auth_method' => null
     ];
     
@@ -52,21 +53,6 @@ class Login extends Validator
             function($value)
             {
                 return filter_var($value, FILTER_VALIDATE_EMAIL); 
-
-                // if(filter_var($value, FILTER_VALIDATE_EMAIL))
-                // {
-                //     $whereThisEmail = (new Condition('User'))->col('email')->equals($value);
-                //     $result = Database::SELECT('email', 'User', ['condition' => $whereThisEmail]);
-                    
-                //     if($result['num_rows'] > 0)
-                //     {
-                //         $this->_errors['email'] = 'This email is already taken';
-                //     }
-                    
-                //     return true; // skip invalidEmail message given before
-                // }
-                
-                // return false; // apply invalidEmail message
             });
         }
         else
@@ -75,20 +61,6 @@ class Login extends Validator
             function($value)
             {
                 return preg_match('/^[0-9a-z]{3,20}$/i', $value);
-                // if(preg_match('/^[0-9a-z]{3,20}$/i', $value))
-                // {
-                //     $whereThisUserName = (new Condition('User'))->col('username')->equals($value);
-                //     $result = Database::SELECT('email', 'User', ['condition' => $whereThisUserName]);
-                    
-                //     if($result['num_rows'] > 0)
-                //     {
-                //         $this->_errors['username'] = 'This username is already taken';
-                //     }
-                    
-                //     return true; // skip invalidUserName message given before
-                // }
-                
-                // return false; // apply invalidUserName message
             });
         }
             
@@ -135,12 +107,13 @@ class Login extends Validator
 
             $returnValue = '';
 
-            if(!$result['success'] || $result['num_rows'] == 0) // No matches
+            $failed = isset($result['success']) && !$result['success'];
+            if($failed || $result['num_rows'] == 0) // No matches
             {
                 $returnValue = 'This account doesn\'t exist';
             }
             else if(isset($result['row']) &&        // Verify password
-                    password_verify($this->getValue('password'), $result['password']))
+                    !password_verify($this->getValue('password'), $result['row']['password']))
             {
                 $returnValue = 'Invalid password';
             }
@@ -158,7 +131,7 @@ class Login extends Validator
                     'condition' => (new Condition('TextMap'))->col('owner')->equals($userId),
                     'fetch' => Database::ONE
                 ];
-                $mapResult = Database::SELECT('TextMap', ['id', 'map_data'], $mapOptions);
+                $mapResult = Database::SELECT(['id', 'map_data'], 'TextMap', $mapOptions);
 
                 if($mapResult['success'] && 
                    $mapResult['num_rows'] == 1 &&

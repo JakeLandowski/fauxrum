@@ -37,7 +37,7 @@ abstract class Validator extends DataCore
         if(isset($_POST[$name]) && !empty($_POST[$name]))
         {
             $this->setValue($name, $_POST[$name]);
-
+            
             if(!$valid($_POST[$name]))
                 $this->_errors[$name] = $invalidMessage;
         }   
