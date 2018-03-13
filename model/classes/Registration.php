@@ -15,7 +15,8 @@ class Registration extends Validator
     protected $data = 
     [
         'email'    => null,
-        'username' => null
+        'username' => null,
+        'password' => null
     ];
     
   //=========================================================//
@@ -92,7 +93,6 @@ class Registration extends Validator
         function($value)
         {
             $password = $this->getValue('password');
-
             return isset($password) && $value == $password;
         });
     }
