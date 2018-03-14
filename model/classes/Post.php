@@ -27,6 +27,44 @@ class Post extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public static function getPosts($threadId)
+    {
+        $options = 
+        [
+            'condition' => (new Condition('Post'))->col('thread')->equals($threadId),
+            'order_by'  => 'created'
+        ];
+        
+        $result = Database::SELECT_ALL('Post', $options);
+
+        $returnValue = '';
+
+        if($result['success'] && $result['num_rows'] > 0)
+        {
+            $rows = $result['rows'];
+            $returnValue = [];
+            
+            foreach($rows as $row)
+            {
+                $post = new Post;
+                $post->setValue('id',            $row['id']);
+                $post->setValue('owner',         $row['owner']);
+                $post->setValue('thread',        $row['thread']);
+                $post->setValue('content',       $row['content']);
+                $post->setValue('created',       $row['created']);
+                $post->setValue('is_root_post',  $row['is_root_post']);
+                $post->setValue('bot_generated', $row['bot_generated']);
+                $returnValue[] = $post;
+            }
+        }
+        else
+        {
+            $returnValue = 'Something went wrong fetching posts';
+        }
+
+        return $returnValue;
+    }
+
     /**
      *  Validates the creation of a post.
      *  Populates errors array with errors which can later be retrieved.
