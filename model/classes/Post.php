@@ -18,8 +18,8 @@ class Post extends Validator
         'thread'        => null,
         'owner'         => null,
         'content'       => null,
-        'is_root_post'  => null,
-        'bot_generated' => null
+        'is_root_post'  => false,
+        'bot_generated' => false
     ];
 
   //=========================================================//
@@ -64,10 +64,11 @@ class Post extends Validator
     {
         if(count($this->_errors) == 0)
         {
+                // Set Arguments for INSERT
             $thread  = $this->getValue('thread');
             $owner   = $this->getValue('owner');
             $content = $this->getValue('content');
-            $is_root_post  = $this->getValue('is_root_post');
+            $is_root_post  = $this->getValue('is_root_post')  ? 1 : 0;
             $bot_generated = $this->getValue('bot_generated') ? 1 : 0;
              
             $result = Database::INSERT('Post', 
@@ -76,6 +77,7 @@ class Post extends Validator
             
             $returnValue = '';
 
+                // UNKNOWN ISSUE
             if(!$result['success'] || $result['num_rows'] == 0 || isset($result['duplicate']))
             {
                 $returnValue = 'Sorry, something went wrong with post creation';
@@ -94,7 +96,6 @@ class Post extends Validator
                                 when there are still errors.', 2);
         }   
     }
-
 
   //=========================================================//
  //                   PRIVATE FUNCTIONS                     //
