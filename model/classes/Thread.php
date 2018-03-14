@@ -52,7 +52,7 @@ class Thread extends Validator
         $this->_validateField('title', $missingTitle, $invalidTitle,
         function($value)
         {
-            if(!empty(trim($value)) && strlen($value) <= 40 && strlen($value) >= 3)
+            if(!empty(trim($value)) && strlen($value) <= 40 && strlen(trim($value)) >= 3)
             {
                 $whereThisTitle = (new Condition('Thread'))->col('title')->equals($value);
                 $result = Database::SELECT('title', 'Thread', ['condition' => $whereThisTitle]);
@@ -68,9 +68,12 @@ class Thread extends Validator
             return false; // apply invalidTitle message
         });
 
+            // Make and validate a Post after validating Thread
         $post = new Post;
         $this->setValue('root_post', $post);
         $post->validate();
+
+            // Forward errors to Parent Thread 
         $this->_errors = array_merge($this->_errors, $post->getErrors());
     }
 
@@ -78,6 +81,7 @@ class Thread extends Validator
     {
         if(count($this->_errors) == 0)
         {
+                // Set Thread arguments for INSERT
             $title = $this->getValue('title');
             $owner = $this->getValue('owner');
             $bot_generated = $this->getValue('bot_generated') ? 1 : 0;
@@ -86,12 +90,12 @@ class Thread extends Validator
                                                  [$owner,  $title,  $bot_generated]);
             $returnValue = '';
 
-            if(isset($result['duplicate']))
+            if(isset($result['duplicate'])) // TITLE TAKEN
             {
                 $returnValue = 'Sorry, but this thread has already been created, 
                                 somebody might have beat you to it';
             }
-            else if(!$result['success'] || $result['num_rows'] == 0)
+            else if(!$result['success'] || $result['num_rows'] == 0) // UNKNOWN PROBLEM
             {
                 $returnValue = 'Sorry, something went wrong with the thread creation';
             }
@@ -100,16 +104,22 @@ class Thread extends Validator
                 $returnValue = $this;
                 $this->setValue('id', $result['id']);
 
-                $post = $this->getValue('root_post');
+                    //  Set Post arguments for INSERT
+                $post = $this->getValue('root_post'); // Grab Post object created earlier
                 $post->setValue('thread', $this->getValue('id'));
                 $post->setValue('owner', $this->getValue('owner'));
                 $post->setValue('is_root_post', true);
-                $postResult = $post->createPost();
+                $postResult = $post->createPost(); // Attempt INSERT
                 
+                    // Failed Post insertion
+                    // Delete Thread that was inserted
+                    // Forward Post error
                 if(!$postResult instanceof Post)
                 {
                     $returnValue = $postResult;
-                    // failed, delete thread that was inserted
+                    $id = $this->getValue('id');
+                    $whereThisThread = (new Condition('Thread'))->col('id')->equals($id);
+                    Database::DELETE('Thread', $whereThisThread);
                 }
             }
 
