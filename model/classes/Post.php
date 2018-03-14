@@ -79,12 +79,12 @@ class Post extends Validator
         $this->hasValidated(); // Used to prove this object has ran validation 
 
         $missingPost  = 'You must fill out a post';
-        $invalidPost  = 'Post must be atleast 3 characters long and not empty';
+        $invalidPost  = 'Post must be between 5-1000 characters and not empty';
 
         $this->_validateField('content', $missingPost, $invalidPost,
         function($value)
         {
-            return !empty(trim($value)) && strlen(trim($value)) >= 3;
+            return !empty(trim($value)) && strlen(trim($value)) >= 5 && strlen($value) <= 1000;
         });
     }
 

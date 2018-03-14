@@ -108,12 +108,12 @@ class Thread extends Validator
         $this->hasValidated(); // Used to prove this object has ran validation 
 
         $missingTitle = 'Please create a thread title';
-        $invalidTitle = 'Title must be between 3-40 characters or less and not empty';
+        $invalidTitle = 'Title must be between 5-40 characters or less and not empty';
 
         $this->_validateField('title', $missingTitle, $invalidTitle,
         function($value)
         {
-            if(!empty(trim($value)) && strlen($value) <= 40 && strlen(trim($value)) >= 3)
+            if(!empty(trim($value)) && strlen($value) <= 40 && strlen(trim($value)) >= 5)
             {
                 $whereThisTitle = (new Condition('Thread'))->col('title')->equals($value);
                 $result = Database::SELECT('title', 'Thread', ['condition' => $whereThisTitle]);
