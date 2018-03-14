@@ -28,6 +28,7 @@ CREATE TABLE Thread
     views         INT         NOT NULL DEFAULT 0,
     created       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     bot_generated TINYINT     NOT NULL DEFAULT 0,
+    parsed        TINYINT     NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
     FOREIGN KEY(owner) REFERENCES User(id), 
     UNIQUE(title)
@@ -42,6 +43,7 @@ CREATE TABLE Post
     created       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     content       TEXT      NOT NULL,
     bot_generated TINYINT   NOT NULL DEFAULT 0,
+    parsed        TINYINT   NOT NULL DEFAULT 0,
     is_root_post  TINYINT   NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
     FOREIGN KEY(thread) REFERENCES Thread(id),
