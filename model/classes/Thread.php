@@ -40,7 +40,7 @@ class Thread extends Validator
 
         $returnValue = '';
 
-        if($result['success'] && $result['num_rows'] > 0)
+        if($result['success'] && $result['num_rows'] > 0 && isset($result['rows']))
         {
             $rows = $result['rows'];
             $returnValue = [];
@@ -59,6 +59,36 @@ class Thread extends Validator
         else
         {
             $returnValue = 'Something went wrong fetching threads';
+        }
+
+        return $returnValue;
+    }
+
+    public static function getThread($threadId)
+    {
+        $options = 
+        [
+            'fetch' => Database::ONE,
+            'condition' => (new Condition('Thread'))->col('id')->equals($threadId) 
+        ];
+        
+        $result = Database::SELECT_ALL('Thread', $options);
+
+        $returnValue = '';
+
+        if($result['success'] && $result['num_rows'] > 0 && isset($result['row']))
+        {
+            $thread = new Thread;
+            $thread->setValue('id',            $result['row']['id']);
+            $thread->setValue('title',         $result['row']['title']);
+            $thread->setValue('owner',         $result['row']['owner']);
+            $thread->setValue('created',       $result['row']['created']);
+            $thread->setValue('bot_generated', $result['row']['bot_generated']);
+            $returnValue = $thread;
+        }
+        else
+        {
+            $returnValue = 'Something went wrong fetching thread title';
         }
 
         return $returnValue;
