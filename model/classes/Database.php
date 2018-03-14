@@ -29,7 +29,9 @@ abstract class Database
             [ 
                 'id'            => 'int', 
                 'title'         => 'string',    
-                'owner'         => 'int', 
+                'owner'         => 'int',
+                'replies'       => 'int',
+                'views'         => 'int', 
                 'created'       => 'string', 
                 'bot_generated' => 'int' 
             ],

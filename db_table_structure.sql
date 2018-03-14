@@ -24,6 +24,8 @@ CREATE TABLE Thread
     id            INT         NOT NULL AUTO_INCREMENT,
     owner         INT         NOT NULL,
     title         VARCHAR(40),
+    replies       INT         NOT NULL DEFAULT 0,
+    views         INT         NOT NULL DEFAULT 0,
     created       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     bot_generated TINYINT     NOT NULL DEFAULT 0,
     PRIMARY KEY(id),

@@ -17,18 +17,12 @@ class Login extends Validator
         'email'    => null,
         'username' => null,
         'password' => null,
-        'auth_method' => null
+        'auth_method' => 'username'
     ];
     
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
-
-    public function __construct($auth_method='username')
-    {
-        $this->setValue('auth_method', $auth_method);
-    }
-
     /**
      *  Validates email or username and password on the login page.
      *  Populates errors array with errors which can later be retrieved.

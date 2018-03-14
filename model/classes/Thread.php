@@ -17,6 +17,8 @@ class Thread extends Validator
         'id'            => null,
         'owner'         => null,
         'title'         => null,
+        'replies'       => 0,
+        'views'         => 0,
         'created'       => null,
         'bot_generated' => false,
         'root_post'     => null // not a column in database
@@ -30,7 +32,8 @@ class Thread extends Validator
     {
         $options = 
         [
-            'order_by' => 'created'
+            'order_by' => 'created',
+            'descending' => true
         ];
         
         $result = Database::SELECT_ALL('Thread', $options);
