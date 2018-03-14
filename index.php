@@ -193,7 +193,27 @@ $f3->route('GET /posts/@thread_id', function($f3, $params)
         return !is_numeric($token) || (int)$token < 1;
     });
 
-    $thread = (int) $params['thread_id'];
+    $threadId = (int) $params['thread_id'];
+
+    $posts = Post::getPosts($threadId);
+    $thread = Thread::getThread($threadId); 
+
+    if(is_array($posts)) // Success
+    {
+        if($thread instanceof Thread) // Success
+        {
+            $f3->set('thread', $thread);
+            $f3->set('posts', $posts);
+        }
+        else // Fail
+        {
+            $f3->set('fail_message', $thread);    
+        }
+    }
+    else // Fail
+    {
+        $f3->set('fail_message', $posts);
+    }
 
     echo Template::instance()->render('views/posts.html');
 });
