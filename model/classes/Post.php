@@ -57,6 +57,10 @@ class Post extends Validator
                 $returnValue[] = $post;
             }
         }
+        else if($result['num_rows'] == 0)
+        {
+            $returnValue = 'This thread doesn\'t exist';
+        }
         else
         {
             $returnValue = 'Something went wrong fetching posts';

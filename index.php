@@ -188,15 +188,16 @@ $f3->route('GET /posts/@thread_id', function($f3, $params)
         $f3->reroute('/login');
     }
 
+    
     errorIfTokenInvalid($f3, $params['thread_id'], function($token)
     {
         return !is_numeric($token) || (int)$token < 1;
     });
-
+    
     $threadId = (int) $params['thread_id'];
-
+    
     $posts = Post::getPosts($threadId);
-    $thread = Thread::getThread($threadId); 
+    $thread = Thread::getThread($threadId);
 
     if(is_array($posts)) // Success
     {

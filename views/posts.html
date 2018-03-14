@@ -23,7 +23,7 @@
 <form action="./views/posts.html">
 
     <div class="container">
-        <check if="{{ isset(@posts) }}">
+        <check if="{{ isset(@posts) && isset(@thread)}}">
 
             <true>
                 <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
@@ -42,6 +42,11 @@
                             <h5>{{ @post->displayValue('created') }}</h5>
                         </div>
                     </div>
+    
+                    <a href="{{ @BASE }}/new-post/
+                    {{ @thread->displayValue('id') }}/
+                    {{ @post->displayValue('id') }}" 
+                    class="btn btn-primary">Reply</a>
                 
                 </repeat>
             </true>
@@ -80,8 +85,6 @@
             </div>
         </div> -->
 
-        <br>
-        <a href="{{ @BASE }}/new-post" class="btn btn-primary">Reply</a>
     </div>
 </form>
 

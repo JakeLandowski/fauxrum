@@ -56,9 +56,13 @@ class Thread extends Validator
                 $returnValue[] = $thread;
             }
         }
+        else if($result['num_rows'] == 0)
+        {
+            $returnValue = 'This thread doesn\'t exist';
+        }
         else
         {
-            $returnValue = 'Something went wrong fetching threads';
+            $returnValue = 'Something went wrong fetching thread';
         }
 
         return $returnValue;
