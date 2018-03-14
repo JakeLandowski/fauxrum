@@ -29,6 +29,7 @@
             <label for="title">Thread Title</label>
             <p class="error-text m-0">
                 {{ isset(@errors['title']) ? @errors['title'] : ''}}
+                {{ isset(@fail_message) ? @fail_message : ''}}
             </p>
             <input type="text" 
                 class="form-control {{ isset(@errors['title']) ? 'error' : ''}}" 

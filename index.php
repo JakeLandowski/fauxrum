@@ -37,6 +37,16 @@ function loggedIn()
     return isset($_SESSION['User']);
 }
 
+function errorIfTokenInvalid($f3, $token, $tokenChecker)
+{
+    if($tokenChecker($token)) $f3->error(404);
+}
+    // Custom 404 Page
+// $f3->set('ONERROR', function($f3)
+// {
+//     echo Template::instance()->render('views/404.html');
+// });
+
   //================================================//
  //                    ROUTES                      //
 //================================================//
@@ -156,16 +166,34 @@ $f3->route('GET /threads', function($f3)
         $f3->reroute('/login');
     }
 
+    $threads = Thread::getThreads(); 
+
+    if(is_array($threads)) // Success
+    {
+        $f3->set('threads', $threads);
+    }
+    else // Fail
+    {
+        $f3->set('fail_message', $threads);
+    }
+
     echo Template::instance()->render('views/threads.html');
 });
 
     // POSTS ROUTE
-$f3->route('GET /posts', function($f3)
+$f3->route('GET /posts/@thread_id', function($f3, $params)
 {
     if(!loggedIn())
     {
         $f3->reroute('/login');
     }
+
+    errorIfTokenInvalid($f3, $params['thread_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+
+    $thread = (int) $params['thread_id'];
 
     echo Template::instance()->render('views/posts.html');
 });
@@ -191,13 +219,13 @@ $f3->route('GET|POST /new-thread', function($f3)
             
             if($threadResult instanceof Thread)
             {
-                //success, show the thread
-                $f3->reroute('/posts');
+                $threadId = $thread->displayValue('id');
+                $f3->reroute("/posts/$threadId");
             }
             else
             {
-                // failed insert error message to print to user
-                $f3->set('fail_message', $registerResult);
+                    // failed insert, error message to print to user
+                $f3->set('fail_message', $threadResult);
             }
         }
     
@@ -206,13 +234,67 @@ $f3->route('GET|POST /new-thread', function($f3)
             'title'   => $thread->displayValue('title'),
             'content' => $thread->getValue('root_post')->displayValue('content')
         ]);
-
-
-
-
     }
     
-    echo Template::instance()->render('views/create_thread.html');
+    echo Template::instance()->render('views/new_thread.html');
+});
+
+    // CREATE POST ROUTE
+$f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
+{
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+    
+    errorIfTokenInvalid($f3, $params['thread_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+
+    errorIfTokenInvalid($f3, $params['post_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+
+    $replyingInThreadId = (int) $params['thread_id'];
+    $repliedToPostId    = (int) $params['post_id'];
+
+    $f3->set('thread_id', $replyingInThreadId);
+    $f3->set('post_id', $repliedToPostId);
+
+    if(isPost())
+    {
+        $user = $_SESSION['User'];
+        $post = new Post;
+        $post->setValue('owner', $user->getValue('id'));
+        $post->setValue('thread', $replyingInThreadId);
+        
+        $post->validate();
+
+        if(count($post->getErrors()) == 0)
+        {
+            $postResult = $post->createPost();
+            
+            if($postResult instanceof Post)
+            {
+                    // success, show the post
+                $f3->reroute("/posts/$replyingInThreadId"); 
+            }
+            else
+            {
+                    // failed insert, error message to print to user
+                $f3->set('fail_message', $postResult);
+            }
+        }
+    
+        $f3->mset([
+            'errors'  => $post->getErrors(),
+            'content' => $post->displayValue('content'),
+        ]);
+    }
+    
+    echo Template::instance()->render('views/new_post.html');
 });
 
   //================================================//

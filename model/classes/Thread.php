@@ -17,25 +17,49 @@ class Thread extends Validator
         'id'            => null,
         'owner'         => null,
         'title'         => null,
+        'created'       => null,
         'bot_generated' => false,
         'root_post'     => null // not a column in database
     ];
 
   //=========================================================//
- //                      CONSTRUCTORS                       //
-//=========================================================//
-
-    public function __construct($id=null, $title=null, $root_post=null, $bot_generated=false)
-    {
-        $this->setValue('id', $id);
-        $this->setValue('title', $title);
-        $this->setValue('root_post', $root_post);
-        $this->setValue('bot_generated', $bot_generated);
-    }
-
-  //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
+
+    public static function getThreads()
+    {
+        $options = 
+        [
+            'order_by' => 'created'
+        ];
+        
+        $result = Database::SELECT_ALL('Thread', $options);
+
+        $returnValue = '';
+
+        if($result['success'] && $result['num_rows'] > 0)
+        {
+            $rows = $result['rows'];
+            $returnValue = [];
+            
+            foreach($rows as $row)
+            {
+                $thread = new Thread;
+                $thread->setValue('id',            $row['id']);
+                $thread->setValue('owner',         $row['owner']);
+                $thread->setValue('title',         $row['title']);
+                $thread->setValue('created',       $row['created']);
+                $thread->setValue('bot_generated', $row['bot_generated']);
+                $returnValue[] = $thread;
+            }
+        }
+        else
+        {
+            $returnValue = 'Something went wrong fetching threads';
+        }
+
+        return $returnValue;
+    }
 
     /**
      *  Validates the creation of a thread on new-thread page..

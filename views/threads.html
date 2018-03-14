@@ -16,6 +16,15 @@
     {
         background-image: url("./image/ya.jpg");
     }
+    .error
+    {
+        border: 1px solid red;
+    }
+
+    .error-text
+    {
+        color: red;
+    }
 </style>
 <!-- <nav class="navbar d-flex justify-content-end"> -->
 <nav class="container d-flex justify-content-end">
@@ -27,9 +36,41 @@
 <div class="pl-5">
     <a href="{{ @BASE }}/new-thread" class="btn btn-primary ml-5">Create New Thread</a>
 </div>
-    <br>
 
     <div class="container">
+        <check if="{{ isset(@threads) }}">
+
+            <true>
+                <repeat group="{{ @threads }}" key="{{ @i }}" value="{{ $thread }}">
+                
+                    <div class="row mr-3">
+                        <div class="col-2">
+                            <h5>{{ @thread->displayValue('owner') }}</h5>
+                        </div>
+                        <div class="col-6">
+                            <h5>{{ @thread->displayValue('title') }}</h5>
+                        </div>
+                        <div class="col-2">
+                            <h5>id: {{ @thread->displayValue('id') }}</h5>
+                        </div>
+                        <div class="col-2">
+                            <h5>{{ @thread->displayValue('created') }}</h5>
+                        </div>
+                    </div>
+                
+                </repeat>
+            </true>
+
+            <false>
+                <p class="error-text m-0">
+                    {{ isset(@fail_message) ? @fail_message : ''}}
+                </p>
+            </false>
+
+        </check>
+    </div>
+    
+    <!-- <div class="container">
         <div class="row mr-3">
             <div class="col-2">
                 <h5>Khan1</h5>
@@ -100,7 +141,7 @@
                 <h5>1:00pm</h5>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
