@@ -18,25 +18,11 @@ class Post extends Validator
         'thread'        => null,
         'owner'         => null,
         'content'       => null,
+        'created'       => null,
         'is_root_post'  => false,
         'bot_generated' => false
     ];
-
-  //=========================================================//
- //                      CONSTRUCTORS                       //
-//=========================================================//
-
-    public function __construct($id=null, $thread=null, $owner=null, 
-                                $content=null, $root_post=false, $bot_generated=false)
-    {
-        $this->setValue('id', $id);
-        $this->setValue('thread', $thread);
-        $this->setValue('owner', $owner);
-        $this->setValue('content', $content);
-        $this->setValue('root_post', $root_post);
-        $this->setValue('bot_generated', $bot_generated);
-    }
-
+    
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
@@ -70,24 +56,38 @@ class Post extends Validator
             $content = $this->getValue('content');
             $is_root_post  = $this->getValue('is_root_post')  ? 1 : 0;
             $bot_generated = $this->getValue('bot_generated') ? 1 : 0;
-             
-            $result = Database::INSERT('Post', 
+
+                // Search for this Thread's existence before attempting to INSERT Post
+            $whereThisThread = (new Condition('Thread'))->col('id')->equals($thread);
+            $threadResult = Database::SELECT('id', 'Thread', ['condition' => $whereThisThread]);
+            
+                // This Thread exists, commence Post Insertion
+            if($threadResult['success'] && $threadResult['num_rows'] > 0)
+            {
+                $result = Database::INSERT('Post', 
                 ['thread', 'owner', 'content', 'is_root_post', 'bot_generated'], 
                 [$thread,  $owner,  $content,  $is_root_post,  $bot_generated]);
             
-            $returnValue = '';
+                $returnValue = '';
 
-                // UNKNOWN ISSUE
-            if(!$result['success'] || $result['num_rows'] == 0 || isset($result['duplicate']))
-            {
-                $returnValue = 'Sorry, something went wrong with post creation';
+                    // UNKNOWN ISSUE
+                if(!$result['success'] || $result['num_rows'] == 0 || isset($result['duplicate']))
+                {
+                    $returnValue = 'Sorry, something went wrong with post creation';
+                }
+                else if($result['id']) // SUCCESSFUL POST CREATION
+                {
+                    $this->setValue('id', $result['id']);
+                    $returnValue = $this;
+                }
+                
             }
-            else if($result['id']) // SUCCESSFUL POST CREATION
+            else // FAILED, THIS THREAD DOESNT EXIST
             {
-                $this->setValue('id', $result['id']);
-                $returnValue = $this;
+                $returnValue = 'Sorry but the thread you\'re 
+                                trying to reply in doesn\'t exist';
             }
-
+            
             return $returnValue; // Return This Post Object or Error Message
         }
         else // If whoever uses this class forgets to check for errors

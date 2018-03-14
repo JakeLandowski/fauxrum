@@ -1,10 +1,10 @@
 <?php
 /**
- *   
+ *  Class to represent the User.
  */
 
 /**
- *  
+ *  Class to represent the User.
  *  
  *  @author Jacob Landowski
  */
