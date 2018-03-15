@@ -39,7 +39,10 @@ class Condition
     /**
      *  Starts a Condition object and its method chaining.
      * 
-     *  Usage: (new Condition)->col( string $column )->operator( string $value ) 
+     *  Usage: $condition = (new Condition( string $table ))->col( string $column )->operator( mixed $value );
+     *         ~ or ~
+     *         $condition = new Condition( string $table); 
+     *         $condition->col( string $column )->equals( mixed $value );
      * 
      *  @param string $table The string of a table to create a condition for,
      *                       this is used to automatically set the correct

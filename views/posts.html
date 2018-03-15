@@ -23,6 +23,45 @@
 <form action="./views/posts.html">
 
     <div class="container">
+        <check if="{{ isset(@posts) && isset(@thread)}}">
+
+            <true>
+                <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
+                
+                    <div class="row mr-3">
+                        <div class="col-2">
+                            <h5>{{ @post->displayValue('owner') }}</h5>
+                        </div>
+                        <div class="col-6">
+                            <h5>{{ @post->displayValue('content') }}</h5>
+                        </div>
+                        <div class="col-2">
+                            <h5>id: {{ @post->displayValue('id') }}</h5>
+                        </div>
+                        <div class="col-2">
+                            <h5>{{ @post->displayValue('created') }}</h5>
+                        </div>
+                    </div>
+    
+                    <a href="{{ @BASE }}/new-post/
+                    {{ @thread->displayValue('id') }}/
+                    {{ @post->displayValue('id') }}" 
+                    class="btn btn-primary">Reply</a>
+                
+                </repeat>
+            </true>
+
+            <false>
+                <p class="error-text m-0">
+                    {{ isset(@fail_message) ? @fail_message : '' }}
+                </p>
+            </false>
+
+        </check>
+    </div>
+    
+<!-- 
+    <div class="container">
         <div class="row mr-3">
             <div class="col-2">
                 <h5>Khan1</h5>
@@ -44,10 +83,8 @@
             <div class="col-10">
                 <h6>Hi! Woodland Zoo is in seattle. All the animals are sleeping but it's cool.</h6>
             </div>
-        </div>
+        </div> -->
 
-        <br>
-        <button type="button" class="btn btn-primary">Reply</button>
     </div>
 </form>
 

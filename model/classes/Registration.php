@@ -39,6 +39,8 @@ class Registration extends Validator
         $missingPassword = 'Please enter a password';
         $invalidPassword = 'Password must be 8 or more characters, 
                             and atleast 1 uppercase, 1 lowercase, 1 digit';
+        $missingRepeatPassword = 'Please enter your password again';
+        $invalidRepeatPassword = 'Repeated password must match the original';
 
         $this->_validateField('email', $missingEmail, $invalidEmail,
         function($value)
@@ -48,7 +50,7 @@ class Registration extends Validator
                 $whereThisEmail = (new Condition('User'))->col('email')->equals($value);
                 $result = Database::SELECT('email', 'User', ['condition' => $whereThisEmail]);
 
-                if($result['num_rows'] > 0)
+                if($result['success'] && $result['num_rows'] > 0)
                 {
                     $this->_errors['email'] = 'This email is already taken';
                 }
@@ -67,7 +69,7 @@ class Registration extends Validator
                 $whereThisUserName = (new Condition('User'))->col('username')->equals($value);
                 $result = Database::SELECT('email', 'User', ['condition' => $whereThisUserName]);
 
-                if($result['num_rows'] > 0)
+                if($result['success'] && $result['num_rows'] > 0)
                 {
                     $this->_errors['username'] = 'This username is already taken';
                 }
@@ -85,6 +87,13 @@ class Registration extends Validator
                    preg_match('/[a-z]/', $value) && 
                    preg_match('/[0-9]/', $value) &&
                    strlen($value) >= 8;
+        });
+
+        $this->_validateField('repeat_password', $missingRepeatPassword, $invalidRepeatPassword, 
+        function($value)
+        {
+            $password = $this->getValue('password');
+            return isset($password) && $value == $password;
         });
     }
 
@@ -106,7 +115,7 @@ class Registration extends Validator
             $password = password_hash($this->getValue('password'), PASSWORD_DEFAULT); 
             $result   = Database::INSERT('User', ['email', 'username', 'password'], 
                                                  [$email,  $username,  $password]);
-            $returnValue;
+            $returnValue = '';
 
             if(isset($result['duplicate']))
             {
