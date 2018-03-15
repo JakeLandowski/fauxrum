@@ -21,7 +21,6 @@ class Thread extends Validator
         'views'         => 0,
         'created'       => null,
         'bot_generated' => false,
-        'parsed'        => false,
         'root_post'     => null // not a column in database
     ];
 
@@ -74,6 +73,8 @@ class Thread extends Validator
                 $thread->setValue('owner',         $row['owner']);
                 $thread->setValue('title',         $row['title']);
                 $thread->setValue('created',       $row['created']);
+                $thread->setValue('views',         $row['views']);
+                $thread->setValue('replies',       $row['replies']);
                 $thread->setValue('bot_generated', $row['bot_generated']);
                 $returnValue[] = $thread;
             }
@@ -109,6 +110,8 @@ class Thread extends Validator
             $thread->setValue('title',         $result['row']['title']);
             $thread->setValue('owner',         $result['row']['owner']);
             $thread->setValue('created',       $result['row']['created']);
+            $thread->setValue('views',         $result['row']['views']);
+            $thread->setValue('replies',       $result['row']['replies']);
             $thread->setValue('bot_generated', $result['row']['bot_generated']);
             $returnValue = $thread;
         }
