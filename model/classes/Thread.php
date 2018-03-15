@@ -58,7 +58,7 @@ class Thread extends Validator
         }
         else if($result['num_rows'] == 0)
         {
-            $returnValue = 'This thread doesn\'t exist';
+            $returnValue = 'There are no threads';
         }
         else
         {
@@ -89,6 +89,10 @@ class Thread extends Validator
             $thread->setValue('created',       $result['row']['created']);
             $thread->setValue('bot_generated', $result['row']['bot_generated']);
             $returnValue = $thread;
+        }
+        else if($result['num_rows'] == 0)
+        {
+            $returnValue = 'This thread doesn\'t exist';
         }
         else
         {
