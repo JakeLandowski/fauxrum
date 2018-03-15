@@ -29,9 +29,25 @@ class Thread extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
-    public function incrementViews()
+    public function incrementViews($userId)
     {
-
+        $threadId = $this->getValue('id');
+        $whereThisThreadAndUser = (new Condition('Thread_User_Views'));
+        $whereThisThreadAndUser->col('thread')->equals($threadId)->and()
+                               ->col('user')->equals($userId);
+        
+        $result = Database::INSERT('Thread_User_Views', ['thread', 'user'], 
+                                                        [$threadId, $userId]);
+        
+        if($result['success'] && !isset($result['duplicate'])) // NOT VIEWED
+        {
+            $views = $this->getValue('views');
+            $views++; 
+            $this->setValue('views', $views);
+            
+            $whereThisThread = (new Condition('Thread'))->col('id')->equals($threadId);
+            Database::UPDATE('Thread', 'views', $views, $whereThisThread);
+        }
     }
 
     public static function getThreads()
