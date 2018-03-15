@@ -36,6 +36,12 @@ abstract class Database
                 'bot_generated' => 'int',
                 'parsed'        => 'int'
             ],
+        'Thread_User_Views' =>
+            [
+                'id'     => 'int', 
+                'thread' => 'int',
+                'user'   => 'int'
+            ],
         'Post' => 
             [ 
                 'id'            => 'int', 
