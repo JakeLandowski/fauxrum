@@ -20,7 +20,6 @@ class Post extends Validator
         'content'       => null,
         'created'       => null,
         'is_root_post'  => false,
-        'parsed'        => false,
         'bot_generated' => false
     ];
     
