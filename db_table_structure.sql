@@ -35,6 +35,17 @@ CREATE TABLE Thread
 
 ) ENGINE=InnoDB;
 
+CREATE TABLE Thread_User_Views
+(
+    id     INT NOT NULL AUTO_INCREMENT,
+    thread INT NOT NULL,
+    user   INT NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(thread) REFERENCES Thread(id) ON DELETE CASCADE,
+    FOREIGN KEY(user)   REFERENCES User(id)   ON DELETE CASCADE,
+    UNIQUE(thread, user)
+) ENGINE=InnoDB;
+
 CREATE TABLE Post
 (
     id            INT       NOT NULL AUTO_INCREMENT,
@@ -46,7 +57,7 @@ CREATE TABLE Post
     parsed        TINYINT   NOT NULL DEFAULT 0,
     is_root_post  TINYINT   NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
-    FOREIGN KEY(thread) REFERENCES Thread(id),
+    FOREIGN KEY(thread) REFERENCES Thread(id) ON DELETE CASCADE,
     FOREIGN KEY(owner)  REFERENCES User(id)
 
 ) ENGINE=InnoDB;

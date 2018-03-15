@@ -28,6 +28,27 @@ class Thread extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function incrementViews($userId)
+    {
+        $threadId = $this->getValue('id');
+        $whereThisThreadAndUser = (new Condition('Thread_User_Views'));
+        $whereThisThreadAndUser->col('thread')->equals($threadId)->and()
+                               ->col('user')->equals($userId);
+        
+        $result = Database::INSERT('Thread_User_Views', ['thread', 'user'], 
+                                                        [$threadId, $userId]);
+        
+        if($result['success'] && !isset($result['duplicate'])) // NOT VIEWED
+        {
+            $views = $this->getValue('views');
+            $views++; 
+            $this->setValue('views', $views);
+            
+            $whereThisThread = (new Condition('Thread'))->col('id')->equals($threadId);
+            Database::UPDATE('Thread', 'views', $views, $whereThisThread);
+        }
+    }
+
     public static function getThreads()
     {
         $options = 
@@ -52,13 +73,15 @@ class Thread extends Validator
                 $thread->setValue('owner',         $row['owner']);
                 $thread->setValue('title',         $row['title']);
                 $thread->setValue('created',       $row['created']);
+                $thread->setValue('views',         $row['views']);
+                $thread->setValue('replies',       $row['replies']);
                 $thread->setValue('bot_generated', $row['bot_generated']);
                 $returnValue[] = $thread;
             }
         }
         else if($result['num_rows'] == 0)
         {
-            $returnValue = 'This thread doesn\'t exist';
+            $returnValue = 'There are no threads';
         }
         else
         {
@@ -87,8 +110,14 @@ class Thread extends Validator
             $thread->setValue('title',         $result['row']['title']);
             $thread->setValue('owner',         $result['row']['owner']);
             $thread->setValue('created',       $result['row']['created']);
+            $thread->setValue('views',         $result['row']['views']);
+            $thread->setValue('replies',       $result['row']['replies']);
             $thread->setValue('bot_generated', $result['row']['bot_generated']);
             $returnValue = $thread;
+        }
+        else if($result['num_rows'] == 0)
+        {
+            $returnValue = 'This thread doesn\'t exist';
         }
         else
         {
