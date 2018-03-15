@@ -167,9 +167,10 @@ $f3->route('GET /threads', function($f3)
     }
 
     $threads = Thread::getThreads(); 
-
+    
     if(is_array($threads)) // Success
     {
+        $f3->set('user_id', $_SESSION['User']->displayValue('id'));
         $f3->set('threads', $threads);
     }
     else // Fail
@@ -188,21 +189,23 @@ $f3->route('GET /posts/@thread_id', function($f3, $params)
         $f3->reroute('/login');
     }
 
-    
     errorIfTokenInvalid($f3, $params['thread_id'], function($token)
     {
         return !is_numeric($token) || (int)$token < 1;
     });
     
     $threadId = (int) $params['thread_id'];
+    $userId   = $_SESSION['User']->displayValue('id');
     
     $posts = Post::getPosts($threadId);
     $thread = Thread::getThread($threadId);
-
+    
     if(is_array($posts)) // Success
     {
         if($thread instanceof Thread) // Success
         {
+            $thread->incrementViews($userId);
+            $f3->set('user_id', $userId);
             $f3->set('thread', $thread);
             $f3->set('posts', $posts);
         }
@@ -299,6 +302,12 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
             
             if($postResult instanceof Post)
             {
+                $thread = Thread::getThread($replyingInThreadId);
+
+                if($thread instanceof Thread) // Success
+                {
+                    $thread->incrementReplies();
+                }
                     // success, show the post
                 $f3->reroute("/posts/$replyingInThreadId"); 
             }
@@ -316,6 +325,42 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
     }
     
     echo Template::instance()->render('views/new_post.html');
+});
+
+    // EDIT THREAD ROUTE
+$f3->route('GET /edit-thread/@thread_id', function($f3, $params)
+{
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+
+    errorIfTokenInvalid($f3, $params['thread_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+    
+    $userId = $_SESSION['User']->displayValue('id');
+    $threadId = (int) $params['thread_id'];
+    $thread = Thread::getThread($threadId);
+    
+    if($thread instanceof Thread) // Success
+    {
+        if($userId == $thread->getValue('owner'))
+        {
+            $f3->set('thread', $thread);
+        }
+        else
+        {
+            $f3->set('fail_message', 'You are not the owner of this thread');    
+        }
+    }
+    else // Fail
+    {
+        $f3->set('fail_message', $thread);    
+    }
+
+    echo Template::instance()->render('views/edit_thread.html');
 });
 
   //================================================//

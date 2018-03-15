@@ -28,6 +28,18 @@ class Thread extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function incrementReplies()
+    {
+        $threadId = $this->getValue('id');
+        
+        $replies = $this->getValue('replies');
+        $replies++; 
+        $this->setValue('replies', $replies);
+        
+        $whereThisThread = (new Condition('Thread'))->col('id')->equals($threadId);
+        Database::UPDATE('Thread', 'replies', $replies, $whereThisThread);
+    }
+
     public function incrementViews($userId)
     {
         $threadId = $this->getValue('id');
