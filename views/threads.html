@@ -47,11 +47,14 @@
                         <div class="col-2">
                             <h5>{{ @thread->displayValue('owner') }}</h5>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <h5>{{ @thread->displayValue('title') }}</h5>
                         </div>
                         <div class="col-2">
-                            <h5>id: {{ @thread->displayValue('id') }}</h5>
+                            <h5>Views: {{ @thread->displayValue('views') }}</h5>
+                        </div>
+                        <div class="col-2">
+                            <h5>Replies: {{ @thread->displayValue('replies') }}</h5>
                         </div>
                         <div class="col-2">
                             <h5>{{ @thread->displayValue('created') }}</h5>
