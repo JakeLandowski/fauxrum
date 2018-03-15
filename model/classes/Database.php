@@ -33,7 +33,8 @@ abstract class Database
                 'replies'       => 'int',
                 'views'         => 'int', 
                 'created'       => 'string', 
-                'bot_generated' => 'int' 
+                'bot_generated' => 'int',
+                'parsed'        => 'int'
             ],
         'Post' => 
             [ 
@@ -41,8 +42,9 @@ abstract class Database
                 'thread'        => 'int',   
                 'owner'         => 'int', 
                 'created'       => 'string', 
-                'bot_generated' => 'int', 
                 'content'       => 'string', 
+                'bot_generated' => 'int', 
+                'parsed'        => 'int',
                 'is_root_post'  => 'int' 
             ],
         'TextMap' =>
