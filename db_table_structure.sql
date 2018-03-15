@@ -57,7 +57,7 @@ CREATE TABLE Post
     parsed        TINYINT   NOT NULL DEFAULT 0,
     is_root_post  TINYINT   NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
-    FOREIGN KEY(thread) REFERENCES Thread(id),
+    FOREIGN KEY(thread) REFERENCES Thread(id) ON DELETE CASCADE,
     FOREIGN KEY(owner)  REFERENCES User(id)
 
 ) ENGINE=InnoDB;
