@@ -24,63 +24,128 @@
     {
         color: red;
     }
+
+    .flex {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        height: 100vh;
+    }
+
+    .header {
+        display: flex;
+        width: 100vw;
+        background-color: black;
+        color: white;
+
+        height: 5vh;
+    }
+
+    .header h4 {
+        margin: 0;
+        align-self: center;
+    }
+
+    .header p {
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+        align-self: center;
+    }
+
+    .content {
+        display: flex;
+
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        flex-grow: 1;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        background-color: black;
+        color: white;
+    }
+
+    .footer p {
+        margin: 0;
+    }
 </style>
 
-<div class="container">
-    <div class="text-center row mb-4">
-        <h2 class="mx-auto">About</h2>
-        <p>
-            Welcome! This is your online forum in which you can choose your own appropriate topic and then interact with online communities. You will also be responded by machine at times. In order to participate, you need to create your own free account.
-        </p>
+<div class="container flex">
+    <div class="header">
+        <h4>Fauxrum</h4>
+        <p>Welcome to Fauxrum</p>
+        <button>Login</button>
     </div>
-    <form class="row p-3" action="#" method="POST">
-            
-        <div class="form-group col-12 col-md-8 offset-md-2">
-            <label for="username">Username</label>
-            <input type="text" 
-                   class="form-control {{ isset(@errors['username']) ? 'error' : ''}}" 
-                   id="username"
-                   name="username" 
-                   placeholder="ex: McDerpington5"
-                   value="{{ isset(@username) ? @username : '' }}" 
-            />
-            <p class="error-text text-center m-0">
-                {{ isset(@errors['username']) ? @errors['username'] : ''}}
-            </p>
-        </div>
 
-        <div class="form-group col-12 col-md-8 offset-md-2">
-            <label for="password">Password</label>
-            <input type="password" 
-                class="form-control {{ isset(@errors['password']) ? 'error' : '' }}" 
-                id="password"
-                name="password" 
-                placeholder="8 or more characters, 1 upper, 1 lower, 1 digit" 
-            />
-            <p class="error-text text-center m-0">
-                {{ isset(@errors['password']) ? @errors['password'] : '' }}
+    <div class="content">
+        <div class="text-center row mb-4">
+            <h2 class="mx-auto">About Fauxrum</h2>
+            <p class="text-center">
+                This is your online forum in which you can choose your own appropriate topic and then interact with online community. You will also be responded by machine at times. In order to participate, you need to create your own free account.
             </p>
         </div>
-<!-- 
-        <div class="custom-control custom-checkbox col-12 col-md-8 offset-md-2">
-            <div class="form-check">
-                <input class="custom-control-input" type="checkbox" id="remember">
-                <label class="custom-control-label" for="remember">Remember Me</label>
+        <form class="row p-3" action="#" method="POST">
+
+            <div class="form-group col-12 col-md-8 offset-md-2">
+                <label for="username">Username</label>
+                <input type="text"
+                       class="form-control {{ isset(@errors['username']) ? 'error' : ''}}"
+                       id="username"
+                       name="username"
+                       placeholder="ex: McDerpington5"
+                       value="{{ isset(@username) ? @username : '' }}"
+                />
+                <p class="error-text text-center m-0">
+                    {{ isset(@errors['username']) ? @errors['username'] : ''}}
+                </p>
             </div>
-        </div> -->
 
-        <div class="col-12 col-md-8 offset-md-2">
-            <p class="error-text text-center">
-                {{ isset(@fail_message) ? @fail_message : ''}}
-            </p>
-        </div>
-    
-        <div class="form-group col-12 col-md-8 offset-md-2 d-flex justify-content-end">
-            <a href="{{ @BASE }}/register" class="btn mr-auto border text-muted">New? Register Here</a>
-            <input type="submit" value="Login" class="btn btn-primary" />
-        </div>
+            <div class="form-group col-12 col-md-8 offset-md-2">
+                <label for="password">Password</label>
+                <input type="password"
+                       class="form-control {{ isset(@errors['password']) ? 'error' : '' }}"
+                       id="password"
+                       name="password"
+                       placeholder="8 or more characters, 1 upper, 1 lower, 1 digit"
+                />
+                <p class="error-text text-center m-0">
+                    {{ isset(@errors['password']) ? @errors['password'] : '' }}
+                </p>
+            </div>
+            <!--
+                    <div class="custom-control custom-checkbox col-12 col-md-8 offset-md-2">
+                        <div class="form-check">
+                            <input class="custom-control-input" type="checkbox" id="remember">
+                            <label class="custom-control-label" for="remember">Remember Me</label>
+                        </div>
+                    </div> -->
 
-    </form>
+            <div class="col-12 col-md-8 offset-md-2">
+                <p class="error-text text-center">
+                    {{ isset(@fail_message) ? @fail_message : ''}}
+                </p>
+            </div>
+
+            <div class="form-group col-12 col-md-8 offset-md-2 d-flex justify-content-end">
+                <a href="{{ @BASE }}/register" class="btn mr-auto border text-muted">New? Register Here</a>
+                <input type="submit" value="Login" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+
+    <div class="footer">
+        <p>Created by: Jake and Shahbaz as part of the Green River Software Development Bachelors degree</p>
+    </div>
 </div>
 
 
