@@ -21,12 +21,18 @@ class Thread extends Validator
         'views'         => 0,
         'created'       => null,
         'bot_generated' => false,
+        'parsed'        => false,
         'root_post'     => null // not a column in database
     ];
 
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
+
+    public function incrementViews()
+    {
+
+    }
 
     public static function getThreads()
     {
