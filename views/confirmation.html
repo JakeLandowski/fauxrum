@@ -21,7 +21,6 @@
         color: red;
     }
 </style>
-<h2>Edit Post</h2>
 
 <form method="POST" action="{{ @BASE }}/{{ @route }}">
 
@@ -30,7 +29,7 @@
     </div>
 
     <input type="submit" value="Confirm" class="btn btn-primary" />
-    <a href="{{ @return_route }}" class="btn btn-warning">Return</a>
+    <a href="{{ @BASE }}/{{ @return_route }}" class="btn btn-warning">Return</a>
 
 </form>
 

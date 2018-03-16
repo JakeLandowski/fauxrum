@@ -434,6 +434,58 @@ $f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
     echo Template::instance()->render('views/edit_post.html');
 });
 
+    // DELETE POST ROUTE
+$f3->route('GET|POST /delete-post/@post_id', function($f3, $params)
+{
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+
+    errorIfTokenInvalid($f3, $params['post_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+
+    $returnRoute = "/posts/$threadId";
+    $userId = $_SESSION['User']->displayValue('id');
+    $postId   = (int) $params['post_id'];
+    $post     = Post::getPost($postId); 
+    
+    if($post instanceof Post) // Success 
+    {
+        if($userId == $post->getValue('owner'))
+        {
+            $f3->set('post', $post);
+            
+            if(isPost())
+            {
+                if($post->deletePost())
+                {
+                    $f3->reroute($returnRoute);
+                }
+            }
+        }
+        else
+        {
+            $f3->set('fail_message', 'You are not the owner of this post');    
+        }
+    }
+    else // Fail
+    {
+        $f3->set('fail_message', $post);    
+    }
+
+    $f3->mset([
+        'route'        => "/delete-post/$postId", 
+        'return_route' => $returnRoute,
+        'message'      => 'Are you sure you want to delete this post?',
+        // 'post'         => $post
+    ]);
+
+    echo Template::instance()->render('views/confirmation.html');
+});
+
   //================================================//
  //                    TESTING                     //
 //================================================//

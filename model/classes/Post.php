@@ -27,6 +27,14 @@ class Post extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function deletePost()
+    {
+        $postId = $this->getValue('id');
+        $whereThisPost = (new Condition('Post'))->col('id')->equals($postId);
+        $result = Database::DELETE('Post', $whereThisPost);
+        return $result['success'] && $result['num_rows'] > 0;
+    }
+
     public function editContent($newContent)
     {
         $postId = $this->getValue('id');
