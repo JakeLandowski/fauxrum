@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thread</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+</head>
+<body>
+<style>
+    h2
+    {
+        text-align: center;
+    }
+    body
+    {
+        background-image: url("./image/ya.jpg");
+    }
+</style>
+
+<br>
+<h2>Statistics</h2>
+<br>
+<form action="./views/profile.html">
+
+    <div class="container">
+        <div class="row mr-3">
+
+            <div class="row mr-3">
+                <div class="col-12">
+                    <h5><a href="/328/fauxrum">Find all posts by jake123</a></h5> <!--This should be hyperlink which will show all thread posted by author    -->
+                </div>
+
+                <div class="col-12">
+                    <h5><a href="/328/fauxrum">Find all threads by jake123</a></h5> <!--This should be hyperlink which will show all thread posted by author    -->
+                </div>
+
+            <div class="col-10">
+                <h5>Total number of posts:</h5>
+            </div>
+            <div class="col-2">
+                <h5>4</h5>
+        </div>
+
+
+
+
+    </div>
+</form>
+
+<script>
+    $('#myTab a').on('click', function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+    })
+
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</body>
+</html>
