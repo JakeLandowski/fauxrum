@@ -328,7 +328,7 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
 });
 
     // EDIT THREAD ROUTE
-$f3->route('GET /edit-thread/@thread_id', function($f3, $params)
+$f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
 {
     if(!loggedIn())
     {
@@ -339,7 +339,7 @@ $f3->route('GET /edit-thread/@thread_id', function($f3, $params)
     {
         return !is_numeric($token) || (int)$token < 1;
     });
-    
+
     $userId = $_SESSION['User']->displayValue('id');
     $threadId = (int) $params['thread_id'];
     $thread = Thread::getThread($threadId);
@@ -349,6 +349,23 @@ $f3->route('GET /edit-thread/@thread_id', function($f3, $params)
         if($userId == $thread->getValue('owner'))
         {
             $f3->set('thread', $thread);
+            
+            if(isPost())
+            {
+                $newThread = new Thread;
+                $newThread->validateTitle();
+                
+                if(count($newThread->getErrors()) == 0)
+                {
+                    $thread->editTitle($newThread->getValue('title'));
+                    $f3->reroute("/posts/$threadId");
+                }
+                else 
+                {
+                    $f3->set('errors', $newThread->getErrors());
+                    $f3->set('title',  $newThread->displayValue('title'));
+                }
+            }
         }
         else
         {
@@ -362,6 +379,7 @@ $f3->route('GET /edit-thread/@thread_id', function($f3, $params)
 
     echo Template::instance()->render('views/edit_thread.html');
 });
+
 
   //================================================//
  //                    TESTING                     //

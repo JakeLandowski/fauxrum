@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Thread</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+</head>
+<body>
+<style>
+    h2
+    {
+        text-align: center;
+    }
+    body
+    {
+        background-image: url("./image/ya.jpg");
+    }
+    .error
+    {
+        border: 1px solid red;
+    }
+    .error-text
+    {
+        color: red;
+    }
+</style>
+
+<check if="{{ isset(@thread) }}">   
+    <true>
+        
+        <form method="POST" action="{{ @BASE }}/edit-thread/{{ @thread->displayValue('id') }}">
+            <div class="container">
+                <h1 class="text-center">Current Title: {{ @thread->displayValue('title') }}</h1>
+                <label for="title">New Title</label>
+                <p class="error-text m-0">
+                    {{ isset(@errors['title']) ? @errors['title'] : ''}}
+                </p>
+                <input type="text" 
+                       class="form-control {{ isset(@errors['title']) ? 'error' : ''}}" 
+                       id="title"
+                       name="title" 
+                       placeholder="ex: I like kittens"
+                       value="{{ isset(@title) ? @title : '' }}" 
+                />
+                <div class="form-check row">
+                    <input type="submit" value="Edit"  class="btn btn-primary"/>
+                </div> 
+            </div>
+        </form>
+
+    </true>
+</check>
+<p class="error-text m-0">
+    {{ isset(@fail_message) ? @fail_message : '' }}
+</p>
+
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</body>
+</html>

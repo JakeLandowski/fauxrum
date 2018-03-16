@@ -28,6 +28,14 @@ class Thread extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function editTitle($newTitle)
+    {
+        $threadId = $this->getValue('id');
+        $whereThisThread = (new Condition('Thread'))->col('id')->equals($threadId);
+        Database::UPDATE('Thread', 'title', $newTitle, $whereThisThread); 
+        $this->setValue('title', $newTitle);
+    }
+
     public function incrementReplies()
     {
         $threadId = $this->getValue('id');
@@ -43,9 +51,6 @@ class Thread extends Validator
     public function incrementViews($userId)
     {
         $threadId = $this->getValue('id');
-        $whereThisThreadAndUser = (new Condition('Thread_User_Views'));
-        $whereThisThreadAndUser->col('thread')->equals($threadId)->and()
-                               ->col('user')->equals($userId);
         
         $result = Database::INSERT('Thread_User_Views', ['thread', 'user'], 
                                                         [$threadId, $userId]);
@@ -145,8 +150,19 @@ class Thread extends Validator
      *  Also stores the values validated for stickiness.
      */
     public function validate()
-    { 
-        $this->hasValidated(); // Used to prove this object has ran validation 
+    {
+        $this->validateTitle();
+        $this->validateRootPost();
+    }
+
+    /**
+     *  Validates the title of a thread on current page..
+     *  Populates errors array with errors which can later be retrieved.
+     *  Also stores the values validated for stickiness.
+     */
+    public function validateTitle()
+    {
+        $this->hasValidated(); // Used to prove this object has ran validation
 
         $missingTitle = 'Please create a thread title';
         $invalidTitle = 'Title must be between 5-40 characters or less and not empty';
@@ -169,7 +185,17 @@ class Thread extends Validator
 
             return false; // apply invalidTitle message
         });
+    }
 
+    /**
+     *  Validates the root post of a thread on the current page..
+     *  Populates errors array with errors which can later be retrieved.
+     *  Also stores the values validated for stickiness.
+     */
+    public function validateRootPost()
+    {
+        $this->hasValidated(); // Used to prove this object has ran validation
+        
             // Make and validate a Post after validating Thread
         $post = new Post;
         $this->setValue('root_post', $post);
