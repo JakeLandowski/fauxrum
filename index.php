@@ -380,6 +380,59 @@ $f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
     echo Template::instance()->render('views/edit_thread.html');
 });
 
+    // EDIT POST ROUTE
+$f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
+{
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+
+    errorIfTokenInvalid($f3, $params['post_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+
+    $userId = $_SESSION['User']->displayValue('id');
+    $postId   = (int) $params['post_id'];
+    $post     = Post::getPost($postId);
+    
+    if($post instanceof Post) // Success
+    {
+        if($userId == $post->getValue('owner'))
+        {
+            $f3->set('post', $post);
+            
+            if(isPost())
+            {
+                $threadId = $post->getValue('thread');
+                $newPost = new Post;
+                $newPost->validate();
+                
+                if(count($newPost->getErrors()) == 0)
+                {
+                    $post->editContent($newPost->getValue('content'));
+                    $f3->reroute("/posts/$threadId");
+                }
+                else 
+                {
+                    $f3->set('errors', $newPost->getErrors());
+                    $f3->set('content', $newPost->displayValue('content'));
+                }
+            }
+        }
+        else
+        {
+            $f3->set('fail_message', 'You are not the owner of this post');    
+        }
+    }
+    else // Fail
+    {
+        $f3->set('fail_message', $post);    
+    }
+
+    echo Template::instance()->render('views/edit_post.html');
+});
 
   //================================================//
  //                    TESTING                     //

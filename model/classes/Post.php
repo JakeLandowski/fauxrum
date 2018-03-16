@@ -27,6 +27,14 @@ class Post extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function editContent($newContent)
+    {
+        $postId = $this->getValue('id');
+        $whereThisPost = (new Condition('Post'))->col('id')->equals($postId);
+        Database::UPDATE('Post', 'content', $newContent, $whereThisPost); 
+        $this->setValue('content', $newContent);
+    }
+
     public static function getPosts($threadId)
     {
         $options = 
@@ -64,6 +72,45 @@ class Post extends Validator
         else
         {
             $returnValue = 'Something went wrong fetching posts';
+        }
+
+        return $returnValue;
+    }
+
+    /**
+     * 
+     */
+    public static function getPost($postId)
+    {
+        $options = 
+        [
+            'fetch' => Database::ONE,
+            'condition' => (new Condition('Post'))->col('id')->equals($postId) 
+        ];
+        
+        $result = Database::SELECT_ALL('Post', $options);
+
+        $returnValue = '';
+
+        if($result['success'] && $result['num_rows'] > 0 && isset($result['row']))
+        {
+            $post = new Post;
+            $post->setValue('id',            $result['row']['id']);
+            $post->setValue('owner',         $result['row']['owner']);
+            $post->setValue('content',       $result['row']['content']);
+            $post->setValue('thread',        $result['row']['thread']);
+            $post->setValue('created',       $result['row']['created']);
+            $post->setValue('is_root_post',  $result['row']['is_root_post']);
+            $post->setValue('bot_generated', $result['row']['bot_generated']);
+            $returnValue = $post;
+        }
+        else if($result['num_rows'] == 0)
+        {
+            $returnValue = 'This post doesn\'t exist';
+        }
+        else
+        {
+            $returnValue = 'Something went wrong fetching post contents';
         }
 
         return $returnValue;
