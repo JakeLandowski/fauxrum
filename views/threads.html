@@ -45,7 +45,7 @@
                 
                     <div class="row mr-3">
                         <div class="col-2">
-                            <h5>{{ @thread->displayValue('owner') }}</h5>
+                            <h5>{{ isset(@username) ? '' : @thread->displayValue('owner') }}</h5>
                         </div>
                         <div class="col-4">
                             <h5>{{ @thread->displayValue('title') }}</h5>

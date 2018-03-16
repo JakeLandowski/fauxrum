@@ -18,76 +18,62 @@
 
 </style>
 
-<h2>Welcome! Please read the thread!</h2>
-<br>
-<form action="./views/posts.html">
+<div class="container">
+    <check if="{{ isset(@posts) && isset(@thread)}}">
 
-    <div class="container">
-        <check if="{{ isset(@posts) && isset(@thread)}}">
+        <h1 class="text-center">{{ @thread->displayValue('title') }}
+            <check if="{{ isset(@user_id) && @user_id == @thread->getValue('owner') }}">
+                <true>
+                    <a href="{{ @BASE }}/edit-thread/{{ @thread->displayValue('id') }}" 
+                    class="btn btn-warning">Edit Title</a>
+                </true>
+            </check>
+            </h1>
 
-            <true>
-                <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
-                
-                    <div class="row mr-3">
-                        <div class="col-2">
-                            <h5>{{ @post->displayValue('owner') }}</h5>
-                        </div>
-                        <div class="col-6">
-                            <h5>{{ @post->displayValue('content') }}</h5>
-                        </div>
-                        <div class="col-2">
-                            <h5>id: {{ @post->displayValue('id') }}</h5>
-                        </div>
-                        <div class="col-2">
-                            <h5>{{ @post->displayValue('created') }}</h5>
-                        </div>
+        <true>
+            <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
+            
+                <div class="row mr-3">
+                    <div class="col-2">
+                        <h5>{{ @post->displayValue('owner') }}</h5>
                     </div>
-    
-                    <a href="{{ @BASE }}/new-post/
-                    {{ @thread->displayValue('id') }}/
-                    {{ @post->displayValue('id') }}" 
-                    class="btn btn-primary">Reply</a>
+                    <div class="col-6">
+                        <h5>{{ @post->displayValue('content') }}</h5>
+                    </div>
+                    <div class="col-2">
+                        <h5>id: {{ @post->displayValue('id') }}</h5>
+                    </div>
+                    <div class="col-2">
+                        <h5>{{ @post->displayValue('created') }}</h5>
+                    </div>
+                </div>
+
+                <a href="{{ @BASE }}/new-post/{{ 
+                    @thread->displayValue('id') }}/{{ 
+                    @post->displayValue('id') }}" 
+                class="btn btn-primary">Reply To</a>
+
+                <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') }}">
+                    <true>
+                        <a href="{{ @BASE }}/edit-post/{{ @post->displayValue('id') }}" 
+                        class="btn btn-warning">Edit Post</a>
+
+                        <a href="{{ @BASE }}/delete-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
+                            class="btn btn-danger">Delete Post</a>
+                    </true>
+                </check>
                 
-                </repeat>
-            </true>
+            </repeat>
+        </true>
 
-            <false>
-                <p class="error-text m-0">
-                    {{ isset(@fail_message) ? @fail_message : '' }}
-                </p>
-            </false>
+        <false>
+            <p class="error-text m-0">
+                {{ isset(@fail_message) ? @fail_message : '' }}
+            </p>
+        </false>
 
-        </check>
-    </div>
-    
-<!-- 
-    <div class="container">
-        <div class="row mr-3">
-            <div class="col-2">
-                <h5>Khan1</h5>
-            </div>
-            <div class="col-10">
-                <h6>Hi! i'm new in seattle and i was wondering what kind of activities are here to do?</h6>
-            </div>
-
-            <div class="col-2">
-                <h5>Jake</h5>
-            </div>
-            <div class="col-10">
-                <h6>Hi Khan1! You should visit pike place market. Also check out space needle and Alki beach!</h6>
-            </div>
-
-            <div class="col-2">
-                <h5>Jessica</h5>
-            </div>
-            <div class="col-10">
-                <h6>Hi! Woodland Zoo is in seattle. All the animals are sleeping but it's cool.</h6>
-            </div>
-        </div> -->
-
-    </div>
-</form>
-
+    </check>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>

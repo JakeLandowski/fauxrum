@@ -22,14 +22,14 @@
     }
 </style>
 
-<form method="POST" action="{{ @BASE }}/{{ @route }}">
+<form method="POST" action="{{ @BASE . isset(@route) ? @route : '' }}">
 
     <div class="form-group">
-        <h1>{{ @message }}</h1>
+        <h1>{{ isset(@message) ? @message : '' }}</h1>
     </div>
 
     <input type="submit" value="Confirm" class="btn btn-primary" />
-    <a href="{{ @BASE }}/{{ @return_route }}" class="btn btn-warning">Return</a>
+    <a href="{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
 
 </form>
 
