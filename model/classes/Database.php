@@ -255,6 +255,9 @@ abstract class Database
         return $returnValues;
     }
 
+    /**
+     * jhkaefwe
+     */
     public static final function SELECT_ALL($table, $options=[])
     {
         return Database::SELECT('*', $table, $options);

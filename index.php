@@ -80,7 +80,10 @@ $f3->route('GET /logout', function($f3)
     $f3->reroute('/login');
 });
 
-    // LOGIN ROUTE
+  //=========================================================//
+ //                  LOGIN/REGISTER ROUTES                  //
+//=========================================================//
+
 $f3->route('GET|POST /login', function($f3)
 {
     if(loggedIn())
@@ -119,7 +122,6 @@ $f3->route('GET|POST /login', function($f3)
     echo Template::instance()->render('views/login.html');
 });
 
-    //  REGISTRATION ROUTE
 $f3->route('GET|POST /register', function($f3)
 {
     if(loggedIn())
@@ -158,7 +160,10 @@ $f3->route('GET|POST /register', function($f3)
     echo Template::instance()->render('views/register.html');
 });
 
-    // THREADS ROUTE
+  //=========================================================//
+ //                     LIST ALL ROUTES                     //
+//=========================================================//
+
 $f3->route('GET /threads', function($f3)
 {
     if(!loggedIn())
@@ -181,7 +186,6 @@ $f3->route('GET /threads', function($f3)
     echo Template::instance()->render('views/threads.html');
 });
 
-    // POSTS ROUTE
 $f3->route('GET /posts/@thread_id', function($f3, $params)
 {
     if(!loggedIn())
@@ -222,7 +226,10 @@ $f3->route('GET /posts/@thread_id', function($f3, $params)
     echo Template::instance()->render('views/posts.html');
 });
 
-    // CREATE THREAD ROUTE
+  //=========================================================//
+ //                   NEW/CREATE ROUTES                     //
+//=========================================================//
+
 $f3->route('GET|POST /new-thread', function($f3)
 {
     if(!loggedIn())
@@ -263,7 +270,6 @@ $f3->route('GET|POST /new-thread', function($f3)
     echo Template::instance()->render('views/new_thread.html');
 });
 
-    // CREATE POST ROUTE
 $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
 {
     if(!loggedIn())
@@ -327,7 +333,10 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
     echo Template::instance()->render('views/new_post.html');
 });
 
-    // EDIT THREAD ROUTE
+  //=========================================================//
+ //                      EDIT ROUTES                        //
+//=========================================================//
+
 $f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
 {
     if(!loggedIn())
@@ -380,7 +389,6 @@ $f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
     echo Template::instance()->render('views/edit_thread.html');
 });
 
-    // EDIT POST ROUTE
 $f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
 {
     if(!loggedIn())
@@ -434,8 +442,11 @@ $f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
     echo Template::instance()->render('views/edit_post.html');
 });
 
-    // DELETE POST ROUTE
-$f3->route('GET|POST /delete-post/@post_id', function($f3, $params)
+  //=========================================================//
+ //                     DELETE ROUTES                       //
+//=========================================================//
+
+$f3->route('GET|POST /delete-post/@thread_id/@post_id', function($f3, $params)
 {
     if(!loggedIn())
     {
@@ -447,10 +458,16 @@ $f3->route('GET|POST /delete-post/@post_id', function($f3, $params)
         return !is_numeric($token) || (int)$token < 1;
     });
 
-    $returnRoute = "/posts/$threadId";
+    errorIfTokenInvalid($f3, $params['thread_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+
     $userId = $_SESSION['User']->displayValue('id');
     $postId   = (int) $params['post_id'];
+    $threadId = (int) $params['thread_id'];
     $post     = Post::getPost($postId); 
+    $returnRoute = "/posts/$threadId";
     
     if($post instanceof Post) // Success 
     {
@@ -463,6 +480,10 @@ $f3->route('GET|POST /delete-post/@post_id', function($f3, $params)
                 if($post->deletePost())
                 {
                     $f3->reroute($returnRoute);
+                }
+                else
+                {
+                    $f3->set('fail_message', 'Sorry, failed to delete post');        
                 }
             }
         }
@@ -477,10 +498,65 @@ $f3->route('GET|POST /delete-post/@post_id', function($f3, $params)
     }
 
     $f3->mset([
-        'route'        => "/delete-post/$postId", 
+        'route'        => "/delete-post/$threadId/$postId", 
         'return_route' => $returnRoute,
         'message'      => 'Are you sure you want to delete this post?',
         // 'post'         => $post
+    ]);
+
+    echo Template::instance()->render('views/confirmation.html');
+});
+
+$f3->route('GET|POST /delete-thread/@thread_id', function($f3, $params)
+{
+    if(!loggedIn())
+    {
+        $f3->reroute('/login');
+    }
+
+    errorIfTokenInvalid($f3, $params['thread_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+
+    $userId = $_SESSION['User']->displayValue('id');
+    $threadId = (int) $params['thread_id'];
+    $thread   = Thread::getThread($threadId); 
+    $returnRoute = "/threads";
+    
+    if($thread instanceof Thread) // Success 
+    {
+        if($userId == $thread->getValue('owner'))
+        {
+            $f3->set('thread', $thread);
+            
+            if(isPost())
+            {
+                if($thread->deleteThread())
+                {
+                    $f3->reroute($returnRoute);
+                }
+                else
+                {
+                    $f3->set('fail_message', 'Sorry, failed to delete thread');        
+                }
+            }
+        }
+        else
+        {
+            $f3->set('fail_message', 'You are not the owner of this thread');    
+        }
+    }
+    else // Fail
+    {
+        $f3->set('fail_message', $thread);    
+    }
+
+    $f3->mset([
+        'route'        => "/delete-thread/$threadId", 
+        'return_route' => $returnRoute,
+        'message'      => 'Are you sure you want to delete this thread?',
+        // 'thread'         => $thread
     ]);
 
     echo Template::instance()->render('views/confirmation.html');

@@ -28,6 +28,14 @@ class Thread extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function deleteThread()
+    {
+        $threadId = $this->getValue('id');
+        $whereThisThread = (new Condition('Thread'))->col('id')->equals($threadId);
+        $result = Database::DELETE('Thread', $whereThisThread);
+        return $result['success'] && $result['num_rows'] > 0;
+    }
+
     public function editTitle($newTitle)
     {
         $threadId = $this->getValue('id');
