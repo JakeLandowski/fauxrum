@@ -132,6 +132,7 @@ class TextMap
         if($this->_lastSignature != $this->_signature)
             $this->_weighProbabilities();
 
+        $size -= $this->_order; // offset because $i is offset
         $seed = '';
         $gram;        // Current substring key to lookup char possibilities 
         $newChar;     // New char to append to our string
