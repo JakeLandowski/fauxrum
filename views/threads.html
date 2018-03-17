@@ -56,7 +56,7 @@
                             <h5>Replies: {{ @thread->displayValue('replies') }}</h5>
                         </div>
                         <div class="col-2">
-                            <h5>{{ @thread->displayValue('created') }}</h5>
+                            <h5>{{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('created')) }}</h5>
                         </div>
                     </a>
                 

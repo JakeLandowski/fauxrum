@@ -47,7 +47,7 @@
                         <h5>id: {{ @post->displayValue('id') }}</h5>
                     </div>
                     <div class="col-2">
-                        <h5>{{ @post->displayValue('created') }}</h5>
+                        <h5>{{ TimeCalculate::getTimeSinceCreation(@post->displayValue('created')) }}</h5>
                     </div>
                 </div>
 
