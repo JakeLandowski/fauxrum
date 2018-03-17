@@ -240,7 +240,8 @@ abstract class Database
                 {
                     $getTotalRows = 'SELECT found_rows() AS totalRows';
                     $returnValues['total_rows'] = $connection->query($getTotalRows)
-                                                             ->fetch(PDO::FETCH_ASSOC);
+                                                             ->fetch(PDO::FETCH_ASSOC)
+                                                             ['totalRows'];
                 }
             }
 

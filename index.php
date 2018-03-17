@@ -107,7 +107,7 @@ $f3->route('GET|POST /login', function($f3)
             }
             else
             {
-                // failed insert error message to print to user
+                    // failed insert error message to print to user
                 $f3->set('fail_message', $loginResult);
             }
         }
@@ -163,20 +163,45 @@ $f3->route('GET|POST /register', function($f3)
   //=========================================================//
  //                     LIST-ALL ROUTES                     //
 //=========================================================//
-
 $f3->route('GET /threads', function($f3)
+{
+    $f3->reroute('/threads/1');
+});
+
+$f3->route('GET /threads/@page', function($f3, $params)
 {
     if(!loggedIn())
     {
         $f3->reroute('/login');
     }
 
-    $threads = Thread::getThreads(); 
-    
-    if(is_array($threads)) // Success
+    errorIfTokenInvalid($f3, $params['page'], function($token)
     {
-        $f3->set('user_id', $_SESSION['User']->displayValue('id'));
-        $f3->set('threads', $threads);
+        return !is_numeric($token) || (int)$token < 1;
+    });
+    
+    $page  = (int) $params['page'];
+    $per   = 3;
+    $order = 'created';
+    $start = ($page - 1) * $per;
+
+    $paginator = new Paginator($page, $per, $order);
+    $result = $paginator->getAndPaginateAll('Thread');
+
+        //  If trying to nonexistant page of data
+    if(!$paginator->isValidPage()) $f3->error(404);
+    
+    if(isset   ($result['threads']) && 
+       is_array($result['threads']) && 
+       isset   ($result['total'])) // Success
+    {
+        $f3->mset([
+            'user_id' => $_SESSION['User']->displayValue('id'),
+            'threads' => $result['threads'],
+            'route'   => 'threads'
+        ]);
+
+        $f3->mset($paginator->getHiveTokens());
     }
     else // Fail
     {
@@ -188,6 +213,18 @@ $f3->route('GET /threads', function($f3)
 
 $f3->route('GET /posts/@thread_id', function($f3, $params)
 {
+    errorIfTokenInvalid($f3, $params['thread_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
+    
+    $threadId = (int) $params['thread_id'];
+
+    $f3->reroute("/posts/$threadId/1");
+});
+
+$f3->route('GET /posts/@thread_id/@page', function($f3, $params)
+{
     if(!loggedIn())
     {
         $f3->reroute('/login');
@@ -197,21 +234,43 @@ $f3->route('GET /posts/@thread_id', function($f3, $params)
     {
         return !is_numeric($token) || (int)$token < 1;
     });
+
+    errorIfTokenInvalid($f3, $params['page'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
     
-    $threadId = (int) $params['thread_id'];
     $userId   = $_SESSION['User']->displayValue('id');
+    $threadId = (int) $params['thread_id'];
+    $page     = (int) $params['page'];
+    $per      = 3;
+    $order    = 'created';
+    $start    = ($page - 1) * $per;
     
-    $posts = Post::getPosts($threadId);
+    $paginator = new Paginator($page, $per, $order);
+    $result = $paginator->getAndPaginateAll('Post', $threadId);
+    
     $thread = Thread::getThread($threadId);
+
+        //  If trying to nonexistant page of data
+    if(!$paginator->isValidPage()) $f3->error(404);
     
-    if(is_array($posts)) // Success
+    if(isset   ($result['posts']) && 
+       is_array($result['posts']) && 
+       isset   ($result['total'])) // Success
     {
         if($thread instanceof Thread) // Success
         {
             $thread->incrementViews($userId);
-            $f3->set('user_id', $userId);
-            $f3->set('thread', $thread);
-            $f3->set('posts', $posts);
+            
+            $f3->mset([
+                'user_id' => $userId,
+                'thread'  => $thread,
+                'posts'   => $result['posts'],
+                'route'   => "posts/$threadId"
+            ]);
+            
+            $f3->mset($paginator->getHiveTokens());
         }
         else // Fail
         {
@@ -526,7 +585,6 @@ $f3->route('GET|POST /delete-thread/@thread_id', function($f3, $params)
     $userId = $_SESSION['User']->displayValue('id');
     $threadId = (int) $params['thread_id'];
     $thread   = Thread::getThread($threadId); 
-    $returnRoute = "/threads";
     
     if($thread instanceof Thread) // Success 
     {
@@ -538,7 +596,7 @@ $f3->route('GET|POST /delete-thread/@thread_id', function($f3, $params)
             {
                 if($thread->deleteThread())
                 {
-                    $f3->reroute($returnRoute);
+                    $f3->reroute('/threads');
                 }
                 else
                 {
@@ -558,7 +616,7 @@ $f3->route('GET|POST /delete-thread/@thread_id', function($f3, $params)
 
     $f3->mset([
         'route'        => "/delete-thread/$threadId", 
-        'return_route' => $returnRoute,
+        'return_route' => "/posts/$threadId",
         'message'      => 'Are you sure you want to delete this thread?',
         // 'thread'         => $thread
     ]);

@@ -43,23 +43,32 @@ class Post extends Validator
         $this->setValue('content', $newContent);
     }
 
-    public static function getPosts($threadId)
+    public static function getAllFromDatabase($limitStart, $limitAmount, $orderBy, $threadId)
     {
+        if(!isset($threadId))
+            CustomError::throw('Post::getAllFromDatabase() requires a thread 
+                                id as the 4th parameter.', 2);
+
         $options = 
         [
             'condition' => (new Condition('Post'))->col('thread')->equals($threadId),
-            'order_by'  => 'created'
+            'order_by'     => $orderBy,
+            'limit_amount' => $limitAmount,
+            'limit_start'  => $limitStart
         ];
         
         $result = Database::SELECT_ALL('Post', $options);
 
         $returnValue = '';
 
-        if($result['success'] && $result['num_rows'] > 0)
+        if($result['success'] && $result['num_rows'] > 0 && isset($result['rows']))
         {
             $rows = $result['rows'];
-            $returnValue = [];
+            $returnValue = [ 'posts' => [] ];
             
+            if(isset($result['total_rows'])) 
+                $returnValue['total'] = $result['total_rows'];
+
             foreach($rows as $row)
             {
                 $post = new Post;
@@ -70,7 +79,7 @@ class Post extends Validator
                 $post->setValue('created',       $row['created']);
                 $post->setValue('is_root_post',  $row['is_root_post']);
                 $post->setValue('bot_generated', $row['bot_generated']);
-                $returnValue[] = $post;
+                $returnValue['posts'][] = $post;
             }
         }
         else if($result['num_rows'] == 0)

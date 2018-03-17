@@ -10,7 +10,7 @@
  *  
  *  @author Jacob Landowski
  */
-class Thread extends Validator 
+class Thread extends Validator
 {
     protected $data = 
     [
@@ -74,12 +74,14 @@ class Thread extends Validator
         }
     }
 
-    public static function getThreads()
+    public static function getAllFromDatabase($limitStart, $limitAmount, $orderBy)
     {
         $options = 
         [
-            'order_by' => 'created',
-            'descending' => true
+            'order_by'     => $orderBy,
+            'descending'   => true,
+            'limit_amount' => $limitAmount,
+            'limit_start'  => $limitStart
         ];
         
         $result = Database::SELECT_ALL('Thread', $options);
@@ -89,7 +91,10 @@ class Thread extends Validator
         if($result['success'] && $result['num_rows'] > 0 && isset($result['rows']))
         {
             $rows = $result['rows'];
-            $returnValue = [];
+            $returnValue = [ 'threads' => [] ];
+
+            if(isset($result['total_rows'])) 
+                $returnValue['total'] = $result['total_rows'];  
             
             foreach($rows as $row)
             {
@@ -101,7 +106,7 @@ class Thread extends Validator
                 $thread->setValue('views',         $row['views']);
                 $thread->setValue('replies',       $row['replies']);
                 $thread->setValue('bot_generated', $row['bot_generated']);
-                $returnValue[] = $thread;
+                $returnValue['threads'][] = $thread;
             }
         }
         else if($result['num_rows'] == 0)

@@ -1,0 +1,25 @@
+<nav aria-label="Page Navigation">
+    <ul class="pagination">
+        <li class="page-item">
+            <a class="page-link" href="{{ @BASE }}/{{ @route }}/{{ @page == 1 ? @page : @page - 1 }}"> <!-- /{{ @per }}/{{ @order }} -->
+                Previous
+            </a>
+        </li>
+
+        <loop from="{{ @i = 1 }}" 
+              to="{{ @i <= (int)(@total / @per) + (@total % @per != 0 ? 1 : 0) }}" 
+              step="@i++">
+
+            <li class="page-item {{ @i == (@page) ? 'active' : '' }}">
+                <a class="page-link" href="{{ @BASE }}/{{ @route }}/{{ @i }}">{{ @i }}</a> <!-- /{{ @per }}/{{ @order }} -->
+            </li>
+
+        </loop>
+
+        <li class="page-item">
+            <a class="page-link" href="{{ @BASE }}/{{ @route }}/{{ @page + 1 > @num_pages ? @page : @page + 1}}"> <!-- /{{ @per }}/{{ @order }} -->
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>

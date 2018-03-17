@@ -36,14 +36,13 @@
 <div class="pl-5">
     <a href="{{ @BASE }}/new-thread" class="btn btn-primary ml-5">Create New Thread</a>
 </div>
-
     <div class="container">
         <check if="{{ isset(@threads) }}">
 
             <true>
                 <repeat group="{{ @threads }}" key="{{ @i }}" value="{{ @thread }}">
                 
-                    <div class="row mr-3">
+                    <a href="{{ @BASE }}/posts/{{ @thread->getValue('id') }}" class="row mr-3">
                         <div class="col-2">
                             <h5>{{ isset(@username) ? '' : @thread->displayValue('owner') }}</h5>
                         </div>
@@ -59,9 +58,11 @@
                         <div class="col-2">
                             <h5>{{ @thread->displayValue('created') }}</h5>
                         </div>
-                    </div>
+                    </a>
                 
                 </repeat>
+                
+                <include href="{{ @BASE . '/views/pagination.html' }}" />
             </true>
 
             <false>
@@ -72,80 +73,6 @@
 
         </check>
     </div>
-    
-    <!-- <div class="container">
-        <div class="row mr-3">
-            <div class="col-2">
-                <h5>Khan1</h5>
-            </div>
-            <div class="col-6">
-                <h5>What's good in Seattle</h5>
-            </div>
-            <div class="col-2">
-                <h5>Replies: 8</h5>
-            </div>
-            <div class="col-2">
-                <h5>8:52am</h5>
-            </div>
-        </div>
-        <div class="row mr-3">
-            <div class="col-2">
-                <h5>John94</h5>
-            </div>
-            <div class="col-6">
-                <h5>Anyone wanna go bowling?</h5>
-            </div>
-            <div class="col-2">
-                <h5>Replies: 15</h5>
-            </div>
-            <div class="col-2">
-                <h5>2:00pm</h5>
-            </div>
-        </div>
-        <div class="row mr-3">
-            <div class="col-2">
-                <h5>Sarah1990</h5>
-            </div>
-            <div class="col-6">
-                <h5>Coldplay concert ticket for sale</h5>
-            </div>
-            <div class="col-2">
-                <h5>Replies: 200</h5>
-            </div>
-            <div class="col-2">
-                <h5>5:00am</h5>
-            </div>
-        </div>
-        <div class="row mr-3">
-            <div class="col-2">
-                <h5>derp</h5>
-            </div>
-            <div class="col-6">
-                <h5>Who needs?</h5>
-            </div>
-            <div class="col-2">
-                <h5>Replies: 2</h5>
-            </div>
-            <div class="col-2">
-                <h5>3:30pm</h5>
-            </div>
-        </div>
-        <div class="row mr-3">
-            <div class="col-2">
-                <h5>progressive</h5>
-            </div>
-            <div class="col-6">
-                <h5>Don't buy car insurance</h5>
-            </div>
-            <div class="col-2">
-                <h5>Replies: 5</h5>
-            </div>
-            <div class="col-2">
-                <h5>1:00pm</h5>
-            </div>
-        </div>
-    </div> -->
-
 
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
