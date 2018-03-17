@@ -23,6 +23,7 @@ CREATE TABLE Thread
 (
     id            INT         NOT NULL AUTO_INCREMENT,
     owner         INT         NOT NULL,
+    owner_name    VARCHAR(20) NOT NULL,
     title         VARCHAR(40),
     replies       INT         NOT NULL DEFAULT 0,
     views         INT         NOT NULL DEFAULT 0,
@@ -30,7 +31,8 @@ CREATE TABLE Thread
     bot_generated TINYINT     NOT NULL DEFAULT 0,
     parsed        TINYINT     NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
-    FOREIGN KEY(owner) REFERENCES User(id), 
+    FOREIGN KEY(owner)      REFERENCES User(id),
+    FOREIGN KEY(owner_name) REFERENCES User(username), 
     UNIQUE(title)
 
 ) ENGINE=InnoDB;
@@ -48,17 +50,19 @@ CREATE TABLE Thread_User_Views
 
 CREATE TABLE Post
 (
-    id            INT       NOT NULL AUTO_INCREMENT,
-    thread        INT       NOT NULL,
-    owner         INT       NOT NULL,
-    created       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    content       TEXT      NOT NULL,
-    bot_generated TINYINT   NOT NULL DEFAULT 0,
-    parsed        TINYINT   NOT NULL DEFAULT 0,
-    is_root_post  TINYINT   NOT NULL DEFAULT 0,
+    id            INT         NOT NULL AUTO_INCREMENT,
+    thread        INT         NOT NULL,
+    owner         INT         NOT NULL,
+    owner_name    VARCHAR(20) NOT NULL,
+    created       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    content       TEXT        NOT NULL,
+    bot_generated TINYINT     NOT NULL DEFAULT 0,
+    parsed        TINYINT     NOT NULL DEFAULT 0,
+    is_root_post  TINYINT     NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
-    FOREIGN KEY(thread) REFERENCES Thread(id) ON DELETE CASCADE,
-    FOREIGN KEY(owner)  REFERENCES User(id)
+    FOREIGN KEY(thread)     REFERENCES Thread(id) ON DELETE CASCADE,
+    FOREIGN KEY(owner)      REFERENCES User(id),
+    FOREIGN KEY(owner_name) REFERENCES User(username)
 
 ) ENGINE=InnoDB;
 
