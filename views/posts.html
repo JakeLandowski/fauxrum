@@ -38,13 +38,10 @@
             
                 <div class="row mr-3">
                     <div class="col-2">
-                        <h5>{{ @post->displayValue('owner') }}</h5>
+                        <h5>{{ @post->displayValue('owner_name') }}</h5>
                     </div>
-                    <div class="col-6">
+                    <div class="col-8">
                         <h5>{{ @post->displayValue('content') }}</h5>
-                    </div>
-                    <div class="col-2">
-                        <h5>id: {{ @post->displayValue('id') }}</h5>
                     </div>
                     <div class="col-2">
                         <h5>{{ TimeCalculate::getTimeSinceCreation(@post->displayValue('created')) }}</h5>

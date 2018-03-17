@@ -41,6 +41,7 @@ function errorIfTokenInvalid($f3, $token, $tokenChecker)
 {
     if($tokenChecker($token)) $f3->error(404);
 }
+
     // Custom 404 Page
 // $f3->set('ONERROR', function($f3)
 // {
@@ -187,14 +188,14 @@ $f3->route('GET /threads/@page', function($f3, $params)
 
     $paginator = new Paginator($page, $per, $order);
     $result = $paginator->getAndPaginateAll('Thread');
-
-        //  If trying to nonexistant page of data
-    if(!$paginator->isValidPage()) $f3->error(404);
-    
+        
     if(isset   ($result['threads']) && 
        is_array($result['threads']) && 
        isset   ($result['total'])) // Success
     {
+            //  If trying to nonexistant page of data
+        if(!$paginator->isValidPage()) $f3->error(404);
+        
         $f3->mset([
             'user_id' => $_SESSION['User']->displayValue('id'),
             'threads' => $result['threads'],
@@ -205,7 +206,7 @@ $f3->route('GET /threads/@page', function($f3, $params)
     }
     else // Fail
     {
-        $f3->set('fail_message', $threads);
+        $f3->set('fail_message', $result);
     }
 
     echo Template::instance()->render('views/threads.html');
@@ -252,13 +253,13 @@ $f3->route('GET /posts/@thread_id/@page', function($f3, $params)
     
     $thread = Thread::getThread($threadId);
 
-        //  If trying to nonexistant page of data
-    if(!$paginator->isValidPage()) $f3->error(404);
-    
     if(isset   ($result['posts']) && 
        is_array($result['posts']) && 
        isset   ($result['total'])) // Success
     {
+            //  If trying to nonexistant page of data
+        if(!$paginator->isValidPage()) $f3->error(404);
+        
         if($thread instanceof Thread) // Success
         {
             $thread->incrementViews($userId);
@@ -279,7 +280,7 @@ $f3->route('GET /posts/@thread_id/@page', function($f3, $params)
     }
     else // Fail
     {
-        $f3->set('fail_message', $posts);
+        $f3->set('fail_message', $result);
     }
 
     echo Template::instance()->render('views/posts.html');
@@ -299,8 +300,9 @@ $f3->route('GET|POST /new-thread', function($f3)
     {
         $user = $_SESSION['User'];
         $thread = new Thread;
-        $thread->setValue('owner', $user->getValue('id'));
-        
+        $thread->setValue('owner',      $user->getValue('id'));
+        $thread->setValue('owner_name', $user->getValue('username'));
+
         $thread->validate();
 
         if(count($thread->getErrors()) == 0)
@@ -356,8 +358,9 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
     {
         $user = $_SESSION['User'];
         $post = new Post;
-        $post->setValue('owner', $user->getValue('id'));
-        $post->setValue('thread', $replyingInThreadId);
+        $post->setValue('owner',      $user->getValue('id'));
+        $post->setValue('owner_name', $user->getValue('username'));
+        $post->setValue('thread',     $replyingInThreadId);
         
         $post->validate();
 

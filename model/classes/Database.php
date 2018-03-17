@@ -30,6 +30,7 @@ abstract class Database
                 'id'            => 'int', 
                 'title'         => 'string',    
                 'owner'         => 'int',
+                'owner_name'    => 'string',
                 'replies'       => 'int',
                 'views'         => 'int', 
                 'created'       => 'string', 
@@ -46,7 +47,8 @@ abstract class Database
             [ 
                 'id'            => 'int', 
                 'thread'        => 'int',   
-                'owner'         => 'int', 
+                'owner'         => 'int',
+                'owner_name'    => 'string', 
                 'created'       => 'string', 
                 'content'       => 'string', 
                 'bot_generated' => 'int', 

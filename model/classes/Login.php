@@ -117,8 +117,7 @@ class Login extends Validator
                 $userName  = $result['row']['username'];
                 $userEmail = $result['row']['email'];
                 
-                $returnValue = new User($email, $username);
-                $returnValue->setValue('id', $userId);
+                $returnValue = new User($userId, $email, $username);
                 
                 $mapOptions = 
                 [

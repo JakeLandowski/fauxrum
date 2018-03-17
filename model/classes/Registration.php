@@ -137,8 +137,7 @@ class Registration extends Validator
                 $mapResult = Database::INSERT('TextMap', ['owner', 'map_data'], 
                                                 [$userId, $serializedTextMap]);
                     // Create User Object
-                $returnValue = new User($email, $username);
-                $returnValue->setValue('id', $userId);
+                $returnValue = new User($userId, $email, $username);
 
                     // If TextMap INSERT Success
                     // Set TextMap ID and attach to User Object 

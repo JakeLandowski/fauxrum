@@ -17,6 +17,7 @@ class Post extends Validator
         'id'            => null,
         'thread'        => null,
         'owner'         => null,
+        'owner_name'    => null,
         'content'       => null,
         'created'       => null,
         'is_root_post'  => false,
@@ -32,7 +33,15 @@ class Post extends Validator
         $postId = $this->getValue('id');
         $whereThisPost = (new Condition('Post'))->col('id')->equals($postId);
         $result = Database::DELETE('Post', $whereThisPost);
-        return $result['success'] && $result['num_rows'] > 0;
+
+        $success = $result['success'] && $result['num_rows'] > 0;
+
+        if($success)
+        {
+            //  should decrement thread views here possibly
+        }
+
+        return $success;
     }
 
     public function editContent($newContent)
@@ -74,6 +83,7 @@ class Post extends Validator
                 $post = new Post;
                 $post->setValue('id',            $row['id']);
                 $post->setValue('owner',         $row['owner']);
+                $post->setValue('owner_name',    $row['owner_name']);
                 $post->setValue('thread',        $row['thread']);
                 $post->setValue('content',       $row['content']);
                 $post->setValue('created',       $row['created']);
@@ -114,6 +124,7 @@ class Post extends Validator
             $post = new Post;
             $post->setValue('id',            $result['row']['id']);
             $post->setValue('owner',         $result['row']['owner']);
+            $post->setValue('owner_name',    $result['row']['owner_name']);
             $post->setValue('content',       $result['row']['content']);
             $post->setValue('thread',        $result['row']['thread']);
             $post->setValue('created',       $result['row']['created']);
@@ -157,9 +168,10 @@ class Post extends Validator
         if(count($this->_errors) == 0)
         {
                 // Set Arguments for INSERT
-            $thread  = $this->getValue('thread');
-            $owner   = $this->getValue('owner');
-            $content = $this->getValue('content');
+            $thread     = $this->getValue('thread');
+            $owner      = $this->getValue('owner');
+            $owner_name = $this->getValue('owner_name');
+            $content    = $this->getValue('content');
             $is_root_post  = $this->getValue('is_root_post')  ? 1 : 0;
             $bot_generated = $this->getValue('bot_generated') ? 1 : 0;
 
@@ -171,8 +183,8 @@ class Post extends Validator
             if($threadResult['success'] && $threadResult['num_rows'] > 0)
             {
                 $result = Database::INSERT('Post', 
-                ['thread', 'owner', 'content', 'is_root_post', 'bot_generated'], 
-                [$thread,  $owner,  $content,  $is_root_post,  $bot_generated]);
+                ['thread', 'owner', 'owner_name', 'content', 'is_root_post', 'bot_generated'], 
+                [$thread,  $owner,  $owner_name, $content,  $is_root_post,  $bot_generated]);
             
                 $returnValue = '';
 

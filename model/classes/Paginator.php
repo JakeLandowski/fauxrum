@@ -18,8 +18,8 @@ class Paginator extends DataCore
         'per'   => null,
         'page'  => null,
         'order' => null,
-        'num_pages'  => null,
         'total' => null,
+        'num_pages'  => null,
     ];
 
     public function __construct($page, $per, $order)

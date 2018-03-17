@@ -16,6 +16,7 @@ class Thread extends Validator
     [
         'id'            => null,
         'owner'         => null,
+        'owner_name'    => null,
         'title'         => null,
         'replies'       => 0,
         'views'         => 0,
@@ -104,6 +105,7 @@ class Thread extends Validator
                 $thread = new Thread;
                 $thread->setValue('id',            $row['id']);
                 $thread->setValue('owner',         $row['owner']);
+                $thread->setValue('owner_name',    $row['owner_name']);
                 $thread->setValue('title',         $row['title']);
                 $thread->setValue('created',       $row['created']);
                 $thread->setValue('views',         $row['views']);
@@ -142,6 +144,7 @@ class Thread extends Validator
             $thread->setValue('id',            $result['row']['id']);
             $thread->setValue('title',         $result['row']['title']);
             $thread->setValue('owner',         $result['row']['owner']);
+            $thread->setValue('owner_name',    $result['row']['owner_name']);
             $thread->setValue('created',       $result['row']['created']);
             $thread->setValue('views',         $result['row']['views']);
             $thread->setValue('replies',       $result['row']['replies']);
@@ -228,13 +231,14 @@ class Thread extends Validator
                 // Set Thread arguments for INSERT
             $title = $this->getValue('title');
             $owner = $this->getValue('owner');
+            $owner_name    = $this->getValue('owner_name');
             $bot_generated = $this->getValue('bot_generated') ? 1 : 0;
-             
-            $result = Database::INSERT('Thread', ['owner', 'title', 'bot_generated'], 
-                                                 [$owner,  $title,  $bot_generated]);
+
+            $result = Database::INSERT('Thread', ['owner', 'owner_name', 'title', 'bot_generated'], 
+                                                 [$owner,  $owner_name, $title, $bot_generated]);
             $returnValue = '';
 
-            if(isset($result['duplicate'])) // TITLE TAKEN
+            if(isset($result['duplicate'])) // TITLE TAKEN or foreign key issue lol
             {
                 $returnValue = 'Sorry, but this thread has already been created, 
                                 somebody might have beat you to it';
@@ -251,7 +255,8 @@ class Thread extends Validator
                     //  Set Post arguments for INSERT
                 $post = $this->getValue('root_post'); // Grab Post object created earlier
                 $post->setValue('thread', $this->getValue('id'));
-                $post->setValue('owner', $this->getValue('owner'));
+                $post->setValue('owner', $owner);
+                $post->setValue('owner_name', $owner_name);
                 $post->setValue('is_root_post', true);
                 $postResult = $post->createPost(); // Attempt INSERT
                 
