@@ -14,17 +14,31 @@ class TextMap
     private $_map = [];
     private $_weighted = [];
     private $_order;
-    private $_cap;
+    private $_toMarkLater = ['threads' => [], 'posts' => []];
 
-    public function __construct($order=5, $cap=500)
+    public function __construct($order=5)
     {
              if($order < 0)  $order = 0;
         else if($order > 10) $order = 10;
         $this->_order = $order;
+    }
 
-             if($cap < $order * 2) $cap = $order * 2;
-        else if($cap > 3000) $cap = 3000;
-        $this->_cap = $cap;
+    public function markAsParsedLater($which, $id)
+    {
+        if(array_key_exists($which, $this->_toMarkLater))
+        {
+            $this->_toMarkLater[$which][] = $id;
+        }
+        else
+        {
+            CustomError::throw("$which given in markAsParsedLater() needs 
+                               to be \'threads\' or \'posts\'");
+        }
+    }
+
+    public function getToMarkLater()
+    {
+        return $this->_toMarkLater;
     }
 
     public function setId($id)
@@ -108,9 +122,12 @@ class TextMap
             $this->parseText($sentence);
     }
 
-    public function generate($size=100)
+    public function generate($size=100, $cap=1000)
     {
         if(empty($this->_map)) return '';
+
+             if($cap < $this->_order * 2) $cap = $this->_order * 2;
+        else if($cap > 3000) $cap = 3000;
 
         if($this->_lastSignature != $this->_signature)
             $this->_weighProbabilities();
@@ -121,7 +138,7 @@ class TextMap
         $charIndex;   // Random number picked to find a char
         $i = 0 - $this->_order; // Start at negative order to start search at empty string
         
-        while($i < $size && $size < $this->_cap)
+        while($i < $size && $size < $cap)
         {
             if($i < 0) $gram = substr($seed, 0); // while seed not big enough grab all
             else $gram = substr($seed, $i, $i + $this->_order); // grab order length and move;
