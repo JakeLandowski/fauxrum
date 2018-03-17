@@ -29,7 +29,7 @@
     </div>
 
     <input type="submit" value="Confirm" class="btn btn-primary" />
-    <a href="{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
+    <a href="{{ @BASE . isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
 
 </form>
 
