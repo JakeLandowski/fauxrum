@@ -161,7 +161,7 @@ $f3->route('GET|POST /register', function($f3)
 });
 
   //=========================================================//
- //                     LIST ALL ROUTES                     //
+ //                     LIST-ALL ROUTES                     //
 //=========================================================//
 
 $f3->route('GET /threads', function($f3)
@@ -471,7 +471,11 @@ $f3->route('GET|POST /delete-post/@thread_id/@post_id', function($f3, $params)
     
     if($post instanceof Post) // Success 
     {
-        if($userId == $post->getValue('owner'))
+        if($post->getValue('is_root_post'))
+        {
+            $f3->reroute("/delete-thread/$threadId");
+        } 
+        else if($userId == $post->getValue('owner'))
         {
             $f3->set('post', $post);
             

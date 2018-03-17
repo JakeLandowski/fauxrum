@@ -33,7 +33,7 @@ class Registration extends Validator
         $this->hasValidated(); // Used to prove this object has ran validation 
 
         $missingEmail = 'Please enter an email';
-        $invalidEmail = 'Please enter a valid email ex: email@place.com';
+        $invalidEmail = 'Please enter a valid email, under 50 chars ex: email@place.com';
         $missingUserName = 'Please enter a username';
         $invalidUserName = 'Username must be between 3-20 characters A-Z, a-z and 0-9 only.';
         $missingPassword = 'Please enter a password';
@@ -45,7 +45,7 @@ class Registration extends Validator
         $this->_validateField('email', $missingEmail, $invalidEmail,
         function($value)
         {
-            if(filter_var($value, FILTER_VALIDATE_EMAIL))
+            if(strlen($value) <= 50 && filter_var($value, FILTER_VALIDATE_EMAIL))
             {
                 $whereThisEmail = (new Condition('User'))->col('email')->equals($value);
                 $result = Database::SELECT('email', 'User', ['condition' => $whereThisEmail]);

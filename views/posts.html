@@ -61,8 +61,13 @@
                         <a href="{{ @BASE }}/edit-post/{{ @post->displayValue('id') }}" 
                         class="btn btn-warning">Edit Post</a>
 
-                        <a href="{{ @BASE }}/delete-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
-                            class="btn btn-danger">Delete Post</a>
+                        <check if="{{ !@post->getValue('is_root_post') }}">
+                            <true>
+                                <a href="{{ @BASE }}/delete-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
+                                    class="btn btn-danger">Delete Post</a>
+                            </true>
+                        </check>
+
                     </true>
                 </check>
                 
