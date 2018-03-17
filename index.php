@@ -27,6 +27,8 @@ $f3->set('DEBUG', 3);
  //                   PRE-ROUTE                    //
 //================================================//
 
+define('GENERATE_IMMEDIATELY', true);
+
 function isPost()
 {
     return $_SERVER['REQUEST_METHOD'] === 'POST';
@@ -70,6 +72,8 @@ $f3->route('GET /logout', function($f3)
 {
     if(loggedIn())
     {
+        $_SESSION['User']->saveMap();
+
         if(isset($_COOKIE[session_name()]))
         {
             setcookie(session_name(), '', time() - 3600, '/' );
@@ -311,6 +315,11 @@ $f3->route('GET|POST /new-thread', function($f3)
             
             if($threadResult instanceof Thread)
             {
+                if(GENERATE_IMMEDIATELY)
+                {
+                    $user->parseThread($thread);
+                    $user->generateThread();
+                }
                 $threadId = $thread->displayValue('id');
                 $f3->reroute("/posts/$threadId");
             }
