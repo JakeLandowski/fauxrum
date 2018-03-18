@@ -46,6 +46,11 @@ class TextMap
         $this->_id = $id > 0 ? $id : null;
     }
 
+    public function getId($id)
+    {
+        return $this->_id;
+    }
+
     public function parseText(&$text)
     {
         if(!isset($text)) return '';
