@@ -35,7 +35,8 @@ abstract class Database
                 'owner_name'    => 'string',
                 'replies'       => 'int',
                 'views'         => 'int', 
-                'created'       => 'string', 
+                'created'       => 'string',
+                'last_reply'    => 'string', 
                 'bot_generated' => 'int',
                 'parsed'        => 'int'
             ],

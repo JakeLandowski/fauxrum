@@ -30,6 +30,7 @@ CREATE TABLE Thread
     replies       INT         NOT NULL DEFAULT 0,
     views         INT         NOT NULL DEFAULT 0,
     created       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_reply    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     bot_generated TINYINT     NOT NULL DEFAULT 0,
     parsed        TINYINT     NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
