@@ -56,10 +56,10 @@
                             <h5>Replies: {{ @thread->displayValue('replies') }}</h5>
                         </div>
                         <div class="col-2">
-                            <h5>{{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('created')) }}</h5>
+                            <h5>created: {{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('created')) }}</h5>
                         </div>
                         <div class="col-2">
-                            <h5>{{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('last_reply')) }}</h5>
+                            <h5>last reply: {{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('last_reply')) }}</h5>
                         </div>
                     </a>
                 

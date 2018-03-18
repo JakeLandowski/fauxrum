@@ -109,6 +109,7 @@ class Thread extends Validator
                 $thread->setValue('owner_name',    $row['owner_name']);
                 $thread->setValue('title',         $row['title']);
                 $thread->setValue('created',       $row['created']);
+                $thread->setValue('last_reply',    $row['last_reply']);
                 $thread->setValue('views',         $row['views']);
                 $thread->setValue('replies',       $row['replies']);
                 $thread->setValue('bot_generated', $row['bot_generated']);
@@ -147,6 +148,7 @@ class Thread extends Validator
             $thread->setValue('owner',         $result['row']['owner']);
             $thread->setValue('owner_name',    $result['row']['owner_name']);
             $thread->setValue('created',       $result['row']['created']);
+            $thread->setValue('last_reply',    $result['row']['last_reply']);
             $thread->setValue('views',         $result['row']['views']);
             $thread->setValue('replies',       $result['row']['replies']);
             $thread->setValue('bot_generated', $result['row']['bot_generated']);
