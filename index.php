@@ -318,6 +318,7 @@ $f3->route('GET|POST /new-thread', function($f3)
                 if(GENERATE_IMMEDIATELY)
                 {
                     $user->parseThread($thread);
+                    $user->parsePost($thread->getValue('root_post'));
                     if(rand(1, 3) == 1)
                         $user->generatePost();
                     else if(rand(1, 5) == 1)
