@@ -9,6 +9,8 @@ CREATE TABLE User
     username      VARCHAR(20),
     email         VARCHAR(50),
     password      VARCHAR(255) NOT NULL,
+    num_threads   INT          NOT NULL DEFAULT 0,
+    num_posts     INT          NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
     UNIQUE(username),
     UNIQUE(email)
@@ -56,6 +58,7 @@ CREATE TABLE Post
     owner_name    VARCHAR(20) NOT NULL,
     created       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     content       TEXT        NOT NULL,
+    last_edit     TIMESTAMP,
     bot_generated TINYINT     NOT NULL DEFAULT 0,
     parsed        TINYINT     NOT NULL DEFAULT 0,
     is_root_post  TINYINT     NOT NULL DEFAULT 0,
@@ -70,7 +73,8 @@ CREATE TABLE TextMap
 (
     id       INT        NOT NULL AUTO_INCREMENT,
     map_data MEDIUMBLOB NOT NULL,
-    owner    INT        NOT NULL,    
+    owner    INT        NOT NULL,
+    was_used TINYINT    NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
     FOREIGN KEY(owner) REFERENCES User(id) ON DELETE CASCADE
 

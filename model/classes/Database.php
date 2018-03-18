@@ -62,7 +62,8 @@ abstract class Database
             [ 
                 'id'       => 'int', 
                 'map_data' => 'lob', 
-                'owner'    => 'int' 
+                'owner'    => 'int',
+                'was_used' => 'int' 
             ]
     ];
     
