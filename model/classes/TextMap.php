@@ -46,7 +46,7 @@ class TextMap
         $this->_id = $id > 0 ? $id : null;
     }
 
-    public function getId($id)
+    public function getId()
     {
         return $this->_id;
     }

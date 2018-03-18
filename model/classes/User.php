@@ -69,6 +69,8 @@ class User extends DataCore
 
     public function generateThread()
     {
+        if($this->getValue('num_threads') < 3) return;
+                
         $thread    = new Thread;
         $owner     = $this->getValue('id');
         $ownerName = $this->getValue('username');
@@ -93,6 +95,8 @@ class User extends DataCore
 
     public function generatePost()
     {
+        if($this->getValue('num_posts') < 3) return;
+
         $result = Database::SELECT(['id', 'replies'], 'Thread');
         
         if($result['success'] && $result['num_rows'] > 0 && isset($result['rows']))
@@ -124,13 +128,40 @@ class User extends DataCore
         }
     }
 
-    public function saveMap()
+    public function saveMap() // To be called in logout
     {
-        // to be called in logout
+        $map = $this->getValue('textmap');
+        $mapId = $map->getId();
+        $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapId);
+
+        $result = Database::SELECT('was_used', 'TextMap', 
+                    ['fetch' => Database::ONE, 'condition' => $whereThisMap]);
+
+        $shouldSave  = $result['success'] && $result['num_rows'] > 0 && $result['row']['was_used'] == 0;
+        $toBeMarked  = $map->getToMarkLater();
+        $shouldParse = (count($toBeMarked['threads']) > 0 || count($toBeMarked['posts']) > 0);
         
-        // if toMarkLater has things
-            // update map to database
-            // update all the threads/posts as parsed = true 
+        if($shouldSave && $shouldParse)
+        {
+            $threads = $toBeMarked['threads'];
+            $posts   = $toBeMarked['posts'];
+            
+            $whereThisThread;
+            foreach($threads as $id)
+            {
+                $whereThisThread = (new Condition('Thread'))->col('id')->equals($id);
+                Database::UPDATE('Thread', 'parsed', 1, $whereThisThread);
+            }
+
+            $whereThisPost;
+            foreach($posts as $id)
+            {
+                $whereThisPost = (new Condition('Post'))->col('id')->equals($id);
+                Database::UPDATE('Post', 'parsed', 1, $whereThisPost);
+            }
+
+            Database::UPDATE('TextMap', 'map_data', serialize($map), $whereThisMap);
+        } 
     }
 
   //=========================================================//
