@@ -454,6 +454,8 @@ abstract class Database
     {   
         $returnValues = ['success' => false];
 
+        if(!is_array($values)) $values = [$values];
+        if(!is_array($columns)) $columns = [$columns];
         $sql = Database::_buildUpdate($table, $columns, $values, $condition);
         
         $connection = Database::connect();
@@ -461,8 +463,6 @@ abstract class Database
         try
         {
             $statement = $connection->prepare($sql);
-            
-            if(!is_array($values)) $values = [$values];
             
             // FOR EACH VALUE BIND THEM
             $type;
@@ -564,7 +564,7 @@ abstract class Database
                 return implode(', ', $builtPairs);
             }
         }
-        else  // IF BOTH ATOMIC
+        else if(!is_array($columns) && !is_array($values)) // IF BOTH ATOMIC
         {
             return trim($columns) . ' = :value_1';
         }
@@ -700,7 +700,7 @@ abstract class Database
  //                 CONNECTION HANDLING                     //
 //=========================================================//
 
-    private static final function connect()
+    public static final function connect()
     {
         try
         {
@@ -716,7 +716,7 @@ abstract class Database
         return $connection;
     }
 
-    private static final function disconnect(&$connection)
+    public static final function disconnect(&$connection)
     {
         unset($connection);
     }    
