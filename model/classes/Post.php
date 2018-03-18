@@ -49,8 +49,7 @@ class Post extends Validator
     {
         $postId = $this->getValue('id');
         $whereThisPost = (new Condition('Post'))->col('id')->equals($postId);
-        $now = date('Y-m-d H:i:s', time());
-        Database::UPDATE('Post', ['content', 'last_edit'], [$newContent, $now], $whereThisPost); 
+        Database::UPDATE('Post', ['content', 'last_edit'], [$newContent, null], $whereThisPost); 
         $this->setValue('content', $newContent);
     }
 
