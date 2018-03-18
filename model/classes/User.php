@@ -61,7 +61,13 @@ class User extends DataCore
         
         if($map instanceof TextMap) // For safety
         {
-            $map->parseSentences($post->getValue('content'));
+            $content = $post->getValue('content');
+            $chunks = preg_split('/\[quote\](.*)\[\/quote\]/i', $content, -1,  PREG_SPLIT_DELIM_CAPTURE);
+            // $chunk[1] == quoted content can use later for cross over algo
+            $quoteLess  = isset($chunks[0]) ? $chunks[0] : '';
+            $quoteLess .= isset($chunks[2]) ? $chunks[2] : '';
+
+            $map->parseSentences($quoteLess);
             if(loggedIn()) 
                 $map->markAsParsedLater('posts', $post->getValue('id'));
         }

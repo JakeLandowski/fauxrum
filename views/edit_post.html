@@ -39,7 +39,7 @@
                             id="content"
                             name="content"
                             rows="5"
-                >{{ isset(@content) ? @content : '' }}</textarea>
+                >{{ preg_replace('/\[quote\]|\[\/quote\]/', '', isset(@content) ? @content : '') }}</textarea>
             </div>
         
             <input type="submit" value="Edit" class="btn btn-primary" />

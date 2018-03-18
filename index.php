@@ -366,6 +366,12 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
     $f3->set('thread_id', $replyingInThreadId);
     $f3->set('post_id', $repliedToPostId);
 
+    $replyingTo = Post::getPost($repliedToPostId);
+    if($replyingTo instanceof Post &&  // Found Reply Post
+       $replyingTo->getValue('thread') == $replyingInThreadId) // Valid Reply Post
+    {
+        $f3->set('quoted_post', $replyingTo);
+    }
     if(isPost())
     {
         $user = $_SESSION['User'];

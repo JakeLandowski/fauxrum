@@ -35,7 +35,8 @@
                   id="content"
                   name="content"
                   rows="5"
-        >{{ isset(@content) ? @content : '' }}</textarea>
+        >[quote]{{ preg_replace('/\[quote\]|\[\/quote\]/', '', isset(@quoted_post) ? @quoted_post->displayValue('content') : '') }}[/quote]{{ 
+            isset(@content) ? @content : '' }}</textarea>
     </div>
 
     <input type="submit" value="Create Post" class="btn btn-primary" />
