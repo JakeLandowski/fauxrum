@@ -318,7 +318,10 @@ $f3->route('GET|POST /new-thread', function($f3)
                 if(GENERATE_IMMEDIATELY)
                 {
                     $user->parseThread($thread);
-                    $user->generateThread();
+                    if(rand(1, 3) == 1)
+                        $user->generatePost();
+                    else if(rand(1, 5) == 1)
+                        $user->generateThread();
                 }
                 $threadId = $thread->displayValue('id');
                 $f3->reroute("/posts/$threadId");
@@ -382,7 +385,10 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
                 if(GENERATE_IMMEDIATELY)
                 {
                     $user->parsePost($post);
-                    $user->generatePost();
+                    if(rand(1, 3) == 1)
+                        $user->generatePost();
+                    else if(rand(1, 5) == 1)
+                        $user->generateThread();
                 }
 
                 $thread = Thread::getThread($replyingInThreadId);
