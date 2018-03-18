@@ -22,7 +22,7 @@
     <check if="{{ isset(@posts) && isset(@thread)}}">
 
         <h1 class="text-center">{{ @thread->displayValue('title') }}
-            <check if="{{ isset(@user_id) && @user_id == @thread->getValue('owner') }}">
+            <check if="{{ isset(@user_id) && @user_id == @thread->getValue('owner') && !@thread->getValue('bot_generated') }}">
                 <true>
                     <a href="{{ @BASE }}/edit-thread/{{ @thread->displayValue('id') }}" 
                     class="btn btn-warning">Edit Title</a>
@@ -53,7 +53,7 @@
                     @post->displayValue('id') }}" 
                 class="btn btn-primary">Reply To</a>
 
-                <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') }}">
+                <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') && !@post->getValue('bot_generated') }}">
                     <true>
                         <a href="{{ @BASE }}/edit-post/{{ @post->displayValue('id') }}" 
                         class="btn btn-warning">Edit Post</a>
