@@ -187,7 +187,7 @@ $f3->route('GET /threads/@page', function($f3, $params)
     
     $page  = (int) $params['page'];
     $per   = 25;
-    $order = 'created';
+    $order = 'last_reply';
     $start = ($page - 1) * $per;
 
     $paginator = new Paginator($page, $per, $order);

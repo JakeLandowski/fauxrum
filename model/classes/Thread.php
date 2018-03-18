@@ -21,6 +21,7 @@ class Thread extends Validator
         'replies'       => 0,
         'views'         => 0,
         'created'       => null,
+        'last_reply'    => null,
         'bot_generated' => false,
         'root_post'     => null // not a column in database
     ];

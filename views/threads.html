@@ -49,14 +49,17 @@
                         <div class="col-4">
                             <h5>{{ @thread->displayValue('title') }}</h5>
                         </div>
-                        <div class="col-2">
+                        <div class="col-1">
                             <h5>Views: {{ @thread->displayValue('views') }}</h5>
                         </div>
-                        <div class="col-2">
+                        <div class="col-1">
                             <h5>Replies: {{ @thread->displayValue('replies') }}</h5>
                         </div>
                         <div class="col-2">
                             <h5>{{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('created')) }}</h5>
+                        </div>
+                        <div class="col-2">
+                            <h5>{{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('last_reply')) }}</h5>
                         </div>
                     </a>
                 
