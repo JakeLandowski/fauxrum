@@ -19,6 +19,7 @@ class Post extends Validator
         'owner'         => null,
         'owner_name'    => null,
         'content'       => null,
+        'last_edit'     => null,
         'created'       => null,
         'is_root_post'  => false,
         'bot_generated' => false
@@ -48,7 +49,8 @@ class Post extends Validator
     {
         $postId = $this->getValue('id');
         $whereThisPost = (new Condition('Post'))->col('id')->equals($postId);
-        Database::UPDATE('Post', 'content', $newContent, $whereThisPost); 
+        $now = date('Y-m-d H:i:s', time());
+        Database::UPDATE('Post', ['content', 'last_edit'], [$newContent, $now], $whereThisPost); 
         $this->setValue('content', $newContent);
     }
 
@@ -87,6 +89,7 @@ class Post extends Validator
                 $post->setValue('thread',        $row['thread']);
                 $post->setValue('content',       $row['content']);
                 $post->setValue('created',       $row['created']);
+                $post->setValue('last_edit',     $row['last_edit']);
                 $post->setValue('is_root_post',  $row['is_root_post']);
                 $post->setValue('bot_generated', $row['bot_generated']);
                 $returnValue['posts'][] = $post;
@@ -128,6 +131,7 @@ class Post extends Validator
             $post->setValue('content',       $result['row']['content']);
             $post->setValue('thread',        $result['row']['thread']);
             $post->setValue('created',       $result['row']['created']);
+            $post->setValue('last_edit',     $result['row']['last_edit']);
             $post->setValue('is_root_post',  $result['row']['is_root_post']);
             $post->setValue('bot_generated', $result['row']['bot_generated']);
             $returnValue = $post;
