@@ -137,6 +137,9 @@ class Login extends Validator
                     $textMap = unserialize($mapResult['row']['map_data']);
                     $textMap->setId($mapResult['row']['id']); 
                     $returnValue->setValue('textmap', $textMap);
+                    
+                    $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapResult['row']['id']);
+                    Database::UPDATE('TextMap', 'was_used', 0, $whereThisMap);
                 }
             }
 
