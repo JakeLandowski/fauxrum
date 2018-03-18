@@ -35,7 +35,7 @@
 
         <true>
             <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
-            
+
                 <div class="row mr-3">
                     <div class="col-2">
                         <h5>{{ @post->displayValue('owner_name') }}</h5>
@@ -47,6 +47,14 @@
                         <h5>{{ TimeCalculate::getTimeSinceCreation(@post->displayValue('created')) }}</h5>
                     </div>
                 </div>
+                <check if="{{ strtotime(@post->getValue('last_edit')) > 0 }}">
+                    <true>
+                        <p>
+                            Editted by {{@post->displayValue('owner_name')}} 
+                            {{ TimeCalculate::getTimeSinceCreation(@post->displayValue('last_edit')) }}
+                        </p>
+                    </true>
+                </check>
 
                 <a href="{{ @BASE }}/new-post/{{ 
                     @thread->displayValue('id') }}/{{ 
