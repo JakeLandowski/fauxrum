@@ -36,6 +36,41 @@ class User extends DataCore
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function fetchMapFromDatabase()
+    {
+        $userId = $this->getValue('id');
+
+        $mapOptions = 
+        [
+            'condition' => (new Condition('TextMap'))->col('owner')->equals($userId),
+            'fetch' => Database::ONE
+        ];
+
+        $mapResult = Database::SELECT(['id', 'map_data'], 'TextMap', $mapOptions);
+
+        if($mapResult['success'] && 
+            $mapResult['num_rows'] == 1 &&
+            isset($mapResult['row']))
+        {
+            $textMap = unserialize($mapResult['row']['map_data']);
+            $textMap->setId($mapResult['row']['id']); 
+            $this->setValue('textmap', $textMap);
+            
+            $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapResult['row']['id']);
+            Database::UPDATE('TextMap', 'was_used', 0, $whereThisMap);
+        }
+        else // There was no textmap when logging in, make one
+        {
+            $textMap = new TextMap(5, 500); // Create fresh TextMap 
+            $serializedTextMap = serialize($textMap); // Prepare for INSERT
+
+                // Insert TextMap
+            $mapResult = Database::INSERT('TextMap', ['owner', 'map_data'], 
+                                            [$userId, $serializedTextMap]);
+            $this->setValue('textmap', $textMap);
+        }
+    }
+
     public function parseThread($thread)
     {
         if(!$thread instanceof Thread)
@@ -46,9 +81,7 @@ class User extends DataCore
         if($map instanceof TextMap) // For safety
         {
             $map->parseText($thread->getValue('title'));
-            $map->parseSentences($thread->getValue('root_post')->getValue('content'));
-            if(loggedIn()) 
-                $map->markAsParsedLater('threads', $thread->getValue('id'));
+            $map->markAsParsedLater('threads', $thread->getValue('id'));
         }
     }
 
@@ -68,8 +101,7 @@ class User extends DataCore
             $quoteLess .= isset($chunks[2]) ? $chunks[2] : '';
 
             $map->parseSentences($quoteLess);
-            if(loggedIn()) 
-                $map->markAsParsedLater('posts', $post->getValue('id'));
+            $map->markAsParsedLater('posts', $post->getValue('id'));
         }
     }
 
