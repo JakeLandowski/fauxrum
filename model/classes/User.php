@@ -36,7 +36,7 @@ class User extends DataCore
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
-    public function fetchMapFromDatabase()
+    public function fetchMapFromDatabase($online=true)
     {
         $userId = $this->getValue('id');
 
@@ -57,7 +57,7 @@ class User extends DataCore
             $this->setValue('textmap', $textMap);
             
             $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapResult['row']['id']);
-            Database::UPDATE('TextMap', 'was_used', 0, $whereThisMap);
+            Database::UPDATE('TextMap', 'was_used', ($online ? 0 : 1), $whereThisMap);
         }
         else // There was no textmap when logging in, make one
         {
@@ -75,12 +75,13 @@ class User extends DataCore
     {
         if(!$thread instanceof Thread)
             CustomError::throw("Tried to pass non-Thread 
-                                object $thread to parseThread().", 2);
+                                object to parseThread().", 1);
         $map = $this->getValue('textmap');
         
         if($map instanceof TextMap) // For safety
         {
-            $map->parseText($thread->getValue('title'));
+            $title = $thread->getValue('title');
+            $map->parseText($title);
             $map->markAsParsedLater('threads', $thread->getValue('id'));
         }
     }
@@ -89,7 +90,7 @@ class User extends DataCore
     {
         if(!$post instanceof Post)
             CustomError::throw("Tried to pass non-Post 
-                                object $post to parsePost().", 2);
+                                object to parsePost().", 1);
         $map = $this->getValue('textmap');
         
         if($map instanceof TextMap) // For safety

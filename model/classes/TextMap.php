@@ -32,7 +32,7 @@ class TextMap
         else
         {
             CustomError::throw("$which given in markAsParsedLater() needs 
-                               to be \'threads\' or \'posts\'");
+                               to be \'threads\' or \'posts\'", 2);
         }
     }
 
@@ -237,7 +237,7 @@ class TextMap
         return '';
     }
 
-    private function _filterChar(&$char)
+    private function _filterChar($char)
     {
         if(ctype_cntrl($char)) return ' ';
         if(ord($char) > 126 || ord($char) < 32) return '~';

@@ -122,35 +122,7 @@ class Login extends Validator
                 $returnValue = new User($userId, $email, $username);
                 $returnValue->setValue('num_threads', $numThreads);
                 $returnValue->setValue('num_posts',   $numPosts);
-                
-                $mapOptions = 
-                [
-                    'condition' => (new Condition('TextMap'))->col('owner')->equals($userId),
-                    'fetch' => Database::ONE
-                ];
-                $mapResult = Database::SELECT(['id', 'map_data'], 'TextMap', $mapOptions);
-
-                if($mapResult['success'] && 
-                   $mapResult['num_rows'] == 1 &&
-                   isset($mapResult['row']))
-                {
-                    $textMap = unserialize($mapResult['row']['map_data']);
-                    $textMap->setId($mapResult['row']['id']); 
-                    $returnValue->setValue('textmap', $textMap);
-                    
-                    $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapResult['row']['id']);
-                    Database::UPDATE('TextMap', 'was_used', 0, $whereThisMap);
-                }
-                else // There was no textmap when logging in, make one
-                {
-                    $textMap = new TextMap(5, 500); // Create fresh TextMap 
-                    $serializedTextMap = serialize($textMap); // Prepare for INSERT
-
-                        // Insert TextMap
-                    $mapResult = Database::INSERT('TextMap', ['owner', 'map_data'], 
-                                                    [$userId, $serializedTextMap]);
-                    $returnValue->setValue('textmap', $textMap);
-                }
+                $returnValue->fetchMapFromDatabase();
             }
 
             return $returnValue; // Return User Object or Error Message
