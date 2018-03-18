@@ -113,11 +113,15 @@ class Login extends Validator
             }
             else if(isset($result['row'])) // SUCCESSFUL LOGIN
             {
-                $userId    = $result['row']['id'];
-                $userName  = $result['row']['username'];
-                $userEmail = $result['row']['email'];
+                $userId     = $result['row']['id'];
+                $userName   = $result['row']['username'];
+                $userEmail  = $result['row']['email'];
+                $numThreads = $result['row']['num_threads'];
+                $numPosts   = $result['row']['num_posts'];
                 
                 $returnValue = new User($userId, $email, $username);
+                $returnValue->setValue('num_threads', $numThreads);
+                $returnValue->setValue('num_posts',   $numPosts);
                 
                 $mapOptions = 
                 [

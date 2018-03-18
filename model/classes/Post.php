@@ -201,6 +201,13 @@ class Post extends Validator
                 {
                     $this->setValue('id', $result['id']);
                     $returnValue = $this;
+                    
+                    $user = $_SESSION['User'];
+                    $whereThisUser = (new Condition('User'))->col('id')->equals($owner);
+                    $col  = $is_root_post == 1 ? 'num_threads' : 'num_posts';
+                    $val  = $user->getValue($col) + 1;
+                    $user->setValue($col, $val);
+                    Database::UPDATE('User', $col, $val, $whereThisUser);
                 }
                 
             }

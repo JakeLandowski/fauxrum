@@ -20,10 +20,12 @@ abstract class Database
     [
         'User' => 
             [ 
-                'id'       => 'int', 
-                'username' => 'string', 
-                'email'    => 'string', 
-                'password' => 'string' 
+                'id'          => 'int', 
+                'username'    => 'string', 
+                'email'       => 'string', 
+                'password'    => 'string',
+                'num_threads' => 'int',
+                'num_posts'   => 'int'
             ],
         'Thread' => 
             [ 
@@ -49,7 +51,8 @@ abstract class Database
                 'thread'        => 'int',   
                 'owner'         => 'int',
                 'owner_name'    => 'string', 
-                'created'       => 'string', 
+                'created'       => 'string',
+                'last_edit'     => 'string', 
                 'content'       => 'string', 
                 'bot_generated' => 'int', 
                 'parsed'        => 'int',

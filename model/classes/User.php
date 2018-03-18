@@ -12,10 +12,12 @@ class User extends DataCore
 {
     protected $data = 
     [
-        'id'       => null,
-        'email'    => null,
-        'username' => null,
-        'textmap'  => null
+        'id'          => null,
+        'email'       => null,
+        'username'    => null,
+        'textmap'     => null,
+        'num_threads' => 0,
+        'num_posts'   => 0
     ];
 
   //=========================================================//
@@ -108,7 +110,6 @@ class User extends DataCore
             $post->setUpGeneratedPost($randomContent, $owner, $ownerName, $threadId);
             $postResult = $post->createPost();
 
-            
             if($postResult instanceof Post)
             {
                 $thread = new Thread;
