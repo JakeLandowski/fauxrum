@@ -70,11 +70,13 @@ class User extends DataCore
         $thread    = new Thread;
         $owner     = $this->getValue('id');
         $ownerName = $this->getValue('username');
+        $map       = $this->getValue('textmap');
     
-        // Need to create new Post with generated content and pass to setUpGeneratedThread()
-
-        $thread->setUpGeneratedThread($map->generate(20, 40), $owner, $ownerName);
-
+        // dont forget to track number of threads/posts in User table later, change database
+        
+        $randomTitle   = $map->generate(20, 40);
+        $randomContent = $map->generate(rand(100, 500));
+        $thread->setUpGeneratedThread($randomTitle, $randomContent, $owner, $ownerName);
         $threadResult = $thread->createThread();
         
         // if($threadResult instanceof Thread)
@@ -85,6 +87,40 @@ class User extends DataCore
         // {
 
         // }
+    }
+
+    public function generatePost()
+    {
+        $result = Database::SELECT(['id', 'replies'], 'Thread');
+        
+        if($result['success'] && $result['num_rows'] > 0 && isset($result['rows']))
+        {
+            $randomThreadId = rand(0, $result['num_rows'] - 1);
+            $threadRow = $result['rows'][$randomThreadId];
+            $threadId  = $threadRow['id'];
+
+            $post      = new Post;
+            $owner     = $this->getValue('id');
+            $ownerName = $this->getValue('username');
+            $map       = $this->getValue('textmap');
+            
+            $randomContent = $map->generate(rand(100, 500));
+            $post->setUpGeneratedPost($randomContent, $owner, $ownerName, $threadId);
+            $postResult = $post->createPost();
+
+            
+            if($postResult instanceof Post)
+            {
+                $thread = new Thread;
+                $thread->setValue('id', $threadId);
+                $thread->setValue('replies', $threadRow['replies']);
+                $thread->incrementReplies();
+            }
+            else
+            {
+
+            }
+        }
     }
 
     public function saveMap()

@@ -186,7 +186,7 @@ $f3->route('GET /threads/@page', function($f3, $params)
     });
     
     $page  = (int) $params['page'];
-    $per   = 3;
+    $per   = 25;
     $order = 'created';
     $start = ($page - 1) * $per;
 
@@ -248,7 +248,7 @@ $f3->route('GET /posts/@thread_id/@page', function($f3, $params)
     $userId   = $_SESSION['User']->displayValue('id');
     $threadId = (int) $params['thread_id'];
     $page     = (int) $params['page'];
-    $per      = 3;
+    $per      = 25;
     $order    = 'created';
     $start    = ($page - 1) * $per;
     
@@ -379,6 +379,12 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
             
             if($postResult instanceof Post)
             {
+                if(GENERATE_IMMEDIATELY)
+                {
+                    $user->parsePost($post);
+                    $user->generatePost();
+                }
+
                 $thread = Thread::getThread($replyingInThreadId);
 
                 if($thread instanceof Thread) // Success

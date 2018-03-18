@@ -215,6 +215,17 @@ class Post extends Validator
         }   
     }
 
+    public function setUpGeneratedPost($generatedText, $owner, $ownerName, $threadId=null)
+    {   
+        $this->hasValidated(); // mark as validated because its all gooooood
+        
+        if(isset($threadId)) $this->setValue('thread', $threadId);
+        $this->setValue('owner',         $owner);
+        $this->setValue('owner_name',    $ownerName);
+        $this->setValue('bot_generated', true);
+        $this->setValue('content',       $generatedText);
+    }
+
   //=========================================================//
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//

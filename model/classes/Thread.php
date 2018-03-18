@@ -281,14 +281,16 @@ class Thread extends Validator
         }
     }
 
-    public function setUpGeneratedThread($generatedText, $owner, $ownerName)
+    public function setUpGeneratedThread($generatedTitle, $generatedContent, $owner, $ownerName)
     {
-        // NEED TO STORE new Post in data[] here for createThread to work
-
+        $this->hasValidated(); // mark as validated because its all gooooood
+        $post = new Post;
+        $post->setUpGeneratedPost($generatedContent, $owner, $owner_name);
+        $this->setValue('root_post', $post);
         $this->setValue('owner', $owner);
         $this->setValue('owner_name', $ownerName);
         $this->setValue('bot_generated', true);
-        $this->setValue('title', ucwords($generatedText));
+        $this->setValue('title', ucwords($generatedTitle));
     }
 
   //=========================================================//
