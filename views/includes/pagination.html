@@ -1,6 +1,12 @@
 <nav aria-label="Page Navigation">
     <ul class="pagination">
         <li class="page-item">
+            <a class="page-link" href="{{ @BASE }}/{{ @route }}/1"> <!-- /{{ @per }}/{{ @order }} -->
+                First
+            </a>
+        </li>
+
+        <li class="page-item">
             <a class="page-link" href="{{ @BASE }}/{{ @route }}/{{ @page == 1 ? @page : @page - 1 }}"> <!-- /{{ @per }}/{{ @order }} -->
                 Previous
             </a>
@@ -19,6 +25,12 @@
         <li class="page-item">
             <a class="page-link" href="{{ @BASE }}/{{ @route }}/{{ @page + 1 > @num_pages ? @page : @page + 1}}"> <!-- /{{ @per }}/{{ @order }} -->
                 Next
+            </a>
+        </li>
+
+        <li class="page-item">
+            <a class="page-link" href="{{ @BASE }}/{{ @route }}/0"> <!-- /{{ @per }}/{{ @order }} -->
+                Last
             </a>
         </li>
     </ul>
