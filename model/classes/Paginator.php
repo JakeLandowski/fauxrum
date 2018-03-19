@@ -30,16 +30,26 @@ class Paginator extends DataCore
         $this->setValue('start', ($page - 1) * $per);
     }
 
-    public function getAndPaginateAll($class, $id=null)
+    public function getAndPaginateAll($class, $threadId=null)
     {
         if(!is_callable([$class, 'getAllFromDatabase']))
             CustomError::throw("$class given does not have method getAllFromDatabase(), 
                                 which is needed for Paginator to work.", 2);
 
+        $result;
+
+        if($this->getValue('page') == 0)
+        {
+            if($class === 'Thread')
+                $this->_modifyStart(Thread::getNumThreads());
+            else if($class === 'Post')
+                $this->_modifyStart(Post::getNumPosts($threadId));
+        }
+        
         $result = $class::getAllFromDatabase($this->getValue('start'), 
-                                             $this->getValue('per'),
-                                             $this->getValue('order'),
-                                             $id);
+                                                $this->getValue('per'),
+                                                $this->getValue('order'),
+                                                $threadId);
         if(isset($result['total'])) 
         {
             $total = $result['total'];
@@ -76,5 +86,13 @@ class Paginator extends DataCore
   //=========================================================//
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
+
+    private function _modifyStart($total)
+    {
+        $per = $this->getValue('per');
+        $numPages = (int)($total / $per) + ($total % $per != 0 ? 1 : 0);
+        $this->setValue('page', $numPages);
+        $this->setValue('start', ($numPages - 1) * $per);
+    }   
 
 }

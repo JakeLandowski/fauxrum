@@ -54,6 +54,16 @@ class Post extends Validator
         $this->setValue('content', $newContent);
     }
 
+    public static function getNumPosts($threadId)
+    {
+        $whereThisThread = (new Condition('Post'))->col('thread')->equals($threadId);
+        $result = Database::SELECT('id', 'Post', ['condition' => $whereThisThread]);
+        if(isset($result['success']) && $result['success'] && isset($result['num_rows'])) 
+            return $result['num_rows'];
+        else
+            return 0;
+    }
+
     public static function getAllFromDatabase($limitStart, $limitAmount, $orderBy, $threadId)
     {
         if(!isset($threadId))

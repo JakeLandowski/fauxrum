@@ -80,6 +80,15 @@ class Thread extends Validator
         }
     }
 
+    public static function getNumThreads()
+    {
+        $result = Database::SELECT('id', 'Thread');
+        if(isset($result['success']) && $result['success'] && isset($result['num_rows'])) 
+            return $result['num_rows'];
+        else
+            return 0;
+    }
+
     public static function getAllFromDatabase($limitStart, $limitAmount, $orderBy)
     {
         $options = 

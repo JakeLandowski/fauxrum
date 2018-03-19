@@ -29,11 +29,7 @@
 
         <true>
             <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
-
-                <p>page: {{@page}}</p>
-                <p>num_pages: {{@num_pages}}</p>
-                <p>total: {{@total}}</p>
-                <a name="post_{{ @i }}"></a>
+                
                 <div class="row mr-3">
                     <div class="col-2">
                         <h5>{{ @post->displayValue('owner_name') }}</h5>
@@ -75,6 +71,8 @@
                 </check>
                 
             </repeat>
+
+            <a name="last_post"></a>
 
             <form action="{{ @BASE }}/posts/{{ 
                 @thread->displayValue('id') }}/1/#reply_error" method="POST">

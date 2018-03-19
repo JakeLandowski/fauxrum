@@ -245,7 +245,7 @@ $f3->route('GET|POST /posts/@thread_id/@page', function($f3, $params)
 
     errorIfTokenInvalid($f3, $params['page'], function($token)
     {
-        return !is_numeric($token) || (int)$token < 1;
+        return !is_numeric($token) || (int)$token < 0;
     });
     
     $user     = $_SESSION['User'];
@@ -327,7 +327,7 @@ $f3->route('GET|POST /posts/@thread_id/@page', function($f3, $params)
                     $thread->incrementReplies();
                 }
                     // success, show the post
-                $f3->reroute("/posts/$threadId/2"); 
+                $f3->reroute("/posts/$threadId/0/#last_post"); 
             }
             else
             {
@@ -470,7 +470,7 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
                     $thread->incrementReplies();
                 }
                     // success, show the post
-                $f3->reroute($returnRoute); 
+                $f3->reroute("$returnRoute/0/#last_post"); 
             }
             else
             {
