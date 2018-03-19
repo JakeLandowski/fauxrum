@@ -184,7 +184,7 @@ $f3->route('GET /threads/@page', function($f3, $params)
 
     errorIfTokenInvalid($f3, $params['page'], function($token)
     {
-        return !is_numeric($token) || (int)$token < 1;
+        return !is_numeric($token) || (int)$token < 0;
     });
     
     $page  = (int) $params['page'];
