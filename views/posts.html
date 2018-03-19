@@ -74,8 +74,9 @@
 
             <a name="last_post"></a>
 
+            <h1>{{@BASE}}</h1>
             <form action="{{ @BASE }}/posts/{{ 
-                @thread->displayValue('id') }}/1/#reply_error" method="POST">
+                @thread->displayValue('id') }}/{{ @page }}/#reply_error" method="POST">
 
                 <div class="form-group">
                     <p class="error-text m-0">
