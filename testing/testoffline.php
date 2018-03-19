@@ -100,9 +100,8 @@ if(successful($result))
                 echo 'generated post';
             }
         }
-        // Here, for each user, randomly generate
 
-        // Then save map
+        $user->saveMap(false); // false to indicate offline
     }
 }
 

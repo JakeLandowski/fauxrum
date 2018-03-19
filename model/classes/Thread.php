@@ -293,6 +293,7 @@ class Thread extends Validator
         $this->setValue('owner', $owner);
         $this->setValue('owner_name', $ownerName);
         $this->setValue('bot_generated', true);
+        $this->setValue('parsed', true);
         $this->setValue('title', ucwords($generatedTitle));
     }
 

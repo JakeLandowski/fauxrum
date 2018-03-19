@@ -36,6 +36,12 @@ class User extends DataCore
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    public function updateMapWasUsed($mapId, $used)
+    {
+        $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapId);
+        Database::UPDATE('TextMap', 'was_used', ($used ? 1 : 0), $whereThisMap);
+    }
+
     public function fetchMapFromDatabase($online=true)
     {
         $userId = $this->getValue('id');
@@ -55,9 +61,8 @@ class User extends DataCore
             $textMap = unserialize($mapResult['row']['map_data']);
             $textMap->setId($mapResult['row']['id']); 
             $this->setValue('textmap', $textMap);
-            
-            $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapResult['row']['id']);
-            Database::UPDATE('TextMap', 'was_used', ($online ? 0 : 1), $whereThisMap);
+        
+            if($online) $this->updateMapWasUsed($mapResult['row']['id'], false);
         }
         else // There was no textmap when logging in, make one
         {
@@ -115,9 +120,9 @@ class User extends DataCore
         $ownerName = $this->getValue('username');
         $map       = $this->getValue('textmap');
     
-        // dont forget to track number of threads/posts in User table later, change database
+        $randomTitle = $map->generate(25, 40);
+        $this->_pruneGeneratedTitle($randomTitle);
         
-        $randomTitle   = $map->generate(20, 40);
         $randomContent = $map->generate(rand(100, 500));
         $thread->setUpGeneratedThread($randomTitle, $randomContent, $owner, $ownerName);
         $threadResult = $thread->createThread();
@@ -159,7 +164,10 @@ class User extends DataCore
             $ownerName = $this->getValue('username');
             $map       = $this->getValue('textmap');
             
-            $randomContent = $map->generate(rand(100, 500));
+            $size  = rand(10, 500);
+            $extra = 1000 - $size; 
+            $cap   = $size + rand(20, $extra);
+            $randomContent = $map->generate($size, $cap);
             $post->setUpGeneratedPost($randomContent, $owner, $ownerName, $threadId);
             $postResult = $post->createPost();
 
@@ -177,39 +185,26 @@ class User extends DataCore
         }
     }
 
-    public function saveMap() // To be called in logout
+    public function saveMap($online=true) // To be called in logout
     {
         $map = $this->getValue('textmap');
         $mapId = $map->getId();
         $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapId);
-
-        $result = Database::SELECT('was_used', 'TextMap', 
-                    ['fetch' => Database::ONE, 'condition' => $whereThisMap]);
-
-        $shouldSave  = $result['success'] && $result['num_rows'] > 0 && $result['row']['was_used'] == 0;
         $toBeMarked  = $map->getToMarkLater();
-        $shouldParse = (count($toBeMarked['threads']) > 0 || count($toBeMarked['posts']) > 0);
+        $shouldParse = (count($toBeMarked['threads']) > 0 || count($toBeMarked['posts']) > 0);   
         
-        if($shouldSave && $shouldParse)
+        if($shouldParse)
         {
-            $threads = $toBeMarked['threads'];
-            $posts   = $toBeMarked['posts'];
+            $loggingOutAndWasntUsed = $online && $this->_shouldUpdateContent($mapId, $whereThisMap); 
             
-            $whereThisThread;
-            foreach($threads as $id)
+            if(!$online || $loggingOutAndWasntUsed)
             {
-                $whereThisThread = (new Condition('Thread'))->col('id')->equals($id);
-                Database::UPDATE('Thread', 'parsed', 1, $whereThisThread);
+                $this->_updateParsedContent($toBeMarked);
+                Database::UPDATE('TextMap', 'map_data', serialize($map), $whereThisMap);
+                echo 'saved map';
             }
-
-            $whereThisPost;
-            foreach($posts as $id)
-            {
-                $whereThisPost = (new Condition('Post'))->col('id')->equals($id);
-                Database::UPDATE('Post', 'parsed', 1, $whereThisPost);
-            }
-
-            Database::UPDATE('TextMap', 'map_data', serialize($map), $whereThisMap);
+            
+            if(!$online) $this->updateMapWasUsed($mapId, true);
         } 
     }
 
@@ -217,4 +212,40 @@ class User extends DataCore
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
 
+    private function _shouldUpdateContent($mapId, $whereThisMap)
+    {
+        $result = Database::SELECT('was_used', 'TextMap', 
+                    ['fetch' => Database::ONE, 'condition' => $whereThisMap]);
+
+        return $result['success'] && $result['num_rows'] > 0 && $result['row']['was_used'] == 0;
+    }
+
+    private function _updateParsedContent($toBeMarked)
+    {
+        $threads = $toBeMarked['threads'];
+        $posts   = $toBeMarked['posts'];
+        
+        $whereThisThread;
+        foreach($threads as $id)
+        {
+            $whereThisThread = (new Condition('Thread'))->col('id')->equals($id);
+            Database::UPDATE('Thread', 'parsed', 1, $whereThisThread);
+        }
+
+        $whereThisPost;
+        foreach($posts as $id)
+        {
+            $whereThisPost = (new Condition('Post'))->col('id')->equals($id);
+            Database::UPDATE('Post', 'parsed', 1, $whereThisPost);
+        }
+    }
+
+    private function _pruneGeneratedTitle(&$title)
+    {
+        $title = trim($title);
+        $chunks = preg_split('/(.*) [^ ]*/i', $title, -1,  PREG_SPLIT_DELIM_CAPTURE);
+        $title = isset($chunks[0]) ? $chunks[0] : '';
+        $title .= isset($chunks[1]) ? $chunks[1] : ''; 
+        $title .= isset($chunks[2]) ? $chunks[2] : '';
+    }
 }
