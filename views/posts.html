@@ -61,9 +61,6 @@
             </repeat>
 
             <a name="last_post"></a>
-
-            <h1>"{{ @BASE }}/posts/{{ 
-                @thread->displayValue('id') }}/{{ @page }}/#reply_error"</h1>
             <form action="{{ @BASE }}/posts/{{ 
                 @thread->displayValue('id') }}/{{ @page }}#reply_error" method="POST" 
                 enctype="multipart/form-data">
