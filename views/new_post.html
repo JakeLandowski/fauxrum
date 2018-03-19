@@ -38,7 +38,7 @@
             isset(@content) ? @content : '' 
         }}</textarea>
     </div>
-
+    <a href="{{ @BASE }}{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
     <input type="submit" value="Create Post" class="btn btn-primary" />
 
 </form>

@@ -30,6 +30,10 @@
         <true>
             <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
 
+                <p>page: {{@page}}</p>
+                <p>num_pages: {{@num_pages}}</p>
+                <p>total: {{@total}}</p>
+                <a name="post_{{ @i }}"></a>
                 <div class="row mr-3">
                     <div class="col-2">
                         <h5>{{ @post->displayValue('owner_name') }}</h5>
@@ -57,7 +61,7 @@
 
                 <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') && !@post->getValue('bot_generated') }}">
                     <true>
-                        <a href="{{ @BASE }}/edit-post/{{ @post->displayValue('id') }}" 
+                        <a href="{{ @BASE }}/edit-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
                         class="btn btn-warning">Edit Post</a>
 
                         <check if="{{ !@post->getValue('is_root_post') }}">
@@ -71,6 +75,28 @@
                 </check>
                 
             </repeat>
+
+            <form action="{{ @BASE }}/posts/{{ 
+                @thread->displayValue('id') }}/1/#reply_error" method="POST">
+
+                <div class="form-group">
+                    <p class="error-text m-0">
+                        {{ isset(@errors['content']) ? @errors['content'] : ''}}
+                        {{ isset(@create_fail_message) ? @create_fail_message : ''}}
+                    </p>
+                    <check if="{{ isset(@create_fail_message) || isset(@errors['content']) }}">
+                        <true><a name="reply_error"></a></true>
+                    </check>
+                    <textarea class="form-control {{ isset(@errors['content']) ? 'error' : ''}}" 
+                              id="content"
+                              name="content"
+                              rows="5"
+                    >{{ isset(@content) ? @content : ''  }}</textarea>
+                </div>
+            
+                <input type="submit" value="Reply" class="btn btn-primary" />
+            
+            </form>
 
             <include href="./views/includes/pagination.html" />
         </true>

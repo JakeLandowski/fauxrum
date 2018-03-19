@@ -219,7 +219,7 @@ $f3->route('GET /threads/@page', function($f3, $params)
     echo Template::instance()->render('views/threads.html');
 });
 
-$f3->route('GET /posts/@thread_id', function($f3, $params)
+$f3->route('GET|POST /posts/@thread_id', function($f3, $params)
 {
     errorIfTokenInvalid($f3, $params['thread_id'], function($token)
     {
@@ -231,7 +231,7 @@ $f3->route('GET /posts/@thread_id', function($f3, $params)
     $f3->reroute("/posts/$threadId/1");
 });
 
-$f3->route('GET /posts/@thread_id/@page', function($f3, $params)
+$f3->route('GET|POST /posts/@thread_id/@page', function($f3, $params)
 {
     if(!loggedIn())
     {
@@ -248,7 +248,8 @@ $f3->route('GET /posts/@thread_id/@page', function($f3, $params)
         return !is_numeric($token) || (int)$token < 1;
     });
     
-    $userId   = $_SESSION['User']->displayValue('id');
+    $user     = $_SESSION['User'];
+    $userId   = $user->displayValue('id');
     $threadId = (int) $params['thread_id'];
     $page     = (int) $params['page'];
     $per      = 25;
@@ -290,6 +291,57 @@ $f3->route('GET /posts/@thread_id/@page', function($f3, $params)
     {
         $f3->set('fail_message', $result);
     }
+
+//=== In Page Reply ===//
+    if(isPost())
+    {
+        $post = new Post;
+        $post->setValue('owner',      $user->getValue('id'));
+        $post->setValue('owner_name', $user->getValue('username'));
+        $post->setValue('thread',     $threadId);
+        
+        $post->validate();
+
+        if(count($post->getErrors()) == 0)
+        {
+            $postResult = $post->createPost();
+            
+            if($postResult instanceof Post)
+            {
+                $user->incrementNumPosts();
+
+                if(GENERATE_IMMEDIATELY)
+                {
+                    $user->parsePost($post);
+                 
+                    if(rand(1, 3) == 1)
+                        $user->generatePost();
+                    else if(rand(1, 5) == 1)
+                        $user->generateThread();
+                }
+
+                $thread = Thread::getThread($threadId);
+
+                if($thread instanceof Thread) // Success
+                {
+                    $thread->incrementReplies();
+                }
+                    // success, show the post
+                $f3->reroute("/posts/$threadId/2"); 
+            }
+            else
+            {
+                    // failed insert, error message to print to user
+                $f3->set('create_fail_message', $postResult);
+            }
+        }
+    
+        $f3->mset([
+            'errors'  => $post->getErrors(),
+            'content' => $post->displayValue('content')
+        ]);
+    }
+//=== In Page Reply ===//
 
     echo Template::instance()->render('views/posts.html');
 });
@@ -369,9 +421,14 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
 
     $replyingInThreadId = (int) $params['thread_id'];
     $repliedToPostId    = (int) $params['post_id'];
-
-    $f3->set('thread_id', $replyingInThreadId);
-    $f3->set('post_id', $repliedToPostId);
+    $returnRoute = "/posts/$replyingInThreadId";
+    $f3->mset([
+        'return_route' => $returnRoute,
+        'thread_id' => $replyingInThreadId,
+        'post_id' => $repliedToPostId
+    ]);
+    
+    
 
     $replyingTo = Post::getPost($repliedToPostId);
     if($replyingTo instanceof Post &&  // Found Reply Post
@@ -413,7 +470,7 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
                     $thread->incrementReplies();
                 }
                     // success, show the post
-                $f3->reroute("/posts/$replyingInThreadId"); 
+                $f3->reroute($returnRoute); 
             }
             else
             {
@@ -424,7 +481,7 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
     
         $f3->mset([
             'errors'  => $post->getErrors(),
-            'content' => $post->displayValue('content'),
+            'content' => $post->displayValue('content')
         ]);
     }
     
@@ -450,6 +507,9 @@ $f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
 
     $userId = $_SESSION['User']->displayValue('id');
     $threadId = (int) $params['thread_id'];
+    $returnRoute = "/posts/$threadId";
+    $f3->set('return_route', $returnRoute);
+
     $thread = Thread::getThread($threadId);
     
     if($thread instanceof Thread) // Success
@@ -466,7 +526,7 @@ $f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
                 if(count($newThread->getErrors()) == 0)
                 {
                     $thread->editTitle($newThread->getValue('title'));
-                    $f3->reroute("/posts/$threadId");
+                    $f3->reroute($returnRoute);
                 }
                 else 
                 {
@@ -489,12 +549,17 @@ $f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
     echo Template::instance()->render('views/edit_thread.html');
 });
 
-$f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
+$f3->route('GET|POST /edit-post/@thread_id/@post_id', function($f3, $params)
 {
     if(!loggedIn())
     {
         $f3->reroute('/login');
     }
+
+    errorIfTokenInvalid($f3, $params['thread_id'], function($token)
+    {
+        return !is_numeric($token) || (int)$token < 1;
+    });
 
     errorIfTokenInvalid($f3, $params['post_id'], function($token)
     {
@@ -503,7 +568,9 @@ $f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
 
     $userId = $_SESSION['User']->displayValue('id');
     $postId   = (int) $params['post_id'];
-    $post     = Post::getPost($postId);
+    $threadId = (int) $params['thread_id'];
+    $post     = Post::getPost($postId); 
+    $returnRoute = "/posts/$threadId";
     
     if($post instanceof Post) // Success
     {
@@ -513,14 +580,13 @@ $f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
             
             if(isPost())
             {
-                $threadId = $post->getValue('thread');
                 $newPost = new Post;
                 $newPost->validate();
                 
                 if(count($newPost->getErrors()) == 0)
                 {
                     $post->editContent($newPost->getValue('content'));
-                    $f3->reroute("/posts/$threadId");
+                    $f3->reroute($returnRoute);
                 }
                 else 
                 {
@@ -539,7 +605,11 @@ $f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
         $f3->set('fail_message', $post);    
     }
 
-    $f3->set('page_title', 'Edit Post');
+    $f3->mset([
+        'page_title'   =>  'Edit Post', 
+        'route'        =>  "/edit-post/$threadId/$postId",
+        'return_route' =>  $returnRoute
+    ]);
     echo Template::instance()->render('views/edit_post.html');
 });
 

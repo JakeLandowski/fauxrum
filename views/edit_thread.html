@@ -36,6 +36,7 @@
                        value="{{ isset(@title) ? @title : @thread->displayValue('title') }}" 
                 />
                 <div class="form-check row">
+                        <a href="{{ @BASE }}{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
                     <input type="submit" value="Edit"  class="btn btn-primary"/>
                 </div> 
             </div>

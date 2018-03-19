@@ -21,7 +21,7 @@
 <check if="{{ isset(@post) }}">   
     <true>
 
-        <form method="POST" action="{{ @BASE }}/edit-post/{{ @post->displayValue('id') }}">
+        <form method="POST" action="{{ @BASE }}{{ isset(@route) ? @route : '' }}">
 
             <div class="form-group">
                 <label for="title">New Post</label>
@@ -35,6 +35,7 @@
                 >{{ isset(@content) ? @content : @post->displayValue('content') }}</textarea>
             </div>
         
+            <a href="{{ @BASE }}{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
             <input type="submit" value="Edit" class="btn btn-primary" />
         
         </form>
