@@ -295,52 +295,51 @@ $f3->route('GET|POST /posts/@thread_id/@page', function($f3, $params)
 //=== In Page Reply ===//
     if(isPost())
     {
-        echo 'desperate';
-        // $post = new Post;
-        // $post->setValue('owner',      $user->getValue('id'));
-        // $post->setValue('owner_name', $user->getValue('username'));
-        // $post->setValue('thread',     $threadId);
+        $post = new Post;
+        $post->setValue('owner',      $user->getValue('id'));
+        $post->setValue('owner_name', $user->getValue('username'));
+        $post->setValue('thread',     $threadId);
         
-        // $post->validate();
+        $post->validate();
 
-        // if(count($post->getErrors()) == 0)
-        // {
-        //     $postResult = $post->createPost();
+        if(count($post->getErrors()) == 0)
+        {
+            $postResult = $post->createPost();
             
-        //     if($postResult instanceof Post)
-        //     {
-        //         $user->incrementNumPosts();
+            if($postResult instanceof Post)
+            {
+                $user->incrementNumPosts();
 
-        //         if(GENERATE_IMMEDIATELY)
-        //         {
-        //             $user->parsePost($post);
+                if(GENERATE_IMMEDIATELY)
+                {
+                    $user->parsePost($post);
                  
-        //             if(rand(1, 3) == 1)
-        //                 $user->generatePost();
-        //             else if(rand(1, 5) == 1)
-        //                 $user->generateThread();
-        //         }
+                    if(rand(1, 3) == 1)
+                        $user->generatePost();
+                    else if(rand(1, 5) == 1)
+                        $user->generateThread();
+                }
 
-        //         $thread = Thread::getThread($threadId);
+                $thread = Thread::getThread($threadId);
 
-        //         if($thread instanceof Thread) // Success
-        //         {
-        //             $thread->incrementReplies();
-        //         }
-        //             // success, show the post
-        //         $f3->reroute("/posts/$threadId/0/#last_post"); 
-        //     }
-        //     else
-        //     {
-        //             // failed insert, error message to print to user
-        //         $f3->set('create_fail_message', $postResult);
-        //     }
-        // }
+                if($thread instanceof Thread) // Success
+                {
+                    $thread->incrementReplies();
+                }
+                    // success, show the post
+                $f3->reroute("./posts/$threadId/0/#last_post"); 
+            }
+            else
+            {
+                    // failed insert, error message to print to user
+                $f3->set('create_fail_message', $postResult);
+            }
+        }
     
-        // $f3->mset([
-        //     'errors'  => $post->getErrors(),
-        //     'content' => $post->displayValue('content')
-        // ]);
+        $f3->mset([
+            'errors'  => $post->getErrors(),
+            'content' => $post->displayValue('content')
+        ]);
     }
 //=== In Page Reply ===//
 
