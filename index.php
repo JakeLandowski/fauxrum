@@ -327,7 +327,7 @@ $f3->route('GET|POST /posts/@thread_id/@page', function($f3, $params)
                     $thread->incrementReplies();
                 }
                     // success, show the post
-                $f3->reroute("./posts/$threadId/0/#last_post"); 
+                $f3->reroute("/posts/$threadId/0#last_post"); 
             }
             else
             {
@@ -436,6 +436,7 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
     {
         $f3->set('quoted_post', $replyingTo);
     }
+    
     if(isPost())
     {
         $user = $_SESSION['User'];
@@ -470,7 +471,7 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
                     $thread->incrementReplies();
                 }
                     // success, show the post
-                $f3->reroute("$returnRoute/0/#last_post"); 
+                $f3->reroute("$returnRoute/0#last_post"); 
             }
             else
             {
