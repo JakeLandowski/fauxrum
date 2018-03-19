@@ -22,7 +22,8 @@ class Post extends Validator
         'last_edit'     => null,
         'created'       => null,
         'is_root_post'  => false,
-        'bot_generated' => false
+        'bot_generated' => false,
+        'parsed'        => false
     ];
     
   //=========================================================//
@@ -177,6 +178,7 @@ class Post extends Validator
             $content    = $this->getValue('content');
             $is_root_post  = $this->getValue('is_root_post')  ? 1 : 0;
             $bot_generated = $this->getValue('bot_generated') ? 1 : 0;
+            $parsed        = $this->getValue('parsed')        ? 1 : 0;
 
                 // Search for this Thread's existence before attempting to INSERT Post
             $whereThisThread = (new Condition('Thread'))->col('id')->equals($thread);
@@ -186,8 +188,8 @@ class Post extends Validator
             if($threadResult['success'] && $threadResult['num_rows'] > 0)
             {
                 $result = Database::INSERT('Post', 
-                ['thread', 'owner', 'owner_name', 'content', 'is_root_post', 'bot_generated'], 
-                [$thread,  $owner,  $owner_name, $content,  $is_root_post,  $bot_generated]);
+                ['thread', 'owner', 'owner_name', 'content', 'is_root_post', 'bot_generated', 'parsed'], 
+                [$thread,  $owner,  $owner_name, $content,  $is_root_post,  $bot_generated, $parsed]);
             
                 $returnValue = '';
 
@@ -227,7 +229,7 @@ class Post extends Validator
         $this->setValue('owner',         $owner);
         $this->setValue('owner_name',    $ownerName);
         $this->setValue('bot_generated', true);
-        $this->setValue('parsed', true);
+        $this->setValue('parsed',        true);
         $this->setValue('content',       $generatedText);
     }
 

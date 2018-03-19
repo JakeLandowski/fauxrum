@@ -23,6 +23,7 @@ class Thread extends Validator
         'created'       => null,
         'last_reply'    => null,
         'bot_generated' => false,
+        'parsed'        => false,
         'root_post'     => null // not a column in database
     ];
 
@@ -236,9 +237,10 @@ class Thread extends Validator
             $owner = $this->getValue('owner');
             $owner_name    = $this->getValue('owner_name');
             $bot_generated = $this->getValue('bot_generated') ? 1 : 0;
+            $parsed        = $this->getValue('parsed')        ? 1 : 0;
 
-            $result = Database::INSERT('Thread', ['owner', 'owner_name', 'title', 'bot_generated'], 
-                                                 [$owner,  $owner_name, $title, $bot_generated]);
+            $result = Database::INSERT('Thread', ['owner', 'owner_name', 'title', 'bot_generated', 'parsed'], 
+                                                 [$owner,  $owner_name, $title, $bot_generated, $parsed]);
             $returnValue = '';
 
             if(isset($result['duplicate'])) // TITLE TAKEN or foreign key issue lol

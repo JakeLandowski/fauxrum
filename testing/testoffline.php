@@ -4,7 +4,10 @@ require_once 'runTimeStart.php';
 
 spl_autoload_register(function($className)
 {
-    require_once getenv('HOME') . "/328/fauxrum/model/classes/{$className}.php";
+    if(file_exists(getenv('HOME') . "/328/fauxrum/model/classes/{$className}.php"))
+        require_once getenv('HOME') . "/328/fauxrum/model/classes/{$className}.php";
+    else if(file_exists(getenv('HOME') . "/328/fauxrum/views/classes/{$className}.php"))
+        require_once getenv('HOME') . "/328/fauxrum/views/classes/{$className}.php";
 });
 
 $whereEnoughContent = (new Condition('User'))->col('num_threads')->greaterThan(2)
