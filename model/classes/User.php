@@ -108,8 +108,6 @@ class User extends DataCore
 
             $quoteLess = Formatting::stripQuoteTags($content);
 
-            print_r($quoteLess);
-
             $map->parseSentences($quoteLess);
             $map->markAsParsedLater('posts', $post->getValue('id'));
         }
