@@ -124,6 +124,7 @@ $f3->route('GET|POST /login', function($f3)
         ]);
     }
 
+    $f3->set('page_title', 'Login');
     echo Template::instance()->render('views/login.html');
 });
 
@@ -162,6 +163,7 @@ $f3->route('GET|POST /register', function($f3)
         ]);
     }
 
+    $f3->set('page_title', 'Register');
     echo Template::instance()->render('views/register.html');
 });
 
@@ -213,6 +215,7 @@ $f3->route('GET /threads/@page', function($f3, $params)
         $f3->set('fail_message', $result);
     }
 
+    $f3->set('page_title', 'Threads');
     echo Template::instance()->render('views/threads.html');
 });
 
@@ -269,10 +272,11 @@ $f3->route('GET /posts/@thread_id/@page', function($f3, $params)
             $thread->incrementViews($userId);
             
             $f3->mset([
-                'user_id' => $userId,
-                'thread'  => $thread,
-                'posts'   => $result['posts'],
-                'route'   => "posts/$threadId"
+                'user_id'    => $userId,
+                'thread'     => $thread,
+                'posts'      => $result['posts'],
+                'route'      => "posts/$threadId",
+                'page_title' => $thread->displayValue('title')
             ]);
             
             $f3->mset($paginator->getHiveTokens());
@@ -342,6 +346,7 @@ $f3->route('GET|POST /new-thread', function($f3)
         ]);
     }
     
+    $f3->set('page_title', 'New Thread');
     echo Template::instance()->render('views/new_thread.html');
 });
 
@@ -423,6 +428,7 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
         ]);
     }
     
+    $f3->set('page_title', 'Reply');
     echo Template::instance()->render('views/new_post.html');
 });
 
@@ -479,6 +485,7 @@ $f3->route('GET|POST /edit-thread/@thread_id', function($f3, $params)
         $f3->set('fail_message', $thread);    
     }
 
+    $f3->set('page_title', 'Edit Thread');
     echo Template::instance()->render('views/edit_thread.html');
 });
 
@@ -532,6 +539,7 @@ $f3->route('GET|POST /edit-post/@post_id', function($f3, $params)
         $f3->set('fail_message', $post);    
     }
 
+    $f3->set('page_title', 'Edit Post');
     echo Template::instance()->render('views/edit_post.html');
 });
 
@@ -598,7 +606,7 @@ $f3->route('GET|POST /delete-post/@thread_id/@post_id', function($f3, $params)
         'route'        => "/delete-post/$threadId/$postId", 
         'return_route' => $returnRoute,
         'message'      => 'Are you sure you want to delete this post?',
-        // 'post'         => $post
+        'page_title'   => 'Delete Post'
     ]);
 
     echo Template::instance()->render('views/confirmation.html');
@@ -652,7 +660,7 @@ $f3->route('GET|POST /delete-thread/@thread_id', function($f3, $params)
         'route'        => "/delete-thread/$threadId", 
         'return_route' => "/posts/$threadId",
         'message'      => 'Are you sure you want to delete this thread?',
-        // 'thread'         => $thread
+        'page_title'   => 'Delete Thread'
     ]);
 
     echo Template::instance()->render('views/confirmation.html');
