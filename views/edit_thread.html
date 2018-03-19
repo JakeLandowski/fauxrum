@@ -24,7 +24,6 @@
         
         <form method="POST" action="{{ @BASE }}/edit-thread/{{ @thread->displayValue('id') }}">
             <div class="container">
-                <h1 class="text-center">Current Title: {{ @thread->displayValue('title') }}</h1>
                 <label for="title">New Title</label>
                 <p class="error-text m-0">
                     {{ isset(@errors['title']) ? @errors['title'] : ''}}
@@ -34,7 +33,7 @@
                        id="title"
                        name="title" 
                        placeholder="ex: I like kittens"
-                       value="{{ isset(@title) ? @title : '' }}" 
+                       value="{{ isset(@title) ? @title : @thread->displayValue('title') }}" 
                 />
                 <div class="form-check row">
                     <input type="submit" value="Edit"  class="btn btn-primary"/>

@@ -24,7 +24,6 @@
         <form method="POST" action="{{ @BASE }}/edit-post/{{ @post->displayValue('id') }}">
 
             <div class="form-group">
-                <h1 class="text-center">Current Post: {{ @post->displayValue('content') }}</h1>
                 <label for="title">New Post</label>
                 <p class="error-text m-0">
                     {{ isset(@errors['content']) ? @errors['content'] : ''}}
@@ -33,7 +32,7 @@
                             id="content"
                             name="content"
                             rows="5"
-                >{{ preg_replace('/\[quote\]|\[\/quote\]/', '', isset(@content) ? @content : '') }}</textarea>
+                >{{ isset(@content) ? @content : @post->displayValue('content') }}</textarea>
             </div>
         
             <input type="submit" value="Edit" class="btn btn-primary" />
