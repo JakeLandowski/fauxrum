@@ -101,10 +101,12 @@ class User extends DataCore
         if($map instanceof TextMap) // For safety
         {
             $content = $post->getValue('content');
-            $chunks = preg_split('/\[quote\](.*)\[\/quote\]/i', $content, -1,  PREG_SPLIT_DELIM_CAPTURE);
+            $chunks = preg_split('/\[quote\](.*)\[\/quote\]/i', $content, -1,  PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
             // $chunk[1] == quoted content can use later for cross over algo
             $quoteLess  = isset($chunks[0]) ? $chunks[0] : '';
             $quoteLess .= isset($chunks[2]) ? $chunks[2] : '';
+
+            print_r($chunks);
 
             $map->parseSentences($quoteLess);
             $map->markAsParsedLater('posts', $post->getValue('id'));
@@ -201,7 +203,6 @@ class User extends DataCore
             {
                 $this->_updateParsedContent($toBeMarked);
                 Database::UPDATE('TextMap', 'map_data', serialize($map), $whereThisMap);
-                echo 'saved map';
             }
             
             if(!$online) $this->updateMapWasUsed($mapId, true);

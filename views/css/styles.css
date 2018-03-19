@@ -1,0 +1,28 @@
+body
+{
+    font-family: Ubuntu, Roboto, sans-serif;
+}
+.error
+{
+    border: 1px solid red;
+}
+
+.error-text
+{
+    color: red;
+}
+
+
+
+
+
+
+
+h2
+{
+    text-align: center;
+}
+body
+{
+    background-image: url("./image/ya.jpg");
+}
