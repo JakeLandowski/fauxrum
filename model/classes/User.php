@@ -132,6 +132,16 @@ class User extends DataCore
         // }
     }
 
+    public function incrementNumPosts($isRootPost=false)
+    {
+        // UPDATE USER NUM_POST OR NUM_THREAD
+        $whereThisUser = (new Condition('User'))->col('id')->equals($this->getValue('id'));
+        $col = $isRootPost ? 'num_threads' : 'num_posts';
+        $val = $this->getValue($col) + 1;
+        $this->setValue($col, $val);
+        Database::UPDATE('User', $col, $val, $whereThisUser);
+    }
+
     public function generatePost()
     {
         if($this->getValue('num_posts') < 3) return;

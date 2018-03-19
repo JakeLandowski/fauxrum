@@ -315,6 +315,7 @@ $f3->route('GET|POST /new-thread', function($f3)
             
             if($threadResult instanceof Thread)
             {
+                $user->incrementNumPosts(true);
                 if(GENERATE_IMMEDIATELY)
                 {
                     $user->parseThread($thread);
@@ -389,6 +390,8 @@ $f3->route('GET|POST /new-post/@thread_id/@post_id', function($f3, $params)
             
             if($postResult instanceof Post)
             {
+                $user->incrementNumPosts();
+
                 if(GENERATE_IMMEDIATELY)
                 {
                     $user->parsePost($post);

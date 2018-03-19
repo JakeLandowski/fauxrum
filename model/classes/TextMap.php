@@ -170,6 +170,7 @@ class TextMap
             }
         }
 
+        while($size == $cap && $seed[strlen($seed)])
         
         return $seed;
     }
