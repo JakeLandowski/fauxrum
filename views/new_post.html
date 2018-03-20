@@ -15,33 +15,37 @@
         color: red;
     }
 </style>
-<h2>Create Post</h2>
+<div class="container">
+    <h2>Reply</h2>
 
-<form id="new_post" action="{{ @BASE }}/new-post/{{ @thread_id }}/{{ @post_id }}" method="POST">
+    <form id="new_post" action="{{ @BASE }}/new-post/{{ @thread_id }}/{{ @post_id }}" method="POST">
 
-    <div class="form-group">
         <p class="error-text m-0">
             {{ isset(@errors['content']) ? @errors['content'] : ''}}
             {{ isset(@fail_message) ? @fail_message : ''}}
         </p>
-        <textarea style="white-space:pre-line;" class="form-control {{ isset(@errors['content']) ? 'error' : ''}}" 
-                  id="content"
-                  name="content"
-                  rows="5"
-        >{{ Formatting::addTags(
-                Formatting::stripQuoteTags((isset(@quoted_post) ? @quoted_post->displayValue('content') : '')),
-                (isset(@quoted_post) ? @quoted_post->displayValue('owner_name') : '')
-            )
-             
-        }}{{ 
-            (isset(@content) ? @content : '') 
-        }}</textarea>
-    </div>
-    <a href="{{ @BASE }}{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
-    <input type="submit" value="Create Post" class="btn btn-primary" />
-    <button type="button" id="sound_smart" class="btn btn-dark">Sound Smart</button>
+        <div class="md-form">
+            <textarea class="p-3 form-control md-textarea {{ isset(@errors['content']) ? 'error' : ''}}" 
+                    id="content"
+                    name="content"
+                    length="1000"
+                    rows="5"
+            >{{ Formatting::addTags(
+                    Formatting::stripQuoteTags((isset(@quoted_post) ? @quoted_post->displayValue('content') : '')),
+                    (isset(@quoted_post) ? @quoted_post->displayValue('owner_name') : '')
+                )
+                    
+            }}{{ 
+                (isset(@content) ? @content : '') 
+            }}</textarea>
+            <label for="content" class="ml-3">Reply</label>
+        </div>
 
-</form>
+        <a href="{{ @BASE }}{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
+        <input type="submit" value="Post" class="btn btn-primary" />
+        <button type="button" id="sound_smart" class="btn btn-dark">Sound Smart</button>
 
+    </form>
+</div>
 <include href="./views/includes/footer.html" />
 <script src="{{ @BASE }}/views/js/soundSmart.js"></script>

@@ -1,68 +1,125 @@
 <include href="./views/includes/header.html" />
 
 <div class="container">
+
+    <h1 class="text-center mt-5">Register</h1>
     
-    <div class="text-center row mb-4">
-        <h2 class="mx-auto">Sign up!</h2>
-    </div>
     <form class="row p-3" action="{{@BASE}}/register" method="POST">
+        
+        <div class="form-group col-12 col-md-8 offset-md-2">
+              <div class="md-form">
+          
+                <i class="fa fa-user prefix"></i>
+                <input type="text" 
+                        class="form-control {{ isset(@errors['username']) ? 'error' : '' }}" 
+                        id="username"
+                        name="username"
+                        aria-describedby="username_help"
+                        value="{{ isset(@username) ? @username : '' }}" 
+                />
+                <label for="username">Username</label>    
+                
+                <check if="{{ isset(@errors['username']) }}">
+                    <true>
+                        <small id="username_help" class="error-text form-text text-center">
+                            {{ @errors['username'] }}
+                        </small>
+                    </true>
+                    <false>
+                        <small id="username" class="form-text text-muted text-center">
+                            3-20 alphanumeric characters [ a - z | A - Z | 0 - 9 ]
+                        </small>
+                    </false>
+                </check>
+            
+            </div>
+        </div>
+
 
         <div class="form-group col-12 col-md-8 offset-md-2">
-            <label for="username">Username</label>
-            <input type="text" 
-                class="form-control {{ isset(@errors['username']) ? 'error' : ''}}" 
-                id="username"
-                name="username" 
-                placeholder="ex: McDerpington5"
-                value="{{ isset(@username) ? @username : '' }}" 
-            />
-            <p class="error-text text-center m-0">
-                {{ isset(@errors['username']) ? @errors['username'] : ''}}
-            </p>
-        </div>
-        
-        <div class="form-group col-12 col-md-8 offset-md-2">
-            <label for="email">Email</label>
-            <input type="text"
-                class="form-control {{ isset(@errors['email']) ? 'error' : ''}}" 
-                id="email" 
-                name="email"
-                placeholder="ex: pooky@yahoo.com" 
-                value="{{ isset(@email) ? @email : '' }}" 
-            />
-            <p class="error-text text-center m-0">
-                {{ isset(@errors['email']) ? @errors['email'] : ''}}
-            </p>
+            <div class="md-form">
+ 
+                <i class="fa fa-envelope prefix"></i>
+                <input type="text" 
+                        class="form-control {{ isset(@errors['email']) ? 'error' : '' }}" 
+                        id="email"
+                        name="email"
+                        aria-describedby="email_help"
+                        value="{{ isset(@email) ? @email : '' }}" 
+                />
+                <label for="email">Email</label>
+                
+                <check if="{{ isset(@errors['email']) }}">
+                    <true>
+                        <small id="email_help" class="error-text form-text text-center">
+                            {{ @errors['email'] }}
+                        </small>
+                    </true>
+                    <false>
+                        <small id="email_help" class="form-text text-muted text-center">
+                             Standard email : email@place.com
+                        </small>
+                    </false>
+                </check>
+
+            </div>
         </div>
         
 
         <div class="form-group col-12 col-md-8 offset-md-2">
-            <label for="password">Password</label>
-            <input type="password" 
-                class="form-control 
-                {{ isset(@errors['password']) || 
-                   isset(@errors['repeat_password']) ? 
-                   'error' : '' }}" 
-                id="password"
-                name="password" 
-                placeholder="8 or more characters, 1 upper, 1 lower, 1 digit" 
-            />
-            <p class="error-text text-center m-0">
-                {{ isset(@errors['password']) ? @errors['password'] : '' }}
-            </p>
+            <div class="md-form">
+ 
+                <i class="fa fa-lock prefix"></i>
+                <input type="password" 
+                        class="form-control {{ isset(@errors['password']) ? 'error' : '' }}" 
+                        id="password"
+                        name="password"
+                        aria-describedby="password_help" 
+                />
+                <label for="password">Password</label>
+                
+                <check if="{{ isset(@errors['password']) }}">
+                    <true>
+                        <small id="password_help" class="error-text form-text text-center">
+                            {{ @errors['password'] }}
+                        </small>
+                    </true>
+                    <false>
+                        <small id="password_help" class="form-text text-muted text-center">
+                            Minimum 8 characters, 1 uppercase, 1 lowercase, 1 digit
+                        </small>
+                    </false>
+                </check>
+
+            </div>
         </div>
         
         <div class="form-group col-12 col-md-8 offset-md-2">
-            <label for="repeat_password">Repeat Password</label>    
-            <input type="password"
-                class="form-control {{ isset(@errors['repeat_password']) ? 'error' : ''}}" 
-                id="repeat_password"
-                name="repeat_password" 
-                placeholder="8 or more characters, 1 upper, 1 lower, 1 digit" 
-            />
-            <p class="error-text text-center m-0">
-                {{ isset(@errors['repeat_password']) ? @errors['repeat_password'] : '' }}
-            </p>
+            <div class="md-form">
+ 
+                <i class="fa fa-lock prefix"></i>
+                <input type="password" 
+                        class="form-control {{ isset(@errors['repeat_password']) ? 'error' : '' }}" 
+                        id="repeat_password"
+                        name="repeat_password"
+                        aria-describedby="repeat_password_help" 
+                />
+                <label for="repeat_password">Repeat Password</label>
+                
+                <check if="{{ isset(@errors['repeat_password']) }}">
+                    <true>
+                        <small id="repeat_password_help" class="error-text form-text text-center">
+                            {{ @errors['repeat_password'] }}
+                        </small>
+                    </true>
+                    <false>
+                        <small id="repeat_password_help" class="form-text text-muted text-center">
+                            Match previous password
+                        </small>
+                    </false>
+                </check>
+
+            </div>
         </div>
 
         <div class="col-12 col-md-8 offset-md-2">

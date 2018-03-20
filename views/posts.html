@@ -81,18 +81,18 @@
 
                 <div class="md-form">
                     <textarea id="content"
-                                name="content" 
-                                class="form-control md-textarea {{ isset(@errors['content']) ? 'error' : ''}}" 
-                                length="1000" 
-                                rows="5">{{
+                              name="content" 
+                              class="p-3 form-control md-textarea {{ isset(@errors['content']) ? 'error' : ''}}" 
+                              length="1000" 
+                              rows="5">{{
                             isset(@content) ? @content : ''  
                     }}</textarea>
-                    <label for="textarea-char-counter">Reply</label>
+                    <label for="content" class="ml-3">Reply</label>
                 </div>
             
                 <input type="submit" value="Reply" class="btn btn-primary btn-sm" />
                 <button type="button" id="sound_smart" class="btn btn-dark btn-sm">Sound Smart</button>
-            
+
             </form>
 
             <include href="./views/includes/pagination.html" />
