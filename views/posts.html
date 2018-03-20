@@ -61,7 +61,7 @@
             </repeat>
 
             <a name="last_post"></a>
-            <form action="{{ @BASE }}/posts/{{ 
+            <form id="new_post" action="{{ @BASE }}/posts/{{ 
                 @thread->displayValue('id') }}/{{ @page }}#reply_error" method="POST" 
                 enctype="multipart/form-data">
 
@@ -81,6 +81,7 @@
                 </div>
             
                 <input type="submit" value="Reply" class="btn btn-primary" />
+                <button type="button" id="sound_smart" class="btn btn-dark">Sound Smart</button>
             
             </form>
 
@@ -97,3 +98,4 @@
 </div>
 
 <include href="./views/includes/footer.html" />
+<script src="{{ @BASE }}/views/js/soundSmart.js"></script>

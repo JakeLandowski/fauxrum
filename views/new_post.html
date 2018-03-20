@@ -16,9 +16,8 @@
     }
 </style>
 <h2>Create Post</h2>
-<br>
 
-<form action="{{ @BASE }}/new-post/{{ @thread_id }}/{{ @post_id }}" method="POST">
+<form id="new_post" action="{{ @BASE }}/new-post/{{ @thread_id }}/{{ @post_id }}" method="POST">
 
     <div class="form-group">
         <p class="error-text m-0">
@@ -40,7 +39,9 @@
     </div>
     <a href="{{ @BASE }}{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>
     <input type="submit" value="Create Post" class="btn btn-primary" />
+    <button type="button" id="sound_smart" class="btn btn-dark">Sound Smart</button>
 
 </form>
 
 <include href="./views/includes/footer.html" />
+<script src="{{ @BASE }}/views/js/soundSmart.js"></script>
