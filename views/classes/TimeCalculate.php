@@ -12,7 +12,10 @@ abstract class TimeCalculate
 {
     public static function getTimeSinceCreation($dateTime)
     {
-        $secondsSince = time() - strtotime($dateTime . ' UTC');
+        $dateTime = new DateTime($dateTime);
+        $timeZone = new DateTimeZone('America/Los_Angeles');
+        $dateTime->setTimeZone($timeZone);
+        $secondsSince = time() - strtotime($dateTime->format('Y-m-d H:i:s'));
         $minutesSince = (int) ($secondsSince / 60);
         $hoursSince   = (int) ($minutesSince / 60);
         $daysSince    = (int) ($hoursSince / 24);
