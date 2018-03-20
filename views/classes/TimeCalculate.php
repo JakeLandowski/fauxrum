@@ -12,13 +12,7 @@ abstract class TimeCalculate
 {
     public static function getTimeSinceCreation($dateTime)
     {
-        $dateTime = new DateTime($dateTime);
-        $timeZone = new DateTimeZone('America/Los_Angeles');
-        $dateTime->setTimeZone($timeZone);
-
-        $now = new DateTime();
-        $now->setTimeZone($timeZone);
-        $secondsSince = strtotime($now->format('Y-m-d H:i:s')) - strtotime($dateTime->format('Y-m-d H:i:s'));
+        $secondsSince = time() - strtotime($dateTime) + 3600*4;
         $minutesSince = (int) ($secondsSince / 60);
         $hoursSince   = (int) ($minutesSince / 60);
         $daysSince    = (int) ($hoursSince / 24);
