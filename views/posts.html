@@ -38,11 +38,15 @@
                     </true>
                 </check>
 
-                <a href="{{ @BASE }}/new-post/{{ 
-                    @thread->displayValue('id') }}/{{ 
-                    @post->displayValue('id') }}" 
-                class="btn btn-primary">Quote</a>
-
+                <check if="{{ isset(@user_id) && @user_id != @post->getValue('owner') }}">
+                    <true>
+                        <a href="{{ @BASE }}/new-post/{{ 
+                            @thread->displayValue('id') }}/{{ 
+                            @post->displayValue('id') }}" 
+                        class="btn btn-primary">Quote</a>
+                    </true>
+                </check>
+            
                 <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') && !@post->getValue('bot_generated') }}">
                     <true>
                         <a href="{{ @BASE }}/edit-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 

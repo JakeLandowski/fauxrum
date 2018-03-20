@@ -9,24 +9,26 @@
             <true>
                 <repeat group="{{ @threads }}" key="{{ @i }}" value="{{ @thread }}">
                 
-                    <a href="{{ @BASE }}/posts/{{ @thread->getValue('id') }}" class="row mr-3">
-                        <div class="col-2">
-                            <h5>{{ @thread->displayValue('owner_name') }}</h5>
-                        </div>
-                        <div class="col-4">
+                    <a href="{{ @BASE }}/posts/{{ @thread->getValue('id') }}" class="row thread p-3 mb-3">
+                        <div class="col-12 col-md-4 p-0 text-justify">
                             <h5>{{ @thread->displayValue('title') }}</h5>
                         </div>
-                        <div class="col-1">
-                            <h5>Views: {{ @thread->displayValue('views') }}</h5>
+                        <div class="col-12 col-md-3 p-0 text-center">
+                            <p><i class="fa fa-user"></i>&nbsp;{{ @thread->displayValue('owner_name') }}</p>
                         </div>
-                        <div class="col-1">
-                            <h5>Replies: {{ @thread->displayValue('replies') }}</h5>
+                        <div class="col-12 col-md-1 p-0 text-center">
+                            <p><i class="fa fa-eye"></i>&nbsp;{{ @thread->displayValue('views') }}</p>
                         </div>
-                        <div class="col-2">
-                            <h5>created: {{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('created')) }}</h5>
+                        <div class="col-12 col-md-1 p-0 text-center">
+                            <p><i class="fa fa-comment"></i>&nbsp;{{ @thread->displayValue('replies') }}</p>
                         </div>
-                        <div class="col-2">
-                            <h5>last reply: {{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('last_reply')) }}</h5>
+                        
+                        <!-- <div class="col-12 col-md-6">
+                            <p><i class="fa fa-clock"></i>&nbsp;{{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('created')) }}</p>
+                        </div> -->
+
+                        <div class="col-12 col-md-3 p-0 text-right">
+                            <p>{{ TimeCalculate::getTimeSinceCreation(@thread->displayValue('last_reply')) }}</p>
                         </div>
                     </a>
                 
