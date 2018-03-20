@@ -25,7 +25,7 @@ abstract class TimeCalculate
         if($hoursSince   > 0) return TimeCalculate::_buildMessage($hoursSince,   'hour');
         if($minutesSince > 0) return TimeCalculate::_buildMessage($minutesSince, 'minute');
         if($secondsSince > 0) return TimeCalculate::_buildMessage($secondsSince, 'second');
-        else return TimeCalculate::_buildMessage(0, 'seconds');
+        else return TimeCalculate::_buildMessage(0, 'second');
     }
 
     private static function _buildMessage($amt, $unit)
