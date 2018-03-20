@@ -33,13 +33,12 @@ body
     border-bottom: 1px solid green !important;
 }
 
-.thread,
-
 .post .fa.fa-user
 {
     font-size: 4rem;
 }
 
+.thread,
 .post
 {
     color: black;
