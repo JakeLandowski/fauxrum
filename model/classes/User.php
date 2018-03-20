@@ -169,7 +169,21 @@ class User extends DataCore
             $size  = rand(10, 500);
             $extra = 1000 - $size; 
             $cap   = $size + rand(20, $extra);
-            $randomContent = $map->generate($size, $cap);
+            $randomContent;
+
+            if(rand(0, 3))
+            {
+                $randomContent  = $this->_replyToRandomPost($threadId);
+                $randomContent .= $map->generate($size, $cap);
+            }
+            else
+            {
+                $randomContent = $map->generate($size, $cap);
+            }
+
+            if(strlen($randomContent) >= $cap)
+                $this->_pruneGeneratedTitle($randomContent);
+
             $post->setUpGeneratedPost($randomContent, $owner, $ownerName, $threadId);
             $postResult = $post->createPost();
 
@@ -213,6 +227,19 @@ class User extends DataCore
  //                   PRIVATE FUNCTIONS                     //
 //=========================================================//
 
+    private function _replyToRandomPost($threadId)
+    {
+        $whereThisThread = (new Condition('Post'))->col('thread')->equals($threadId);
+        $result = Database::SELECT(['content', 'owner_name'], 'Post', 
+                                ['condition' => $whereThisThread]);
+
+        $randomPost = rand(0, $result['num_rows'] - 1);
+        $postRow    = $result['rows'][$randomPost];
+        $content    = $postRow['content'];
+        $author     = $postRow['owner_name'];
+        return Formatting::addTags(Formatting::stripQuoteTags($content), $author);
+    }
+
     private function _shouldUpdateContent($mapId, $whereThisMap)
     {
         $result = Database::SELECT('was_used', 'TextMap', 
@@ -243,9 +270,9 @@ class User extends DataCore
 
     private function _pruneGeneratedTitle(&$title)
     {
-        $title = trim($title);
-        $chunks = preg_split('/(.*) [^ ]*/i', $title, -1,  PREG_SPLIT_DELIM_CAPTURE);
-        $title = isset($chunks[0]) ? $chunks[0] : '';
+        $title  = trim($title);
+        $chunks = preg_split('/(.*) [^ ]*$/i', $title, -1,  PREG_SPLIT_DELIM_CAPTURE);
+        $title  = isset($chunks[0]) ? $chunks[0] : '';
         $title .= isset($chunks[1]) ? $chunks[1] : ''; 
         $title .= isset($chunks[2]) ? $chunks[2] : '';
     }

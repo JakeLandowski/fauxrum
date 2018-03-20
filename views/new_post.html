@@ -25,7 +25,7 @@
             {{ isset(@errors['content']) ? @errors['content'] : ''}}
             {{ isset(@fail_message) ? @fail_message : ''}}
         </p>
-        <textarea class="form-control {{ isset(@errors['content']) ? 'error' : ''}}" 
+        <textarea style="white-space:pre-line;" class="form-control {{ isset(@errors['content']) ? 'error' : ''}}" 
                   id="content"
                   name="content"
                   rows="5"
@@ -35,7 +35,7 @@
             )
              
         }}{{ 
-            isset(@content) ? @content : '' 
+            (isset(@content) ? @content : '') 
         }}</textarea>
     </div>
     <a href="{{ @BASE }}{{ isset(@return_route) ? @return_route : '' }}" class="btn btn-warning">Return</a>

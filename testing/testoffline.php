@@ -89,7 +89,7 @@ if(successful($result))
             for($i = 0; $i < $numberOfThreads; $i++)
             {
                 $user->generateThread();
-                echo 'generated thread';   
+                // echo 'generated thread';   
             }
         }
 
@@ -100,7 +100,7 @@ if(successful($result))
             for($i = 0; $i < $numberOfPosts; $i++)
             {
                 $user->generatePost();
-                echo 'generated post';
+                // echo 'generated post';
             }
         }
 

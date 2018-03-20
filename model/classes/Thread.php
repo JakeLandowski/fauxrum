@@ -299,7 +299,7 @@ class Thread extends Validator
     {
         $this->hasValidated(); // mark as validated because its all gooooood
         $post = new Post;
-        $post->setUpGeneratedPost($generatedContent, $owner, $owner_name);
+        $post->setUpGeneratedPost($generatedContent, $owner, $ownerName);
         $this->setValue('root_post', $post);
         $this->setValue('owner', $owner);
         $this->setValue('owner_name', $ownerName);
