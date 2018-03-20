@@ -46,10 +46,10 @@ function errorIfTokenInvalid($f3, $token, $tokenChecker)
 }
 
     // Custom 404 Page
-// $f3->set('ONERROR', function($f3)
-// {
-//     echo Template::instance()->render('views/404.html');
-// });
+$f3->set('ONERROR', function($f3)
+{
+    echo Template::instance()->render('views/error.html');
+});
 
   //================================================//
  //                    ROUTES                      //

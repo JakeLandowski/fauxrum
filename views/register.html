@@ -1,21 +1,5 @@
 <include href="./views/includes/header.html" />
 
-<style>
-    body
-    {
-        background: url("./image/ya.jpg");
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .error
-    {
-        border: 1px solid red;
-    }
-
-    .error-text
-    {
-        color: red;
-    }
-</style>
 <div class="container">
     
     <div class="text-center row mb-4">
@@ -88,7 +72,7 @@
         </div>
 
         <div class="form-check col-12 col-md-8 offset-md-2 d-flex justify-content-end">
-            <a href="{{ @BASE }}/login" class="btn mr-auto border text-muted">Already A User? Login</a>
+            <a href="{{ @BASE }}/login" class="btn btn-warning mr-auto border">Already A User? Login</a>
             <input type="submit" value="Register" class="btn btn-primary"/>
         </div>
 

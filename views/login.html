@@ -1,97 +1,12 @@
 <include href="./views/includes/header.html" />
 
-<style>
-    body 
-    {
-        background: url("./image/ya.jpg");
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .error
-    {
-        border: 1px solid red;
-    }
-
-    .error-text
-    {
-        color: red;
-    }
-
-    .flex {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        height: 100vh;
-    }
-
-    .header {
-        display: flex;
-        width: 100vw;
-        background-color: black;
-        color: white;
-
-        height: 5vh;
-    }
-
-        .header h4 {
-            margin: 0;
-            align-self: center;
-        }
-
-            .header h4 a {
-                text-decoration: none;
-                color: white;
-            }
-
-            .header h4 a:hover {
-                text-decoration: none;
-                color: white;
-            }
-
-        .header p {
-            margin: 0;
-            flex-grow: 1;
-            text-align: center;
-            align-self: center;
-        }
-
-    .content {
-        display: flex;
-
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        flex-grow: 1;
-    }
-
-    .footer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100vw;
-        background-color: black;
-        color: white;
-    }
-
-    .footer p {
-        margin: 0;
-    }
-</style>
-
 <div class="container flex">
-    <div class="header">
-        <h4><a href="/328/fauxrum">Fauxrum</a></h4>
-        <p>Welcome to Fauxrum</p>
-        <button>Login</button>
-    </div>
 
     <div class="content">
         <div class="text-center row mb-4">
             <h2 class="mx-auto">About Fauxrum</h2>
             <p class="text-center">
-                This is your online forum in which you can choose your own appropriate topic and then interact with online community. You will also be responded by machine at times. In order to participate, you need to create your own free account.
+                A simple forum for chatting with others through threads and posts. After creating 3 threads and/or 3 posts your account will begin impersonating you. Enjoy!
             </p>
         </div>
         
@@ -123,13 +38,6 @@
                     {{ isset(@errors['password']) ? @errors['password'] : '' }}
                 </p>
             </div>
-            <!--
-                    <div class="custom-control custom-checkbox col-12 col-md-8 offset-md-2">
-                        <div class="form-check">
-                            <input class="custom-control-input" type="checkbox" id="remember">
-                            <label class="custom-control-label" for="remember">Remember Me</label>
-                        </div>
-                    </div> -->
 
             <div class="col-12 col-md-8 offset-md-2">
                 <p class="error-text text-center">
@@ -138,16 +46,13 @@
             </div>
 
             <div class="form-group col-12 col-md-8 offset-md-2 d-flex justify-content-end">
-                <a href="{{ @BASE }}/register" class="btn mr-auto border text-muted">New? Register Here</a>
+                <a href="{{ @BASE }}/register" class="btn btn-warning mr-auto border">New? Register Here</a>
                 <input type="submit" value="Login" class="btn btn-primary" />
             </div>
 
         </form>
     </div>
 
-    <div class="footer">
-        <p>Created by: Jake and Shahbaz as part of the Green River Software Development Bachelors degree</p>
-    </div>
 </div>
 
 <include href="./views/includes/footer.html" />

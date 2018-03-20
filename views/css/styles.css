@@ -1,6 +1,8 @@
 body
 {
     font-family: Ubuntu, Roboto, sans-serif;
+    background: white url("../images/clouds.jpg") center no-repeat;
+    background-size: cover;
 }
 .error
 {
@@ -10,19 +12,4 @@ body
 .error-text
 {
     color: red;
-}
-
-
-
-
-
-
-
-h2
-{
-    text-align: center;
-}
-body
-{
-    background-image: url("./image/ya.jpg");
 }

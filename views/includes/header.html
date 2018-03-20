@@ -18,3 +18,11 @@
     <link rel="stylesheet" href="{{ @BASE }}/views/css/styles.css" />
 </head>
 <body>
+<check if="{{ loggedIn() }}">
+    <true>
+        <nav class="container d-flex justify-content-end mb-4">
+            <a href="{{ @BASE }}/threads" class="btn btn-success mr-auto">Threads</a>
+            <a href="{{ @BASE }}/logout" class="btn btn-warning">Logout</a>
+        </nav>
+    </true>
+</check>
