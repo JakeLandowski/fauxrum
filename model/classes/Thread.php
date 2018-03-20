@@ -31,6 +31,9 @@ class Thread extends Validator
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    /**
+     *  Deletes this thread from the database.
+     */
     public function deleteThread()
     {
         $threadId = $this->getValue('id');
@@ -39,6 +42,11 @@ class Thread extends Validator
         return $result['success'] && $result['num_rows'] > 0;
     }
 
+    /**
+     *  Edits this thread's title and updates the database.
+     * 
+     *  @param string $newTitle the new title to update with
+     */
     public function editTitle($newTitle)
     {
         $threadId = $this->getValue('id');
@@ -47,6 +55,9 @@ class Thread extends Validator
         $this->setValue('title', $newTitle);
     }
 
+    /**
+     *  Updates this thread's number of replies in the database.
+     */
     public function incrementReplies()
     {
         $threadId = $this->getValue('id');
@@ -59,6 +70,11 @@ class Thread extends Validator
         Database::UPDATE('Thread', 'replies', $replies, $whereThisThread);
     }
 
+    /**
+     *  Updates this thread's number of views in the database only if unique.
+     * 
+     *  @param int $userId the id of the user to check to see if this was unique
+     */
     public function incrementViews($userId)
     {
         if($this->getValue('owner') != $userId)
@@ -80,6 +96,11 @@ class Thread extends Validator
         }
     }
 
+    /**
+     *  Get the number of threads currently.
+     *  
+     *  return the number of threads in the database
+     */
     public static function getNumThreads()
     {
         $result = Database::SELECT('id', 'Thread');
@@ -89,6 +110,15 @@ class Thread extends Validator
             return 0;
     }
 
+    /**
+     *  Retrieves all the threads from the database given the limit offsets
+     *  and ordered by the given order column.
+     * 
+     *  @param int $limitStart  the starting index
+     *  @param int $limitAMount the amount of rows to grab
+     *  @param int $orderBy     the column to sort by
+     *  @return array the array of thread objects initialized
+     */
     public static function getAllFromDatabase($limitStart, $limitAmount, $orderBy)
     {
         $options = 
