@@ -15,7 +15,10 @@ abstract class TimeCalculate
         $dateTime = new DateTime($dateTime);
         $timeZone = new DateTimeZone('America/Los_Angeles');
         $dateTime->setTimeZone($timeZone);
-        $secondsSince = strtotime(date('Y-m-d H:i:s', time())) - strtotime($dateTime->format('Y-m-d H:i:s'));
+
+        $now = new DateTime();
+        $now->setTimeZone($timeZone);
+        $secondsSince = strtotime($now->format('Y-m-d H:i:s')) - strtotime($dateTime->format('Y-m-d H:i:s'));
         $minutesSince = (int) ($secondsSince / 60);
         $hoursSince   = (int) ($minutesSince / 60);
         $daysSince    = (int) ($hoursSince / 24);
