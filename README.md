@@ -31,3 +31,5 @@ There is client side javascript validation for login and registration currently,
 # API
 
 As above, using a random number API.
+
+![alt text](https://github.com/JakeLandowski/fauxrum/blob/master/DataCoreUML.png)
