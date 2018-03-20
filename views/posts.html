@@ -18,49 +18,55 @@
         <true>
             <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
                 
-                <div class="row">
+                <div class="row mb-4 post p-2 pt-4">
                     <div class="col-12 col-md-3">
                         <h5>{{ @post->displayValue('owner_name') }}</h5>
                     </div>
-                    <div class="col-12 col-md-7">
+                    <div class="col-12 col-md-7 post-content p-3">
                         <h5>{{ Formatting::renderQuote(@post->displayValue('content')) }}</h5>
                     </div>
                     <div class="col-12 col-md-2">
                         <h5>{{ TimeCalculate::getTimeSinceCreation(@post->displayValue('created')) }}</h5>
                     </div>
-                </div>
-                <check if="{{ strtotime(@post->getValue('last_edit')) > 0 }}">
-                    <true>
-                        <p>
-                            Editted by {{@post->displayValue('owner_name')}} 
-                            {{ TimeCalculate::getTimeSinceCreation(@post->displayValue('last_edit')) }}
-                        </p>
-                    </true>
-                </check>
 
-                <check if="{{ isset(@user_id) && @user_id != @post->getValue('owner') }}">
-                    <true>
-                        <a href="{{ @BASE }}/new-post/{{ 
-                            @thread->displayValue('id') }}/{{ 
-                            @post->displayValue('id') }}" 
-                        class="btn btn-primary btn-sm">Quote</a>
-                    </true>
-                </check>
-            
-                <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') && !@post->getValue('bot_generated') }}">
-                    <true>
-                        <a href="{{ @BASE }}/edit-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
-                        class="btn btn-warning btn-sm">Edit Post</a>
 
-                        <check if="{{ !@post->getValue('is_root_post') }}">
+
+                    <check if="{{ strtotime(@post->getValue('last_edit')) > 0 }}">
                             <true>
-                                <a href="{{ @BASE }}/delete-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
-                                    class="btn btn-danger btn-sm">Delete Post</a>
+                                <p>
+                                    Editted by {{@post->displayValue('owner_name')}} 
+                                    {{ TimeCalculate::getTimeSinceCreation(@post->displayValue('last_edit')) }}
+                                </p>
+                            </true>
+                        </check>
+        
+                        <check if="{{ isset(@user_id) && @user_id != @post->getValue('owner') }}">
+                            <true>
+                                <a href="{{ @BASE }}/new-post/{{ 
+                                    @thread->displayValue('id') }}/{{ 
+                                    @post->displayValue('id') }}" 
+                                class="btn btn-primary btn-sm">Quote</a>
+                            </true>
+                        </check>
+                    
+                        <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') && !@post->getValue('bot_generated') }}">
+                            <true>
+                                <a href="{{ @BASE }}/edit-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
+                                class="btn btn-warning btn-sm">Edit Post</a>
+        
+                                <check if="{{ !@post->getValue('is_root_post') }}">
+                                    <true>
+                                        <a href="{{ @BASE }}/delete-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
+                                            class="btn btn-danger btn-sm">Delete Post</a>
+                                    </true>
+                                </check>
+        
                             </true>
                         </check>
 
-                    </true>
-                </check>
+
+                </div>
+                
                 
             </repeat>
 
