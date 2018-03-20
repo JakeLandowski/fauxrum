@@ -8,8 +8,25 @@ body
 {
     border: 1px solid red;
 }
-
 .error-text
 {
     color: red;
+}
+.thread
+{
+    color: black;
+    background-color: rgba(255, 255, 255, 0.4);
+    box-shadow: rgba(125, 125, 255, 0.5) 0.1rem 0.1rem 1.5rem 0;
+}
+
+.thread p
+{
+    margin: 0;
+    padding: 0.2rem;
+}
+
+.thread:hover
+{
+    text-decoration: none;
+    color: black;
 }
