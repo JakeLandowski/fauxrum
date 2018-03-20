@@ -4,14 +4,35 @@ body
     background: white url("../images/clouds.jpg") center no-repeat;
     background-size: cover;
 }
-.error
-{
-    border: 1px solid red;
-}
 .error-text
 {
-    color: red;
+    color: red !important;
 }
+
+.md-form.error .prefix,
+.md-form.error label,
+.md-form.error small
+{
+    color: red !important;
+}
+
+.md-form.error input
+{
+    border-bottom: 1px solid red !important; 
+}
+
+.md-form.success .prefix,
+.md-form.success label,
+.md-form.success small
+{
+    color: green !important;
+}
+
+.md-form.success input
+{
+    border-bottom: 1px solid green !important;
+}
+
 .thread
 {
     color: black;

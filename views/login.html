@@ -4,7 +4,7 @@
 
     <div class="content">
         <div class="text-center row mb-4">
-            <h2 class="mx-auto">About Fauxrum</h2>
+            <h1 class="mx-auto mt-5">Login To Fauxrum</h1>
             <p class="text-center">
                 A simple forum for chatting with others through threads and posts. After creating 3 threads and/or 3 posts your account will begin impersonating you. Enjoy!
             </p>
@@ -13,7 +13,7 @@
         <form class="row p-3" action="{{ @BASE }}/login" method="POST">
 
             <div class="form-group col-12 col-md-8 offset-md-2">
-                <div class="md-form">
+                <div id="username_field" class="md-form">
                     <i class="fa fa-user prefix"></i>
                     <input type="text" 
                             class="form-control {{ isset(@errors['username']) ? 'error' : '' }}" 
@@ -35,7 +35,7 @@
 
             <div class="form-group col-12 col-md-8 offset-md-2">
 
-                <div class="md-form">
+                <div id="password_field" class="md-form">
                     <i class="fa fa-lock prefix"></i>
                     <input type="password" 
                            class="form-control {{ isset(@errors['password']) ? 'error' : '' }}" 
@@ -61,7 +61,7 @@
             </div>
 
             <div class="form-group col-12 col-md-8 offset-md-2 d-flex justify-content-end">
-                <a href="{{ @BASE }}/register" class="btn btn-warning mr-auto border">New? Register Here</a>
+                <a href="{{ @BASE }}/register" class="btn btn-warning mr-auto">Register Here</a>
                 <input type="submit" value="Login" class="btn btn-primary" />
             </div>
 
