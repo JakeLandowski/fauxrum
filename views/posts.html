@@ -21,6 +21,7 @@
                 <div class="row mb-4 post p-2 pt-4">
                     <div class="col-12 col-md-3">
                         <h5>{{ @post->displayValue('owner_name') }}</h5>
+                        <i class="fa fa-user"></i>
                     </div>
                     <div class="col-12 col-md-7 post-content p-3">
                         <h5>{{ Formatting::renderQuote(@post->displayValue('content')) }}</h5>
