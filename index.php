@@ -399,7 +399,8 @@ $f3->route('GET|POST /new-thread', function($f3)
         ]);
     }
     
-    $f3->set('page_title', 'New Thread');
+    $f3->set('page_title', 'New Thread'); 
+    $f3->set('return_route', '/threads');
     echo Template::instance()->render('views/new_thread.html');
 });
 

@@ -23,14 +23,14 @@
                             value="{{ isset(@username) ? @username : '' }}" 
                     />
                     <label for="username">Username</label>
-                    <!-- <small id="username_help" class="form-text text-muted">
-                        Username must be 3-20 alphanumeric characters [ a - z | A - Z | 0 - 9 ]
-                    </small> -->
+                    <check if="{{ isset(@errors['username']) }}">
+                        <true>
+                            <small id="username_help" class="error-text form-text text-center">
+                                {{ @errors['username'] }}
+                            </small>
+                        </true>
+                    </check>
                 </div>
-
-                <p class="error-text text-center m-0">
-                    {{ isset(@errors['username']) ? @errors['username'] : ''}}
-                </p>
             </div>
 
             <div class="form-group col-12 col-md-8 offset-md-2">
@@ -44,14 +44,14 @@
                            aria-describedby="password_help" 
                     />
                     <label for="password">Password</label>
-                    <!-- <small id="password_help" class="form-text text-muted">
-                            Password must be at least 8 characters, 1 uppercase, 1 lowercase, 1 digit
-                    </small> -->
+                    <check if="{{ isset(@errors['password']) }}">
+                        <true>
+                            <small id="password_help" class="error-text form-text text-center">
+                                {{ @errors['password'] }}
+                            </small>
+                        </true>
+                    </check>
                 </div>
-
-                <p class="error-text text-center m-0">
-                    {{ isset(@errors['password']) ? @errors['password'] : '' }}
-                </p>
             </div>
 
             <div class="col-12 col-md-8 offset-md-2">
@@ -71,3 +71,4 @@
 </div>
 
 <include href="./views/includes/footer.html" />
+<script src="{{ @BASE }}/views/js/loginValidation.js"></script>
