@@ -17,7 +17,12 @@ abstract class Validator extends DataCore
   //=========================================================//
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
-
+    
+    /**
+     *  Retrieve the errors from this object.
+     * 
+     *  @return array of error messages 
+     */
     public function getErrors()
     {
         return $this->_errors;

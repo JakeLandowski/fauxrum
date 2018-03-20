@@ -1,10 +1,12 @@
 <?php
 /**
- *  Class to represent the User.
+ *  Class to represent the User. Handles most of the passive/offline
+ *  content parsing and generation for the user.
  */
 
 /**
- *  Class to represent the User.
+ *  Class to represent the User. Handles most of the passive/offline
+ *  content parsing and generation for the user.
  *  
  *  @author Jacob Landowski
  */
@@ -24,6 +26,14 @@ class User extends DataCore
  //                      CONSTRUCTORS                       //
 //=========================================================//
 
+    /**
+     *  Sets initial values for user if given.
+     * 
+     *  @param mixed $id the id of the user
+     *  @param string $email the email of the user
+     *  @param string $username the username of the user
+     *  @param string $textmap the TextMap object for this user
+     */
     public function __construct($id=null, $email=null, $username=null, $textmap=null)
     {
         $this->setValue('id', $id);
@@ -36,12 +46,24 @@ class User extends DataCore
  //                   PUBLIC FUNCTIONS                      //
 //=========================================================//
 
+    /**
+     *  Sets the map column 'was_used' to true or false accordingly in the database.
+     * 
+     *  @param int     $mapId id of the map to update
+     *  @param boolean $used true or false if the map was used
+     */
     public function updateMapWasUsed($mapId, $used)
     {
         $whereThisMap = (new Condition('TextMap'))->col('id')->equals($mapId);
         Database::UPDATE('TextMap', 'was_used', ($used ? 1 : 0), $whereThisMap);
     }
 
+    /**
+     *  Retrieves the TextMap for this user from the database..
+     * 
+     *  @param boolean $online true if this is being ran from an 
+     *                         active user false if offline
+     */
     public function fetchMapFromDatabase($online=true)
     {
         $userId = $this->getValue('id');
@@ -76,6 +98,11 @@ class User extends DataCore
         }
     }
 
+    /**
+     *  Parses a thread from the given THread object using this user's map.
+     * 
+     *  @param Thread $thread Thread object to use to parse
+     */
     public function parseThread($thread)
     {
         if(!$thread instanceof Thread)
@@ -91,6 +118,11 @@ class User extends DataCore
         }
     }
 
+    /**
+     *  Parses a post from the given Post object using this user's map.
+     * 
+     *  @param Post $post Post object to use to parse
+     */
     public function parsePost($post)
     {
         if(!$post instanceof Post)
@@ -101,10 +133,6 @@ class User extends DataCore
         if($map instanceof TextMap) // For safety
         {
             $content = $post->getValue('content');
-            // $chunks = preg_split('/\[quote\](\s*.*\s*)\[\/quote\]/i', trim($content), -1,  PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-            // // $chunk[1] == quoted content can use later for cross over algo
-            // $quoteLess  = isset($chunks[0]) ? $chunks[0] : '';
-            // $quoteLess .= isset($chunks[2]) ? $chunks[2] : '';
 
             $quoteLess = Formatting::stripQuoteTags($content);
 
@@ -113,6 +141,9 @@ class User extends DataCore
         }
     }
 
+    /**
+     *  Generates a random thread under this user's name.
+     */
     public function generateThread()
     {
         if($this->getValue('num_threads') < 3) return;
@@ -128,17 +159,13 @@ class User extends DataCore
         $randomContent = $map->generate(rand(100, 500));
         $thread->setUpGeneratedThread($randomTitle, $randomContent, $owner, $ownerName);
         $threadResult = $thread->createThread();
-        
-        // if($threadResult instanceof Thread)
-        // {
-            
-        // }
-        // else
-        // {
-
-        // }
     }
 
+    /**
+     *  Increments this user's number of posts in the database
+     * 
+     *  @param boolean $isRootPost if true then this post was actually a thread.
+     */
     public function incrementNumPosts($isRootPost=false)
     {
         // UPDATE USER NUM_POST OR NUM_THREAD
@@ -149,6 +176,9 @@ class User extends DataCore
         Database::UPDATE('User', $col, $val, $whereThisUser);
     }
 
+    /**
+     *  Generates a random post under this user's name.
+     */
     public function generatePost()
     {
         if($this->getValue('num_posts') < 3) return;
@@ -194,13 +224,16 @@ class User extends DataCore
                 $thread->setValue('replies', $threadRow['replies']);
                 $thread->incrementReplies();
             }
-            else
-            {
-
-            }
         }
     }
 
+    /**
+     *  Saves this user's TextMap to the database, only if it wasnt alrdy saved
+     *  offline by the server. Also marks all parsed threads/posts as parsed
+     *  in the database so they cant be parsed again.
+     * 
+     *  @param boolean $online true if called from an active user's session
+     */
     public function saveMap($online=true) // To be called in logout
     {
         $map = $this->getValue('textmap');
