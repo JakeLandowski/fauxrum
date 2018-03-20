@@ -15,7 +15,7 @@ error_reporting(E_ALL|E_STRICT);
 ini_set('display_errors', 1);
 
     //  Start Runtime clock
-require_once "testing/runTimeStart.php";
+// require_once "testing/runTimeStart.php";
 
 require_once 'vendor/autoload.php';
 session_start();
@@ -764,4 +764,4 @@ $f3->route('GET|POST /test', function()
 $f3->run();
 
     //  End Runtime clock
-require_once "testing/runTimeEnd.php";
+// require_once "testing/runTimeEnd.php";

@@ -1,17 +1,17 @@
 <include href="./views/includes/header.html" />
 
-<div class="pl-5">
-    <a href="{{ @BASE }}/new-thread" class="btn btn-primary ml-5">Create New Thread</a>
-</div>
-    <div class="container">
+<div class="container p-0">
+        <a href="{{ @BASE }}/new-thread" class="btn btn-primary m-0 mb-2">Create New Thread</a>
         <check if="{{ isset(@threads) }}">
 
             <true>
                 <repeat group="{{ @threads }}" key="{{ @i }}" value="{{ @thread }}">
                 
-                    <a href="{{ @BASE }}/posts/{{ @thread->getValue('id') }}" class="row thread p-3 mb-3">
-                        <div class="col-12 col-md-4 p-0 text-justify">
-                            <h5>{{ @thread->displayValue('title') }}</h5>
+                    <a href="{{ @BASE }}/posts/{{ @thread->getValue('id') }}" 
+                       class="row no-gutter thread p-3 px-4 m-0 mb-3">
+
+                        <div class="col-12 col-md-4 p-0 text-left">
+                            <h5 class="m-0">{{ @thread->displayValue('title') }}</h5>
                         </div>
                         <div class="col-12 col-md-3 p-0 text-center">
                             <p><i class="fa fa-user"></i>&nbsp;{{ @thread->displayValue('owner_name') }}</p>

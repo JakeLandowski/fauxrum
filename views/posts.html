@@ -7,10 +7,10 @@
             <check if="{{ isset(@user_id) && @user_id == @thread->getValue('owner') && !@thread->getValue('bot_generated') }}">
                 <true>
                     <a href="{{ @BASE }}/edit-thread/{{ @thread->displayValue('id') }}" 
-                    class="btn btn-warning">Edit Title</a>
+                    class="btn btn-warning btn-sm">Edit Title</a>
 
                     <a href="{{ @BASE }}/delete-thread/{{ @thread->displayValue('id') }}" 
-                        class="btn btn-danger">Delete Thread</a>
+                        class="btn btn-danger btn-sm">Delete Thread</a>
                 </true>
             </check>
             </h1>
@@ -18,14 +18,14 @@
         <true>
             <repeat group="{{ @posts }}" key="{{ @i }}" value="{{ @post }}">
                 
-                <div class="row mr-3">
-                    <div class="col-2">
+                <div class="row">
+                    <div class="col-12 col-md-3">
                         <h5>{{ @post->displayValue('owner_name') }}</h5>
                     </div>
-                    <div class="col-8">
+                    <div class="col-12 col-md-7">
                         <h5>{{ Formatting::renderQuote(@post->displayValue('content')) }}</h5>
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 col-md-2">
                         <h5>{{ TimeCalculate::getTimeSinceCreation(@post->displayValue('created')) }}</h5>
                     </div>
                 </div>
@@ -43,19 +43,19 @@
                         <a href="{{ @BASE }}/new-post/{{ 
                             @thread->displayValue('id') }}/{{ 
                             @post->displayValue('id') }}" 
-                        class="btn btn-primary">Quote</a>
+                        class="btn btn-primary btn-sm">Quote</a>
                     </true>
                 </check>
             
                 <check if="{{ isset(@user_id) && @user_id == @post->getValue('owner') && !@post->getValue('bot_generated') }}">
                     <true>
                         <a href="{{ @BASE }}/edit-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
-                        class="btn btn-warning">Edit Post</a>
+                        class="btn btn-warning btn-sm">Edit Post</a>
 
                         <check if="{{ !@post->getValue('is_root_post') }}">
                             <true>
                                 <a href="{{ @BASE }}/delete-post/{{ @thread->displayValue('id') }}/{{ @post->displayValue('id') }}" 
-                                    class="btn btn-danger">Delete Post</a>
+                                    class="btn btn-danger btn-sm">Delete Post</a>
                             </true>
                         </check>
 
@@ -65,27 +65,33 @@
             </repeat>
 
             <a name="last_post"></a>
-            <form id="new_post" action="{{ @BASE }}/posts/{{ 
-                @thread->displayValue('id') }}/{{ @page }}#reply_error" method="POST" 
-                enctype="multipart/form-data">
 
-                <div class="form-group">
-                    <p class="error-text m-0">
-                        {{ isset(@errors['content']) ? @errors['content'] : ''}}
-                        {{ isset(@create_fail_message) ? @create_fail_message : ''}}
-                    </p>
-                    <check if="{{ isset(@create_fail_message) || isset(@errors['content']) }}">
-                        <true><a name="reply_error"></a></true>
-                    </check>
-                    <textarea class="form-control {{ isset(@errors['content']) ? 'error' : ''}}" 
-                              id="content"
-                              name="content"
-                              rows="5"
-                    >{{ isset(@content) ? @content : ''  }}</textarea>
+            <form id="new_post" action="{{ @BASE }}/posts/{{ 
+                @thread->displayValue('id') }}/{{ @page }}#reply_error" 
+                method="POST"
+                class="my-5">
+
+                <p class="error-text m-0">
+                    {{ isset(@errors['content']) ? @errors['content'] : ''}}
+                    {{ isset(@create_fail_message) ? @create_fail_message : ''}}
+                </p>
+                <check if="{{ isset(@create_fail_message) || isset(@errors['content']) }}">
+                    <true><a name="reply_error"></a></true>
+                </check>
+
+                <div class="md-form">
+                    <textarea id="textarea-char-counter"
+                                name="content" 
+                                class="form-control md-textarea {{ isset(@errors['content']) ? 'error' : ''}}" 
+                                length="1000" 
+                                rows="5">{{
+                            isset(@content) ? @content : ''  
+                    }}</textarea>
+                    <label for="textarea-char-counter">Reply</label>
                 </div>
             
-                <input type="submit" value="Reply" class="btn btn-primary" />
-                <button type="button" id="sound_smart" class="btn btn-dark">Sound Smart</button>
+                <input type="submit" value="Reply" class="btn btn-primary btn-sm" />
+                <button type="button" id="sound_smart" class="btn btn-dark btn-sm">Sound Smart</button>
             
             </form>
 
