@@ -12,7 +12,7 @@ abstract class TimeCalculate
 {
     public static function getTimeSinceCreation($dateTime)
     {
-        $secondsSince = time() - strtotime($dateTime);
+        $secondsSince = time() - strtotime($dateTime . ' UTC');
         $minutesSince = (int) ($secondsSince / 60);
         $hoursSince   = (int) ($minutesSince / 60);
         $daysSince    = (int) ($hoursSince / 24);
