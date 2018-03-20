@@ -10,6 +10,13 @@
  */
 abstract class TimeCalculate 
 {
+    /**
+     *  Converts timestamp to a user friendly version, displaying 
+     *  time until nowin english.
+     * 
+     *  @param  string $dateTime the date formatted string to convert
+     *  @return string          a user friendly time 
+     */
     public static function getTimeSinceCreation($dateTime)
     {
         $secondsSince = time() - strtotime($dateTime) - 3600*4;

@@ -1,7 +1,22 @@
 <?php
+/**
+ *  Provides methods for formatting text in templates
+ *  or in map parsing, ex: striping or adding custom quote tags.  
+ */
 
+/**
+ *  Provides methods for formatting text in templates
+ *  or in map parsing, ex: striping or adding custom quote tags.
+ *  
+ *  @author Jacob Landowski
+ */
 abstract class Formatting
 {
+    /**
+     *  Converts custom quote/author tags into html equivalent content.
+     * 
+     *  @param string $content the content to convert  
+     */
     public static function renderQuote($content)
     {
         $authorChunks  = preg_split('/\[author\](\s*.*\s*)\[\/author\]/i', trim($content), -1,  PREG_SPLIT_DELIM_CAPTURE);
@@ -18,6 +33,11 @@ abstract class Formatting
         return $quotedContent;
     }
 
+    /**
+     *  Strips quote/author tags from content.
+     * 
+     *  @param string $content the content to convert  
+     */
     public static function stripQuoteTags($content)
     {
         $newContent = preg_replace('/\[quote\].*\[\/quote\]|\[quote\]|\[\/quote\]/', '', $content);
@@ -25,6 +45,11 @@ abstract class Formatting
         return $newContent;
     }
 
+    /**
+     *  Adds quote/author tags to content.
+     * 
+     *  @param string $content the content to convert  
+     */
     public static function addTags($content, $author)
     {
         return '[quote]' . trim($content) . '[author]' . trim($author) . '[/author][/quote]';
