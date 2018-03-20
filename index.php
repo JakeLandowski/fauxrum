@@ -44,7 +44,9 @@ function errorIfTokenInvalid($f3, $token, $tokenChecker)
     if($tokenChecker($token)) $f3->error(404);
 }
 
-date_default_timezone_set('pacific');
+echo 'timezone before: ' . date_default_timezone_get();
+date_default_timezone_set('America/Los_Angeles');
+echo 'timezone after: ' . date_default_timezone_get();
 
     // Custom 404 Page
 // $f3->set('ONERROR', function($f3)
