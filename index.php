@@ -13,7 +13,6 @@
 
 error_reporting(E_ALL|E_STRICT);
 ini_set('display_errors', 1);
-date_default_timezone_set('America/Los_Angeles');
 
     //  Start Runtime clock
 require_once "testing/runTimeStart.php";
