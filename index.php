@@ -13,12 +13,14 @@
 
 error_reporting(E_ALL|E_STRICT);
 ini_set('display_errors', 1);
+date_default_timezone_set('America/Los_Angeles');
 
     //  Start Runtime clock
 require_once "testing/runTimeStart.php";
 
 require_once 'vendor/autoload.php';
 session_start();
+
 
 $f3 = Base::instance();
 $f3->set('DEBUG', 3);
@@ -43,8 +45,6 @@ function errorIfTokenInvalid($f3, $token, $tokenChecker)
 {
     if($tokenChecker($token)) $f3->error(404);
 }
-
-date_default_timezone_set('America/Los_Angeles');
 
     // Custom 404 Page
 // $f3->set('ONERROR', function($f3)
